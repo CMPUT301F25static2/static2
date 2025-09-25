@@ -13,3 +13,5 @@ Yuheng Li
 mkuzniet
 Mykyta Kuznietsov
 
+bangit
+Patrick Bangit
