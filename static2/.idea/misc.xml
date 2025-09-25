@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
+=======
 <project version="4">
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="ProjectRootManager" version="2" languageLevel="JDK_21" default="true" project-jdk-name="jbr-21" project-jdk-type="JavaSDK">
@@ -6,4 +11,5 @@
   <component name="ProjectType">
     <option name="id" value="Android" />
   </component>
+>>>>>>> 020d1a54fb5ad75898215a3fed4c8be5fc73f4db
 </project>
