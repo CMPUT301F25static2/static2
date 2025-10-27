@@ -12,6 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Static2">
         <activity
+            android:name=".organzier.CreateEditEventActivity"
+            android:exported="false" />
+        <activity
+            android:name=".organzier.OrganizerMainActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
