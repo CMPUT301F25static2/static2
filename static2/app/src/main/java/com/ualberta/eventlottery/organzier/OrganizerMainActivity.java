@@ -1,4 +1,4 @@
-package com.ualberta.static2.organzier;
+package com.ualberta.eventlottery.organzier;
 
 import android.os.Bundle;
 

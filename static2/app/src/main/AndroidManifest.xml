@@ -12,29 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Static2">
         <activity
-<<<<<<< HEAD
-            android:name=".organzier.OrganizerWaitinglistActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activity_organzier_waitingList"
-            android:exported="false" />
-        <activity
-            android:name=".organzier.OrganizerWaitingListActivity"
-            android:exported="false" />
-        <activity
-            android:name=".organzier.CreateEditEventActivity"
-            android:exported="false" />
-        <activity
-            android:name=".organzier.OrganizerMainActivity"
-            android:exported="false" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="true">
-=======
             android:name="com.ualberta.eventlottery.MainActivity"
             android:exported="true"
             android:label="@string/title_activity_event_lottery_main">
->>>>>>> e1cf3b6482fd872fffd62619ef40dc99adbea8b5
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -45,6 +25,7 @@
             android:name=".MainActivity"
             android:exported="true">
         </activity>
+
     </application>
 
 </manifest>
