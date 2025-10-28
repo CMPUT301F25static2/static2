@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    tools:context=".organzier.OrganizerWaitinglistActivity">
+    tools:context="com.ualberta.eventlottery.organzier.OrganizerWaitinglistActivity">
 
     <!--    header-->
     <LinearLayout
@@ -21,17 +21,21 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:gravity="center_vertical">
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/group_24dp_000000_fill0_wght400_grad0_opsz24"/>
 
+<!--            event avatar-->
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_self_improvement_24dp_000000_fill0_wght400_grad0_opsz24"
+                app:tint="@color/text_secondary"/>
+
+<!--            event title-->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="4dp"
-                android:text="Waiting List"
-                android:textSize="24dp"
+                android:text="Morning Yoga Seesion"
+                android:textSize="22dp"
                 android:textColor="@color/black"
                 android:textStyle="bold"/>
         </LinearLayout>
@@ -53,7 +57,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Status"
+            android:text="Event Status"
             android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="@color/black"/>
@@ -116,36 +120,43 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp">
 
+<!--        all button-->
         <LinearLayout
+            android:id="@+id/buttonAll"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/rounded_md"
-            android:backgroundTint="@color/text_secondary"
+            android:background="@drawable/button_selector"
             android:paddingVertical="6dp"
             android:paddingHorizontal="10dp" >
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="All "
+                android:text="All"
                 android:textSize="12sp"
-                android:textColor="@color/white"
+                android:textColor="@drawable/button_text_selector"
                 android:textStyle="bold"/>
 
+            <View
+                android:layout_width="2dp"
+                android:layout_height="match_parent"/>
+
+<!--            total number of entrants currently in the Event-->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="(200)"
+                android:text="(148)"
                 android:textSize="12sp"
-                android:textColor="@color/white"
+                android:textColor="@drawable/button_text_selector"
                 android:textStyle="bold"/>
         </LinearLayout>
 
+<!--        request sent button-->
         <LinearLayout
+            android:id="@+id/buttonRequests"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/rounded_md"
-            android:backgroundTint="@color/text_secondary"
+            android:background="@drawable/button_selector"
             android:paddingVertical="6dp"
             android:paddingHorizontal="10dp"
             android:layout_marginHorizontal="20dp">
@@ -153,47 +164,36 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="All "
+                android:text="Request sent"
                 android:textSize="12sp"
-                android:textColor="@color/white"
+                android:textColor="@drawable/button_text_selector"
                 android:textStyle="bold"/>
 
+            <View
+                android:layout_width="2dp"
+                android:layout_height="match_parent"/>
+
+<!--            number of invitation have sent to entrants-->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="(200)"
+                android:text="(52)"
                 android:textSize="12sp"
-                android:textColor="@color/white"
+                android:textColor="@drawable/button_text_selector"
                 android:textStyle="bold"/>
         </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/rounded_md"
-            android:backgroundTint="@color/text_secondary"
-            android:paddingVertical="6dp"
-            android:paddingHorizontal="10dp" >
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="All "
-                android:textSize="12sp"
-                android:textColor="@color/white"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="(200)"
-                android:textSize="12sp"
-                android:textColor="@color/white"
-                android:textStyle="bold"/>
-        </LinearLayout>
-
-
 
     </LinearLayout>
+
+
+<!--    section showing the list of entrants based on selected button-->
+    <FrameLayout
+        android:id="@+id/fragment_entrants_conatiner"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="16dp" />
+
+
 
 </LinearLayout>

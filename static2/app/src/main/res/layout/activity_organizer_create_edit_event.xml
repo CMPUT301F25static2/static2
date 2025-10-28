@@ -5,6 +5,6 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".organzier.CreateEditEventActivity">
+    tools:context="com.ualberta.eventlottery.organzier.CreateEditEventActivity">
 
 </androidx.constraintlayout.widget.ConstraintLayout>

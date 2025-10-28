@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".organzier.OrganizerMainActivity"
+    tools:context="com.ualberta.eventlottery.organzier.OrganizerMainActivity"
     android:padding="16dp"
     android:background="@color/white">
 
@@ -25,7 +25,7 @@
            <ImageView
                android:layout_width="wrap_content"
                android:layout_height="wrap_content"
-               android:src="@drawable/calendar"/>
+               android:src="@drawable/ic_calendar"/>
 
            <TextView
                android:layout_width="wrap_content"
@@ -49,7 +49,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/icon_add"
+                android:src="@drawable/ic_add"
                 app:tint="@color/white"/>
 
             <TextView
@@ -105,7 +105,7 @@
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/event_available_24dp_000000_fill0_wght400_grad0_opsz24"
+                        android:src="@drawable/ic_event_available_24dp_000000_fill0_wght400_grad0_opsz24"
                         app:tint="#4A90E2" />
                 </LinearLayout>
 
@@ -164,7 +164,7 @@
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/event_available_24dp_000000_fill0_wght400_grad0_opsz24"
+                        android:src="@drawable/ic_event_available_24dp_000000_fill0_wght400_grad0_opsz24"
                         app:tint="#4A90E2" />
                 </LinearLayout>
 
@@ -223,7 +223,7 @@
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/event_available_24dp_000000_fill0_wght400_grad0_opsz24"
+                        android:src="@drawable/ic_event_available_24dp_000000_fill0_wght400_grad0_opsz24"
                         app:tint="#4A90E2" />
                 </LinearLayout>
 
