@@ -12,6 +12,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Static2">
         <activity
+            android:name=".organzier.OrganizerWaitinglistActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity_organzier_waitingList"
+            android:exported="false" />
+        <activity
+            android:name=".organzier.OrganizerWaitingListActivity"
+            android:exported="false" />
+        <activity
             android:name=".organzier.CreateEditEventActivity"
             android:exported="false" />
         <activity
