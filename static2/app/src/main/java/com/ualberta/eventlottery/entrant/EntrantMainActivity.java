@@ -1,4 +1,4 @@
-package com.ualberta.static2.entrant;
+package com.ualberta.eventlottery.entrant;
 
 import android.os.Bundle;
 

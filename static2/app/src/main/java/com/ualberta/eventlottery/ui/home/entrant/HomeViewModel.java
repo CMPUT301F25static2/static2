@@ -1,4 +1,4 @@
-package com.ualberta.eventlottery.ui.home;
+package com.ualberta.eventlottery.ui.home.entrant;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
