@@ -72,9 +72,9 @@
                             android:paddingVertical="1dp"
                             android:paddingHorizontal="8dp"
                             android:text="open"
-                            android:textColor="@color/deep_green"
+                            android:textColor="@color/green_deep"
                             android:background="@drawable/rounded_md"
-                            android:backgroundTint="@color/light_green"
+                            android:backgroundTint="@color/green_light"
                             android:textSize="12sp"/>
                     </LinearLayout>
 
