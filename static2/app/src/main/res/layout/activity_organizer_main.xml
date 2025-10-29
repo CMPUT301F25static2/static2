@@ -42,7 +42,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:background="@drawable/rounded_md"
-            android:backgroundTint="@color/btn_light_dark"
+            android:backgroundTint="@color/btn_dark_light"
             android:paddingHorizontal="8dp"
             android:paddingVertical="6dp"
         >
