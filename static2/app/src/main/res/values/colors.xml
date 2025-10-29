@@ -9,11 +9,13 @@
 
 
 
-    <color name="btn_light_dark">#595959</color>
-    <color name="light_blue">#DBEAFE</color>
-    <color name="deep_blue">#3B82F6</color>
-    <color name="deep_green">#10B981</color>
-    <color name="light_green">#DCFCE7</color>
+    <color name="btn_dark_light">#595959</color>
+    <color name="blue_light">#DBEAFE</color>
+    <color name="blue_deep">#3B82F6</color>
+    <color name="green_deep">#10B981</color>
+    <color name="green_light">#DCFCE7</color>
+    <color name="red_light">#FFEBEE</color>
+    <color name="red_dark">#C62828</color>
 
 
 </resources>
