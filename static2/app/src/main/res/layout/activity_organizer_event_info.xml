@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context="com.ualberta.eventlottery.organzier.OrganizerWaitinglistActivity">
+
+    <!--    header-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
+
+<!--            event avatar-->
+<!--            <ImageView-->
+<!--                android:layout_width="32dp"-->
+<!--                android:layout_height="32dp"-->
+<!--                android:src="@drawable/ic_info_24dp_000000_fill0_wght400_grad0_opsz24"-->
+<!--                app:tint="@color/text_secondary"/>-->
+
+<!--            event Title-->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:text="Morning Yoga Session"
+                android:textSize="22dp"
+                android:textColor="@color/black"
+                android:textStyle="bold"/>
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
+<!--    about-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="About"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_marginTop="18dp"/>
+
+        <!--   about card-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="14dp"
+            android:orientation="vertical"
+            android:background="@drawable/background_gradient_gray">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!--            date-->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_calendar"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="4dp"
+                        android:text="Fri, Oct 28, 2025"
+                        android:textSize="16sp"
+                        android:textStyle="bold"/>
+                </LinearLayout>
+
+                <!--            time-->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_nest_clock_farsight_analog_24dp_000000_fill0_wght400_grad0_opsz24"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="4dp"
+                        android:text="8:00 AM - 10:00AM"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_marginVertical="10dp"/>
+                </LinearLayout>
+
+                <!--            description-->
+            </LinearLayout>
+
+
+            <!--        status-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <!--               event capacity-->
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:text="Capacity: 200"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary"/>
+
+                    <!--                percentage-->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="74%"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary"/>
+                </LinearLayout>
+                <!--            progress bar-->
+                <ProgressBar
+                    android:id="@+id/progressBarSecondary"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:max="100"
+                    android:progress="74" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="end">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="148/200  Filled"
+                        android:textStyle="bold"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_secondary"/>
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+
+
+
+
+<!--    location-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="vertical">
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Location"
+            android:textSize="20sp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp"/>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/location"
+            android:scaleType="centerCrop"/>
+
+        <TextView
+            android:layout_marginTop="5dp"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="116 St 85 Ave, Edmonton, AB T6G 2R3"/>
+    </LinearLayout>
+
+
+<!--    Entrants-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Entrants"
+            android:textSize="20sp"
+            android:textColor="@color/black"
+            android:textStyle="bold"  />
+
+        <!--        status options-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp">
+
+            <!--        all members currently in the event -->
+            <LinearLayout
+                android:id="@+id/buttonAll"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/button_selector"
+                android:paddingVertical="6dp"
+                android:paddingHorizontal="10dp" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="All"
+                    android:textSize="12sp"
+                    android:textColor="@drawable/button_text_selector"
+                    android:textStyle="bold"/>
+
+                <View
+                    android:layout_width="2dp"
+                    android:layout_height="match_parent"/>
+
+                <!--            total number of entrants currently in the Event-->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="(148)"
+                    android:textSize="12sp"
+                    android:textColor="@drawable/button_text_selector"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+
+            <!--        pending -->
+            <LinearLayout
+                android:id="@+id/buttonRequests"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/button_selector"
+                android:paddingVertical="6dp"
+                android:paddingHorizontal="10dp"
+                android:layout_marginHorizontal="20dp">
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Pending"
+                    android:textSize="12sp"
+                    android:textColor="@drawable/button_text_selector"
+                    android:textStyle="bold"/>
+
+                <View
+                    android:layout_width="2dp"
+                    android:layout_height="match_parent"/>
+
+                <!--            number of invitation have sent to entrants-->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="(52)"
+                    android:textSize="12sp"
+                    android:textColor="@drawable/button_text_selector"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+
+            <!--        waiting-->
+            <LinearLayout
+                android:id="@+id/buttonWaiting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/button_selector"
+                android:paddingVertical="6dp"
+                android:paddingHorizontal="10dp">
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Waiting"
+                    android:textSize="12sp"
+                    android:textColor="@drawable/button_text_selector"
+                    android:textStyle="bold"/>
+
+                <View
+                    android:layout_width="2dp"
+                    android:layout_height="match_parent"/>
+
+                <!--            number of invitation have sent to entrants-->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="(2000)"
+                    android:textSize="12sp"
+                    android:textColor="@drawable/button_text_selector"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+
+
+
+        <!--    section showing the list of entrants based on selected button-->
+        <FrameLayout
+            android:id="@+id/fragment_entrants_conatiner"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="16dp" />
+    </LinearLayout>
+
+
+
+</LinearLayout>
