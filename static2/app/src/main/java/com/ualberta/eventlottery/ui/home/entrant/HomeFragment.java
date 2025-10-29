@@ -56,7 +56,9 @@ public class HomeFragment extends Fragment {
         myEventsAdapter = new EventAdapter(myEventsList);
         availableEventsAdapter = new EventAdapter(availableEventsList);
         recyclerView.setAdapter(myEventsAdapter);
-        recyclerView.setAdapter(availableEventsAdapter);
+        myEventsButton.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.white));
+        myEventsButton.setTextColor(ContextCompat.getColorStateList(requireContext(), R.color.black));
+
 
         //Filter and sort placeholders
         filterButton.setOnClickListener(v ->
@@ -95,13 +97,20 @@ public class HomeFragment extends Fragment {
 
     private void showMyEvents() {
         myEventsAdapter.updateEvents(myEventsList);
+        recyclerView.setAdapter(myEventsAdapter);
         myEventsButton.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.white));
         myEventsButton.setTextColor(ContextCompat.getColorStateList(requireContext(), R.color.black));
+        availableEventsButton.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.black));
+        availableEventsButton.setTextColor(ContextCompat.getColorStateList(requireContext(),R.color.white));
+
     }
     private void showAvailableEvents(){
         availableEventsAdapter.updateEvents(availableEventsList);
+        recyclerView.setAdapter(availableEventsAdapter);
         availableEventsButton.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.white));
         availableEventsButton.setTextColor(ContextCompat.getColorStateList(requireContext(),R.color.black));
+        myEventsButton.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.black));
+        myEventsButton.setTextColor(ContextCompat.getColorStateList(requireContext(), R.color.white));
     }
 
     //Test
