@@ -10,7 +10,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.ualberta.static2.R;
 
-public class OrganizerWaitinglistActivity extends AppCompatActivity {
+public class OrganizerEventInfoActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

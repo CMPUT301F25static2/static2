@@ -2,6 +2,9 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="black_transparent_50">#80000000</color>
+    <color name="black_transparent_30">#4D000000</color>
+    <color name="black_transparent_70">#B3000000</color>
 
     <color name="text_primary">#404040</color>
     <color name="text_secondary">#8C8C8C</color>
@@ -15,7 +18,11 @@
     <color name="green_deep">#10B981</color>
     <color name="green_light">#DCFCE7</color>
     <color name="red_light">#FFEBEE</color>
-    <color name="red_dark">#C62828</color>
+    <color name="red_deep">#C62828</color>
+    <color name="gray_light">#EFF0F2</color>
+    <color name="red_delete">#FE2C55</color>
+    <color name="orange_light">#fef5d9</color>
+    <color name="orange_deep">#F59E0B</color>
 
 
 </resources>
