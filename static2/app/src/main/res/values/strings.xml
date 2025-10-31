@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">static2</string>
+    <string name="app_name">EventLottery</string>
     <string name="title_activity_event_lottery_main">EventLotteryMainActivity</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>

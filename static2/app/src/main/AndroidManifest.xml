@@ -20,14 +20,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW"></action>
-                <category android:name="android.intent.category.DEFAULT"></category>
-                <category android:name="android.intent.category.BROWSABLE"></category>
-
-                <data android:scheme="eventlottery" android:host="com.ualberta.eventlottery" android:path="/viewevent"/>
-            </intent-filter>
         </activity>
         <activity
             android:name=".MainActivity"
@@ -37,6 +29,18 @@
             android:name="com.ualberta.eventlottery.admin.AdminMainActivity"
             android:exported="true">
         </activity>
+        <activity
+            android:name="com.ualberta.eventlottery.entrant.EntrantMainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"></action>
+                <category android:name="android.intent.category.DEFAULT"></category>
+                <category android:name="android.intent.category.BROWSABLE"></category>
+
+                <data android:scheme="eventlottery" android:host="com.ualberta.eventlottery" android:path="/viewevent"/>
+            </intent-filter>
+        </activity>
+
 
     </application>
 
