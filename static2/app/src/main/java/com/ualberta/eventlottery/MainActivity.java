@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_event_lottery_main);
         NavigationUI.setupWithNavController(binding.navView, navController);
 
-        isAdmin = true; // Change to false to go to entrant screens
+        isAdmin = false; // Change to false to go to entrant screens
         if (isAdmin){
             Intent myIntent = new Intent(MainActivity.this, AdminMainActivity.class);
             MainActivity.this.startActivity(myIntent);
