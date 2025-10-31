@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Static2">
         <activity
+            android:name="com.ualberta.eventlottery.organzier.Dialog_custom_content"
+            android:exported="false" />
+        <activity
             android:name="com.ualberta.eventlottery.MainActivity"
             android:exported="true"
             android:label="@string/title_activity_event_lottery_main">
@@ -23,9 +26,7 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="true">
-        </activity>
-
+            android:exported="true" />
     </application>
 
 </manifest>
