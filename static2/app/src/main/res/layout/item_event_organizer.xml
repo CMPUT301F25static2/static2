@@ -29,17 +29,17 @@
             android:padding="8dp">
 
 <!--            left-->
-            <LinearLayout
-                android:layout_width="50dp"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical">
-                <ImageView
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:src="@drawable/ic_self_improvement_24dp_000000_fill0_wght400_grad0_opsz24"
-                    app:tint="@color/text_secondary"/>
+<!--            <LinearLayout-->
+<!--                android:layout_width="50dp"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:gravity="center_vertical">-->
+<!--                <ImageView-->
+<!--                    android:layout_width="50dp"-->
+<!--                    android:layout_height="50dp"-->
+<!--                    android:src="@drawable/ic_self_improvement_24dp_000000_fill0_wght400_grad0_opsz24"-->
+<!--                    app:tint="@color/text_secondary"/>-->
 
-            </LinearLayout>
+<!--            </LinearLayout>-->
 
 
 <!--            right-->
@@ -58,6 +58,7 @@
                         android:layout_height="wrap_content">
 
                         <TextView
+                            android:id="@+id/tv_event_title"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Morning Yoga Session"
@@ -67,6 +68,7 @@
                             android:layout_marginRight="8dp"/>
 
                         <TextView
+                            android:id="@+id/tv_event_status"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:paddingVertical="1dp"
@@ -79,6 +81,7 @@
                     </LinearLayout>
 
                     <ImageView
+                        android:id="@+id/btn_event_more"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@drawable/ic_more_horiz_24dp_000000_fill0_wght400_grad0_opsz24"
@@ -88,17 +91,19 @@
 
 
                 <TextView
+                    android:id="@+id/tv_event_entrants_number"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Registration: 148/200 entrants"
+                    android:text="Entrants: 148/200"
                     android:textSize="12dp"
                     android:textColor="@color/text_secondary" />
 
 
                 <TextView
+                    android:id="@+id/tv_event_end_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="End Date: Oct 16, 2025   8:00AM "
+                    android:text="End: 12:00AM, Oct 16, 2025"
                     android:textSize="12dp"
                     android:textColor="@color/text_secondary" />
 
@@ -111,6 +116,7 @@
 
 <!--                    draw btn-->
                     <LinearLayout
+                        android:id="@+id/btn_draw"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/rounded_sm"
@@ -137,6 +143,7 @@
 
 <!--                    export btn-->
                     <LinearLayout
+                        android:id="@+id/btn_export"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/rounded_sm"
@@ -163,6 +170,7 @@
 
 <!--                    data btn-->
                     <LinearLayout
+                        android:id="@+id/btn_data"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/rounded_sm"
@@ -179,7 +187,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Export"
+                            android:text="Data"
                             android:layout_marginLeft="2dp"
                             android:textColor="@color/black"
                             android:textStyle="bold"

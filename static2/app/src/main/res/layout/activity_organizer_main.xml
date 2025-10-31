@@ -38,12 +38,13 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="4dp"
                     android:text="My Events"
-                    android:textSize="24dp"
+                    android:textSize="@dimen/text_size_headline"
                     android:textColor="@color/black"
                     android:textStyle="bold"/>
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/btn_create_event"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
@@ -98,25 +99,26 @@
                     android:layout_height="match_parent"
                     android:gravity="center_horizontal"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="10dp">
 
                     <LinearLayout
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_marginBottom="12dp"
                         android:background="@drawable/rounded_full"
-                        android:backgroundTint="#E0F0FF"
+                        android:backgroundTint="@color/blue_light"
                         android:gravity="center">
 
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_event_available_24dp_000000_fill0_wght400_grad0_opsz24"
-                            app:tint="#4A90E2" />
+                            app:tint="@color/blue_deep" />
                     </LinearLayout>
 
 
                     <TextView
+                        android:id="@+id/tv_total_events"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="24"
@@ -157,25 +159,26 @@
                     android:layout_height="match_parent"
                     android:gravity="center_horizontal"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="10dp">
 
                     <LinearLayout
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_marginBottom="12dp"
                         android:background="@drawable/rounded_full"
-                        android:backgroundTint="#E0F0FF"
+                        android:backgroundTint="@color/green_light"
                         android:gravity="center">
 
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_event_available_24dp_000000_fill0_wght400_grad0_opsz24"
-                            app:tint="#4A90E2" />
+                            app:tint="@color/green_deep" />
                     </LinearLayout>
 
 
                     <TextView
+                        android:id="@+id/tv_total_entrants"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="24"
@@ -188,7 +191,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Total Events"
+                        android:text="Total Entrants"
                         android:textColor="#888888"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -216,25 +219,26 @@
                     android:layout_height="match_parent"
                     android:gravity="center_horizontal"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="10dp">
 
                     <LinearLayout
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_marginBottom="12dp"
                         android:background="@drawable/rounded_full"
-                        android:backgroundTint="#E0F0FF"
+                        android:backgroundTint="@color/orange_light"
                         android:gravity="center">
 
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:src="@drawable/ic_event_available_24dp_000000_fill0_wght400_grad0_opsz24"
-                            app:tint="#4A90E2" />
+                            android:src="@drawable/ic_query_stats_24dp_000000_fill0_wght400_grad0_opsz24"
+                            app:tint="@color/orange_deep" />
                     </LinearLayout>
 
 
                     <TextView
+                        android:id="@+id/tv_full_rate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="24"
@@ -277,7 +281,7 @@
                 android:layout_marginBottom="10dp"/>
 
             <ListView
-                android:id="@+id/eventsListView"
+                android:id="@+id/lv_organzier_event_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
             </ListView>
