@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+   <LinearLayout
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:orientation="horizontal"
+       android:gravity="center_horizontal">
+
+       <TextView
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:text="Custom "
+           android:textSize="20sp"
+           android:textStyle="bold"
+           android:gravity="center"
+           android:layout_marginBottom="16dp" />
+
+       <TextView
+           android:id="@+id/tv_updated_title"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:text="Tag"
+           android:textSize="20sp"
+           android:textStyle="bold"
+           android:gravity="center"
+           android:layout_marginBottom="16dp" />
+   </LinearLayout>
+
+
+    <EditText
+        android:id="@+id/et_updated_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border_radius"
+        android:paddingVertical="8dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:layout_marginTop="24dp">
+
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_marginRight="6dp"
+            android:text="Cancel"
+            android:textColor="@color/text_primary"
+            style="@style/Widget.Material3.Button.TextButton" />
+
+        <Button
+            android:id="@+id/btn_confirm"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="Conrim"
+            android:layout_marginStart="8dp"
+            style="@style/Widget.Material3.Button"
+            android:backgroundTint="@color/text_primary"/>
+
+    </LinearLayout>
+
+</LinearLayout>

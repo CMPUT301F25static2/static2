@@ -37,6 +37,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
+                android:id="@+id/btn_back"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:src="@drawable/ic_arrow_back_24dp_000000_fill0_wght400_grad0_opsz24"
@@ -54,8 +55,8 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:src="@drawable/ic_dice_24dp_000000_fill0_wght400_grad0_opsz24"
                     app:tint="@color/white" />
 
@@ -65,7 +66,7 @@
                     android:layout_marginLeft="4dp"
                     android:text="Lottery"
                     android:textColor="@color/white"
-                    android:textSize="24sp"
+                    android:textSize="@dimen/text_size_headline"
                     android:textStyle="bold" />
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -95,23 +96,25 @@
                     android:layout_height="wrap_content"
                     android:text="Morning Yoga Session"
                     android:textColor="@color/black"
-                    android:textSize="18sp"
+                    android:textSize="@dimen/text_size_title"
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/tv_event_capacity"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="10dp"
                     android:text="Capacity: 200"
                     android:textColor="@color/text_secondary"
-                    android:textSize="14sp" />
+                    android:textSize="@dimen/text_size_body" />
 
                 <TextView
+                    android:id="@+id/tv_registration_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Mar 25,2024  14:00  -  Oct 25,2024  14:00  "
                     android:textColor="@color/text_secondary"
-                    android:textSize="14sp" />
+                    android:textSize="@dimen/text_size_body" />
 
 
             </LinearLayout>
@@ -146,13 +149,13 @@
                     android:layout_height="wrap_content"
                     android:text="Waiting List"
                     android:textColor="@color/black"
-                    android:textSize="18sp"
+                    android:textSize="@dimen/text_size_title"
                     android:textStyle="bold" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
+                    android:layout_marginTop="18dp"
                     android:paddingHorizontal="12dp">
 
                     <LinearLayout
@@ -164,11 +167,12 @@
                         app:layout_constraintStart_toStartOf="parent">
 
                         <TextView
+                            android:id="@+id/tv_event_waiting"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="400"
                             android:textColor="@color/black"
-                            android:textSize="24sp"
+                            android:textSize="@dimen/text_size_headline"
                             android:textStyle="bold" />
 
                         <TextView
@@ -189,11 +193,12 @@
                         app:layout_constraintStart_toEndOf="@+id/linearLayout2">
 
                         <TextView
+                            android:id="@+id/tv_event_accepted_rate"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="148/200"
                             android:textColor="@color/black"
-                            android:textSize="24sp"
+                            android:textSize="@dimen/text_size_headline"
                             android:textStyle="bold" />
 
                         <TextView
@@ -213,11 +218,12 @@
                         app:layout_constraintEnd_toEndOf="parent">
 
                         <TextView
+                            android:id="@+id/tv_event_spots_left"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="52"
                             android:textColor="@color/black"
-                            android:textSize="24sp"
+                            android:textSize="@dimen/text_size_headline"
                             android:textStyle="bold" />
 
                         <TextView
@@ -249,15 +255,15 @@
                 android:layout_height="wrap_content"
                 android:text="Number of entrants to draw"
                 android:textColor="@color/black"
-                android:textSize="18dp"
+                android:textSize="@dimen/text_size_title"
                 android:textStyle="bold" />
 
             <EditText
-                android:id="@+id/numberToDraw"
+                android:id="@+id/et_number_to_draw"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:background="@drawable/border_radius_bg"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/border_radius"
                 android:drawableStart="@drawable/ic_groups_24dp_000000_fill0_wght400_grad0_opsz24"
                 android:drawablePadding="8dp"
                 android:hint="Enter the number..."
@@ -265,7 +271,7 @@
                 android:paddingStart="20dp"
                 android:textColor="@color/black"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                 />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -273,7 +279,7 @@
                 android:layout_marginTop="4dp"
                 android:text="Maximum 52 entrants spots available"
                 android:textColor="@color/text_tertiary"
-                android:textSize="14sp"
+                android:textSize="@dimen/text_size_body_small"
                 android:textStyle="bold" />
 
         </LinearLayout>
@@ -281,22 +287,20 @@
 
         <!--    draw button-->
         <TextView
-            android:id="@+id/drawButton"
+            android:id="@+id/btn_draw"
             android:layout_width="match_parent"
-            android:gravity="center"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:layout_marginTop="60dp"
             android:layout_gravity="center_horizontal"
             android:background="@drawable/rounded_sm"
             android:backgroundTint="@color/black"
             android:paddingVertical="12dp"
             android:text="Draw"
-            android:textSize="18dp"
+            android:textSize="@dimen/text_size_subtitle"
             android:textColor="@color/white"
             android:textStyle="bold" />
     </LinearLayout>
-
-
 
 
     <com.google.android.material.bottomnavigation.BottomNavigationView

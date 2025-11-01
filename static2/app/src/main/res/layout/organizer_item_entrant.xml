@@ -16,6 +16,7 @@
 
         <!--        name of the entrant-->
         <TextView
+            android:id="@+id/tv_entrant_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Emma Wilson"
@@ -27,24 +28,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-            <!--      joined/registered    -->
+            <!--      joined/registered date    -->
             <TextView
+                android:id="@+id/tv_entrant_joined_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Joined"
-                android:textColor="@color/text_tertiary"
-                android:textSize="12sp" />
-
-            <View
-                android:layout_width="6dp"
-                android:layout_height="match_parent" />
-
-            <!--        date-->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="2 hours ago"
-                android:textColor="@color/text_tertiary"
+                android:text="Joined  2 hours ago"
+                android:textColor="@color/text_secondary"
                 android:textSize="12sp" />
         </LinearLayout>
 
@@ -53,6 +43,7 @@
 
     <!--    status-->
     <TextView
+        android:id="@+id/tv_entrant_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_status_accepted"
@@ -65,16 +56,11 @@
 
 <!--    more button-->
     <ImageView
+        android:id="@+id/btn_entrant_more"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_more_vert_24dp_000000_fill0_wght400_grad0_opsz24"
         app:tint="@color/text_secondary"
         android:layout_marginLeft="4dp"/>
-
-
-
-
-
-
 
 </LinearLayout>
