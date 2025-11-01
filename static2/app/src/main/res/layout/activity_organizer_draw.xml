@@ -55,8 +55,8 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:src="@drawable/ic_dice_24dp_000000_fill0_wght400_grad0_opsz24"
                     app:tint="@color/white" />
 
@@ -155,7 +155,7 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
+                    android:layout_marginTop="18dp"
                     android:paddingHorizontal="12dp">
 
                     <LinearLayout
@@ -262,7 +262,7 @@
                 android:id="@+id/et_number_to_draw"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="8dp"
                 android:background="@drawable/border_radius"
                 android:drawableStart="@drawable/ic_groups_24dp_000000_fill0_wght400_grad0_opsz24"
                 android:drawablePadding="8dp"
@@ -289,8 +289,8 @@
         <TextView
             android:id="@+id/btn_draw"
             android:layout_width="match_parent"
-            android:gravity="center"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:layout_marginTop="60dp"
             android:layout_gravity="center_horizontal"
             android:background="@drawable/rounded_sm"

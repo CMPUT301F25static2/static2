@@ -172,7 +172,7 @@
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:src="@drawable/ic_event_available_24dp_000000_fill0_wght400_grad0_opsz24"
+                            android:src="@drawable/ic_group_24dp_000000_fill0_wght400_grad0_opsz24"
                             app:tint="@color/green_deep" />
                     </LinearLayout>
 
@@ -251,7 +251,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Total Events"
+                        android:text="Full rate"
                         android:textColor="#888888"
                         android:textSize="14sp" />
                 </LinearLayout>

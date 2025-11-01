@@ -43,7 +43,7 @@
         android:orientation="vertical"
         android:background="@drawable/rounded_md"
         android:backgroundTint="@color/white"
-        android:layout_marginTop="-40dp"
+        android:layout_marginTop="-20dp"
         android:padding="18dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -90,7 +90,7 @@
                     android:id="@+id/tv_event_entrants_number_ratio"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="148 / 200 entrants"
+                    android:text="148 entrants"
                     android:textColor="@color/text_secondary"
                     />
             </LinearLayout>
@@ -136,7 +136,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="4dp"
-                    android:text="Fri, Oct 28, 2025 - Fri, Dec 28, 2025"
+                    android:text="8:00 AM, Oct 28, 2025 - 8:00 AM, Dec 28, 2025"
                     android:textSize="14sp"
                     android:textColor="@color/text_secondary"/>
             </LinearLayout>
@@ -184,7 +184,6 @@
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:text="Capacity: 200"
-                    android:textStyle="bold"
                     android:textSize="14sp"
                     android:textColor="@color/text_secondary"/>
 
@@ -221,6 +220,12 @@
             </LinearLayout>
         </LinearLayout>
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/text_tertiary"
+            android:layout_marginVertical="16dp"/>
+
 
 
         <!--    section showing the list of entrants based on selected button-->
@@ -228,8 +233,8 @@
             android:id="@+id/fragment_entrants_conatiner"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_marginTop="16dp" />
+            android:layout_weight="1"/>
+
 
 
 
