@@ -255,11 +255,7 @@
                         android:textColor="#888888"
                         android:textSize="14sp" />
                 </LinearLayout>
-
             </com.google.android.material.card.MaterialCardView>
-
-
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!--    Event List-->
@@ -268,7 +264,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:layout_marginTop="30dp">
+            android:layout_marginTop="20dp">
 
             <!--     tittle  -->
             <TextView
