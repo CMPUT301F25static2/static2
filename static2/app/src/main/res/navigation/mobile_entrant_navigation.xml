@@ -12,6 +12,11 @@
         tools:layout="@layout/fragment_entrant_home" />
 
     <fragment
+        android:id="@+id/navigation_event_details"
+        android:name="com.ualberta.eventlottery.ui.home.entrant.EventDetailsFragment"
+        tools:layout="@layout/fragment_event_details" />
+
+    <fragment
         android:id="@+id/navigation_notifications"
         android:name="com.ualberta.eventlottery.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
