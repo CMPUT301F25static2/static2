@@ -7,13 +7,13 @@ import java.time.LocalTime;
 
 public class Event {
     private String id;
-    private String organizerId;  // Fixed typo from "orgarserId"
+    private String organizerId;
     private String title;
     private String description;
     private String category;
     private double price;
-    private LocalTime dailyStartTime;  // For recurring events
-    private int sessionDuration;        // Duration in minutes
+    private LocalTime dailyStartTime;
+    private int sessionDuration;
     private Date createdAt;
     private Date startTime;
     private Date endTime;
@@ -28,11 +28,11 @@ public class Event {
     private int maxWaitListSize;
     private int currentWaitListSize;
 
-    // User ID lists - Consider separating these into a repository
-    private List<String> registeredUserIds;      // All users who registered interest
-    private List<String> waitListUserIds;        // Users in waiting list
-    private List<String> confirmedUserIds;       // Users who confirmed attendance
-    private List<String> attendeeIds;            // Users who actually attended
+
+    private List<String> registeredUserIds; //All users who registered
+    private List<String> waitListUserIds; //Users in waiting list
+    private List<String> confirmedUserIds; //Users who confirmed attendance
+    private List<String> attendeeIds; //Users who actually attended
 
     // Constructors
     public Event() {
