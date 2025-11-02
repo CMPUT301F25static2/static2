@@ -11,22 +11,22 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
 import com.ualberta.static2.R;
-import com.ualberta.static2.databinding.ActivityEntrantMainBinding;
+import com.ualberta.static2.databinding.ActivityEventLotteryMainBinding;
 
 
 public class EntrantMainActivity extends AppCompatActivity {
     private static final String TAG = "EventLottery";
 
-    private ActivityEntrantMainBinding binding;
+    private ActivityEventLotteryMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding = ActivityEntrantMainBinding.inflate(getLayoutInflater());
+        binding = ActivityEventLotteryMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_entrant_main);
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_event_lottery_main);
         NavigationUI.setupWithNavController(binding.navView, navController);
 
         // Sources used for QR code scanning
