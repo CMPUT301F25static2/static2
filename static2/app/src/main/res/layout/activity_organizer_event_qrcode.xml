@@ -9,7 +9,7 @@
     android:background="@color/gray_light">
 
     <ImageView
-        android:id="@+id/btnBack"
+        android:id="@+id/btn_back"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:src="@drawable/ic_arrow_back_24dp_000000_fill0_wght400_grad0_opsz24"
@@ -42,6 +42,7 @@
                app:cardCornerRadius="30dp">
 
                <ImageView
+                   android:id="@+id/iv_event_image"
                    android:layout_width="match_parent"
                    android:layout_height="match_parent"
                    android:scaleType="centerCrop"
@@ -55,6 +56,7 @@
                android:layout_marginLeft="20dp">
 
                <TextView
+                   android:id="@+id/tv_event_title"
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content"
                    android:text="Morning Yoga Session"
@@ -73,6 +75,7 @@
         />
 
         <ImageView
+            android:id="@+id/iv_event_qrcode"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:src="@drawable/qrcode"
