@@ -48,7 +48,6 @@ public class OrganizerMainActivity extends AppCompatActivity {
     private void initData() {
         eventList = new ArrayList<>();
 
-        // 添加一些测试事件
         Event event1 = new Event();
         event1.setId("1");
         event1.setTitle("Morning Yoga Session");
