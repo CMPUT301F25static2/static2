@@ -41,6 +41,11 @@ public class EntrantMainActivity extends AppCompatActivity {
             Uri uri = getIntent().getData();
             if(uri != null){
                 eventId = uri.getQueryParameter("eventId");
+                // Exact google search term: android navigation with parameters in java
+                Bundle bundle = new Bundle();
+                bundle.putString("eventId", eventId);
+
+                navController.navigate(R.id.navigation_event_details, bundle);
             }
         }
         Log.d(TAG, "Launched with eventId=" + eventId);
