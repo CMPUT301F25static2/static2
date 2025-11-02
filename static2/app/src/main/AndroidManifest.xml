@@ -29,6 +29,23 @@
             android:name="com.ualberta.eventlottery.admin.AdminMainActivity"
             android:exported="true">
         </activity>
+        <activity
+            android:name="com.ualberta.eventlottery.organzier.OrganizerEventInfoActivity"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name="com.ualberta.eventlottery.organzier.OrganizerEventCreateActivity"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name="com.ualberta.eventlottery.organzier.OrganizerMainActivity"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name="com.ualberta.eventlottery.entrant.EntrantMainActivity"
+            android:exported="true">
+        </activity>
+
 
     </application>
 
