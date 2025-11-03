@@ -16,34 +16,38 @@ public class UserManager {
     private static String AUTH_TAG = "EventLotteryAuth";
 
     private static FirebaseAuth mAuth;
+    private static FirebaseUser mCurrentUser;
 
     // https://www.google.com/search?q=android+java+callback
     public interface InitCallback {
         void onSuccess(String userId);
         void onFailure(Exception exception);
     }
+    public static String getCurrentUserId() {
+        return mCurrentUser.getUid();
+    }
 
     // https://firebase.google.com/docs/auth/android/anonymous-auth
     public static void initializeUser(Activity activity, InitCallback callback) {
         mAuth = FirebaseAuth.getInstance();
-        FirebaseUser firebaseUser = mAuth.getCurrentUser();
-        if (firebaseUser == null) {
+        mCurrentUser = mAuth.getCurrentUser();
+        if (mCurrentUser == null) {
             mAuth.signInAnonymously()
                     .addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 // Sign in success, update UI with the signed-in user's information
-                                FirebaseUser user = mAuth.getCurrentUser();
-                                callback.onSuccess(user.getUid());
+                                mCurrentUser = mAuth.getCurrentUser();
+                                callback.onSuccess(mCurrentUser.getUid());
                             } else {
                                 callback.onFailure(task.getException());
                             }
                         }
                     });
         } else {
-            Log.d(AUTH_TAG, "userAlreadySignedIn:userId=" + firebaseUser.getUid());
-            callback.onSuccess(firebaseUser.getUid());
+            Log.d(AUTH_TAG, "userAlreadySignedIn:userId=" + mCurrentUser.getUid());
+            callback.onSuccess(mCurrentUser.getUid());
         }
 
     }
