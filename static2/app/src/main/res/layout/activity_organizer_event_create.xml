@@ -117,7 +117,8 @@
                     android:background="@drawable/border_radius"
                     android:drawableEnd="@drawable/ic_location_on_24dp_000000_fill0_wght400_grad0_opsz24"
                     android:paddingVertical="10dp"
-                    android:paddingEnd="20dp"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="10dp"
                     android:textColor="@color/black"
                     android:textSize="18sp"
                     android:textStyle="bold" />

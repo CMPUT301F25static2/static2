@@ -23,6 +23,7 @@ public class Event {
     private boolean locationRequired;
     private String posterUrl;
     private String qrCodeUrl;
+    private String locationUrl;
     private EventStatus status;
     private int maxAttendees;
     private int maxWaitListSize;
@@ -62,6 +63,15 @@ public class Event {
 
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
+
+
+    public String getLocationUrl() {
+        return locationUrl;
+    }
+
+    public void setLocationUrl(String locationUrl) {
+        this.locationUrl = locationUrl;
+    }
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
