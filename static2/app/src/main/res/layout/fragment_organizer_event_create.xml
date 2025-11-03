@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context="com.ualberta.eventlottery.organzier.OrganizerEventCreateActivity">
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -202,7 +202,7 @@
                             android:backgroundTint="@color/text_tertiary"
                             android:paddingHorizontal="10dp"
                             android:paddingVertical="4dp"
-                            android:text="12:00 AM"
+                            android:text="00:00 AM"
                             android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             android:textStyle="bold"
@@ -218,7 +218,7 @@
                             android:backgroundTint="@color/text_tertiary"
                             android:paddingHorizontal="10dp"
                             android:paddingVertical="4dp"
-                            android:text="04/25/2025"
+                            android:text="00/00/0000"
                             android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             android:textStyle="bold"
@@ -257,7 +257,7 @@
                             android:backgroundTint="@color/text_tertiary"
                             android:paddingHorizontal="10dp"
                             android:paddingVertical="4dp"
-                            android:text="12:00 AM"
+                            android:text="00:00 AM"
                             android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             android:textStyle="bold"
@@ -273,7 +273,7 @@
                             android:backgroundTint="@color/text_tertiary"
                             android:paddingHorizontal="10dp"
                             android:paddingVertical="4dp"
-                            android:text="04/25/2025"
+                            android:text="00/00/0000"
                             android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             android:textStyle="bold"
@@ -334,7 +334,7 @@
                             android:backgroundTint="@color/text_tertiary"
                             android:paddingHorizontal="10dp"
                             android:paddingVertical="4dp"
-                            android:text="12:00 AM"
+                            android:text="00:00 AM"
                             android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             android:textStyle="bold"
@@ -350,7 +350,7 @@
                             android:backgroundTint="@color/text_tertiary"
                             android:paddingHorizontal="10dp"
                             android:paddingVertical="4dp"
-                            android:text="04/25/2025"
+                            android:text="00/00/0000"
                             android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             android:textStyle="bold"
@@ -389,7 +389,7 @@
                             android:backgroundTint="@color/text_tertiary"
                             android:paddingHorizontal="10dp"
                             android:paddingVertical="4dp"
-                            android:text="12:00 AM"
+                            android:text="00:00 AM"
                             android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             android:textStyle="bold"
@@ -405,7 +405,7 @@
                             android:backgroundTint="@color/text_tertiary"
                             android:paddingHorizontal="10dp"
                             android:paddingVertical="4dp"
-                            android:text="04/25/2025"
+                            android:text="00/00/0000"
                             android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             android:textStyle="bold"
@@ -451,7 +451,7 @@
                                 android:backgroundTint="@color/text_tertiary"
                                 android:paddingHorizontal="10dp"
                                 android:paddingVertical="4dp"
-                                android:text="8:00 AM"
+                                android:text="00:00 AM"
                                 android:textColor="@color/text_primary"
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
@@ -484,7 +484,7 @@
                                 android:backgroundTint="@color/text_tertiary"
                                 android:paddingHorizontal="10dp"
                                 android:paddingVertical="4dp"
-                                android:text="10:00 AM"
+                                android:text="00:00 AM"
                                 android:textColor="@color/text_primary"
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
@@ -641,6 +641,21 @@
 
 
             </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/btn_create_event"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:paddingVertical="10dp"
+                android:background="@drawable/rounded_md"
+                android:backgroundTint="@color/black"
+                android:gravity="center"
+                android:text="Confirm"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="@dimen/text_size_body"/>
 
 
 
