@@ -20,6 +20,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.ualberta.eventlottery.admin.AdminMainActivity;
 import com.ualberta.eventlottery.entrant.EntrantMainActivity;
 import com.ualberta.eventlottery.organzier.OrganizerMainActivity;
+import com.ualberta.eventlottery.utils.UserManager;
 import com.ualberta.static2.R;
 import com.ualberta.static2.databinding.ActivityEventLotteryMainBinding;
 
@@ -29,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean isAdmin;
     private FirebaseAuth mAuth;
-    private static String AUTH_TAG = "Event Lottery Auth";
+    private static String TAG = "Event Lottery";
 
 //    @Override
 //    protected void onCreate(Bundle savedInstanceState) {
@@ -56,34 +57,22 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        UserManager.initializeUser(this, new UserManager.InitCallback() {
+            @Override
+            public void onSuccess(String userId) {
+                Log.d(TAG, "userInitialization:success:userId=" + userId);
+                setContentView(R.layout.activity_main);
+                setupClickListeners();
+            }
 
-        setupClickListeners();
-        // https://firebase.google.com/docs/auth/android/anonymous-auth
-        mAuth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser == null) {
-            mAuth.signInAnonymously()
-                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                // Sign in success, update UI with the signed-in user's information
-                                FirebaseUser user = mAuth.getCurrentUser();
-                                Log.d(AUTH_TAG, "signInAnonymously:success:userId=" + user.getUid());
-                            } else {
-                                // If sign in fails, display a message to the user.
-                                Log.w(AUTH_TAG, "signInAnonymously:failure", task.getException());
-                                Toast.makeText(MainActivity.this, "Authentication failed.",
-                                        Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-        } else {
-            Log.d(AUTH_TAG, "userAlreadySignedIn:userId=" + currentUser.getUid());
-        }
-
-
+            @Override
+            public void onFailure(Exception exception) {
+                Toast.makeText(MainActivity.this, "User initialization failed.",
+                        Toast.LENGTH_SHORT).show();
+                setContentView(R.layout.activity_main);
+                setupClickListeners();
+            }
+        });
     }
 
     private void setupClickListeners() {
