@@ -76,7 +76,7 @@
                    android:clipChildren="true" >
 
                    <ImageView
-                       android:id="@+id/iv_event_image"
+                       android:id="@+id/iv_event_poster_img"
                        android:layout_width="match_parent"
                        android:layout_height="match_parent"
                        android:src="@drawable/yoga"
@@ -391,7 +391,7 @@
                            android:scaleType="centerCrop"/>
 
                        <TextView
-                           android:id="@+id/iv_event_location"
+                           android:id="@+id/tv_event_location"
                            android:layout_marginTop="5dp"
                            android:layout_gravity="center"
                            android:layout_width="wrap_content"

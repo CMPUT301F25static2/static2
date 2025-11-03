@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/main"
+    android:id="@+id/dialog_custom_content"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="24dp">
+    android:padding="24dp"
+    android:background="@drawable/rounded_sm">
 
    <LinearLayout
        android:layout_width="match_parent"
@@ -39,7 +40,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/border_radius"
-        android:paddingVertical="8dp"/>
+        android:paddingVertical="8dp"
+        android:paddingStart="10dp"
+        />
 
     <LinearLayout
         android:layout_width="match_parent"

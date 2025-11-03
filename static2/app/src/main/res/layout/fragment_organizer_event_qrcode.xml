@@ -42,7 +42,7 @@
                app:cardCornerRadius="30dp">
 
                <ImageView
-                   android:id="@+id/iv_event_image"
+                   android:id="@+id/iv_event_poster_img"
                    android:layout_width="match_parent"
                    android:layout_height="match_parent"
                    android:scaleType="centerCrop"
