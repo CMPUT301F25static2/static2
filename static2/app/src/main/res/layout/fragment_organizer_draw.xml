@@ -16,12 +16,12 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:paddingHorizontal="16dp"
-        android:paddingTop="12dp"
+        android:padding="16dp"
+        app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -270,8 +270,7 @@
                 android:paddingVertical="16dp"
                 android:paddingStart="20dp"
                 android:textColor="@color/black"
-                android:textSize="18sp"
-                 />
+                android:textSize="18sp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -290,15 +289,15 @@
             android:id="@+id/btn_draw"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_marginTop="60dp"
-            android:layout_gravity="center_horizontal"
+            android:layout_gravity="bottom"
+            android:layout_marginTop="48dp"
             android:background="@drawable/rounded_sm"
             android:backgroundTint="@color/black"
+            android:gravity="center"
             android:paddingVertical="12dp"
             android:text="Draw"
-            android:textSize="@dimen/text_size_subtitle"
             android:textColor="@color/white"
+            android:textSize="@dimen/text_size_subtitle"
             android:textStyle="bold" />
     </LinearLayout>
 
