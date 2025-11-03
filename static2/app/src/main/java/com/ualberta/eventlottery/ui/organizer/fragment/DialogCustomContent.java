@@ -1,4 +1,4 @@
-package com.ualberta.eventlottery.organzier.fragment;
+package com.ualberta.eventlottery.ui.organizer.fragment;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

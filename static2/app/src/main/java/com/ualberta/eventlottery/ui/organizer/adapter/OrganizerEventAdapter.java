@@ -1,4 +1,4 @@
-package com.ualberta.eventlottery.organzier.adapter;
+package com.ualberta.eventlottery.ui.organizer.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
