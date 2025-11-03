@@ -23,6 +23,7 @@ public class Event {
     private boolean locationRequired;
     private String posterUrl;
     private String qrCodeUrl;
+    private String locationUrl;
     private EventStatus status;
     private int maxAttendees;
     private int maxWaitListSize;
@@ -32,14 +33,13 @@ public class Event {
     private List<String> registeredUserIds; //All users who registered
     private List<String> waitListUserIds; //Users in waiting list
     private List<String> confirmedUserIds; //Users who confirmed attendance
-    private List<String> attendeeIds; //Users who actually attended
+
 
     // Constructors
     public Event() {
         this.registeredUserIds = new ArrayList<>();
         this.waitListUserIds = new ArrayList<>();
         this.confirmedUserIds = new ArrayList<>();
-        this.attendeeIds = new ArrayList<>();
         this.createdAt = new Date();
         this.status = EventStatus.REGISTRATION_OPEN;
         this.currentWaitListSize = 0;
@@ -62,6 +62,15 @@ public class Event {
 
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
+
+
+    public String getLocationUrl() {
+        return locationUrl;
+    }
+
+    public void setLocationUrl(String locationUrl) {
+        this.locationUrl = locationUrl;
+    }
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
@@ -121,7 +130,6 @@ public class Event {
     public List<String> getRegisteredUserIds() { return new ArrayList<>(registeredUserIds); }
     public List<String> getWaitListUserIds() { return new ArrayList<>(waitListUserIds); }
     public List<String> getConfirmedUserIds() { return new ArrayList<>(confirmedUserIds); }
-    public List<String> getAttendeeIds() { return new ArrayList<>(attendeeIds); }
 
     // Business Logic Methods
 
@@ -200,13 +208,13 @@ public class Event {
         int availableSpots = maxAttendees - confirmedUserIds.size();
         int participantsToDraw = Math.min(availableSpots, waitListUserIds.size());
 
-        // Simplified random selection - in reality, you'd use proper randomization
+
         List<String> selected = new ArrayList<>();
         for (int i = 0; i < participantsToDraw && i < waitListUserIds.size(); i++) {
             selected.add(waitListUserIds.get(i));
         }
 
-        // Move selected users to confirmed list and remove from waitlist
+        // move selected users to confirmed list and remove from waitlist
         confirmedUserIds.addAll(selected);
         waitListUserIds.removeAll(selected);
         currentWaitListSize = waitListUserIds.size();
@@ -233,29 +241,6 @@ public class Event {
         return false;
     }
 
-    /**
-     * Marks a user as attended the event
-     * @param userId The ID of the user who attended
-     * @return true if user was marked as attended
-     */
-    public boolean addAttendance(String userId) {
-        if (userId == null || userId.trim().isEmpty() ||
-                !confirmedUserIds.contains(userId) ||
-                attendeeIds.contains(userId)) {
-            return false;
-        }
-        return attendeeIds.add(userId.trim());
-    }
-
-    /**
-     * Removes a user's attendance record
-     * @param userId The ID of the user to remove
-     * @return true if attendance record was removed
-     */
-    public boolean removeAttendance(String userId) {
-        return attendeeIds.remove(userId);
-    }
-
     // Utility Methods
     public int getAvailableSpots() {
         return maxAttendees - confirmedUserIds.size();
@@ -270,6 +255,6 @@ public class Event {
     }
 
     public int getAttendanceCount() {
-        return attendeeIds.size();
+        return confirmedUserIds.size();
     }
 }
