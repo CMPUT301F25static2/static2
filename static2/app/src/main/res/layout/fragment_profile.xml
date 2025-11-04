@@ -7,7 +7,7 @@
     android:padding="16dp"
     tools:context="com.ualberta.eventlottery.ui.profile.ProfileFragment">
 
-    <!-- Profile image -->
+
     <ImageView
         android:id="@+id/image_profile"
         android:layout_width="72dp"
@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
-    <!-- Name -->
+
     <TextView
         android:id="@+id/text_name"
         android:layout_width="0dp"
@@ -30,7 +30,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginStart="16dp"/>
 
-    <!-- Email -->
+
     <TextView
         android:id="@+id/text_email"
         android:layout_width="0dp"
@@ -43,7 +43,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="4dp"/>
 
-    <!-- Name EditText -->
+
     <EditText
         android:id="@+id/edit_name"
         android:layout_width="0dp"
@@ -54,7 +54,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="24dp"/>
 
-    <!-- Email EditText -->
     <EditText
         android:id="@+id/edit_email"
         android:layout_width="0dp"
@@ -66,7 +65,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"/>
 
-    <!-- Mobile number EditText -->
     <EditText
         android:id="@+id/edit_phone"
         android:layout_width="0dp"
@@ -78,7 +76,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"/>
 
-    <!-- Favorite Rec Center EditText -->
+
     <EditText
         android:id="@+id/edit_rec_center"
         android:layout_width="0dp"
@@ -89,7 +87,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"/>
 
-    <!-- Save Change Button -->
+
     <Button
         android:id="@+id/button_save"
         android:layout_width="0dp"
@@ -101,7 +99,7 @@
         android:layout_marginTop="24dp"
         android:layout_marginEnd="8dp"/>
 
-    <!-- Delete Profile Button -->
+
     <Button
         android:id="@+id/button_delete"
         android:layout_width="0dp"
@@ -111,5 +109,7 @@
         app:layout_constraintStart_toEndOf="@id/button_save"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginStart="8dp"/>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
