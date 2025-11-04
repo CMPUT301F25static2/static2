@@ -38,8 +38,8 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
         Event event = eventList.get(position);
 
         holder.eventTitle.setText(event.getTitle());
-        holder.eventDetails.setText(event.getDescription());
-        holder.timeFrame.setText("");
+//        holder.eventDetails.setText(event.getDescription());
+//        holder.timeFrame.setText("");
         holder.eventStaus.setText(event.getStatus().toString());
     }
 
@@ -52,10 +52,10 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
         TextView eventTitle, eventDetails, timeFrame, eventStaus;
         public ViewHolder(@NonNull View itemView){
             super(itemView);
-            eventTitle = itemView.findViewById(R.id.eventTitle);
-            eventDetails=  itemView.findViewById(R.id.eventDetails);
-            timeFrame = itemView.findViewById(R.id.eventTimeFrame);
-            eventStaus = itemView.findViewById(R.id.eventStatus);
+            eventTitle = itemView.findViewById(R.id.tv_event_title);
+//            eventDetails=  itemView.findViewById(R.id.eventDetails);
+//            timeFrame = itemView.findViewById(R.id.eventTimeFrame);
+            eventStaus = itemView.findViewById(R.id.tv_event_status);
         }
     }
 }
