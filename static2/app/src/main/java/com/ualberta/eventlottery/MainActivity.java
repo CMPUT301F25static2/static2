@@ -58,9 +58,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        setupClickListeners();
+        //Only initialize the view after User initialization below
 
         FirebaseMessaging.getInstance().getToken()
                 .addOnCompleteListener(task -> {
