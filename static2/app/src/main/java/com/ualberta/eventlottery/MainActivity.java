@@ -30,6 +30,9 @@ import com.ualberta.eventlottery.organzier.OrganizerMainActivity;
 import com.ualberta.eventlottery.utils.UserManager;
 import com.ualberta.static2.R;
 import com.ualberta.static2.databinding.ActivityEventLotteryMainBinding;
+import com.ualberta.eventlottery.notification.NotificationController;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -69,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
 
         setupClickListeners();
 
+        // TODO: store into user profile
         FirebaseMessaging.getInstance().getToken()
                 .addOnCompleteListener(task -> {
                     if (!task.isSuccessful()) {
@@ -108,6 +112,30 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, EntrantMainActivity.class);
                 startActivity(intent);
+            }
+        });
+        findViewById(R.id.btn_notification).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("TEST1", "Button Clicked");
+                FirebaseMessaging.getInstance().getToken()
+                        .addOnCompleteListener(task -> {
+                            if (!task.isSuccessful()) {
+                                Log.w("FCM", "Fetching FCM token failed", task.getException());
+                                return;
+                            }
+
+                            // Get the new FCM registration token
+                            String token = task.getResult();
+                            Log.d("FCM", "Current FCM token: " + token);
+
+                            // Call the Firebase callable function
+                            Log.d("TEST!", "About to call function");
+                            NotificationController notificationController = new NotificationController(MainActivity.this);
+                            List<String> tokens = List.of("eie-QAWGST6_yVFxEpnFRM:APA91bG5vyLOWvjOI8AViq54jvzOQznaIgY6OVb4RRGHKm1pm8izSnIAHhs1NCqnv-sLEuP1bE2mbnEyxagPjfHeogZ3cS070Q9RXxL84e7GnjVf9EeBVsU", "efELRSh8TmCeQc0-MqScos:APA91bHARSxu69dc7rjAeZngQsO6RbL6P51zjzD0r5ptCLuj990GRfDgoe3lZ7p_CLDzl55Do-fR8DtoZgHeyp7muwRN2E62UQtjyOECwP4Bvq8nBGQOo64");
+                            notificationController.sendNotification(tokens, "Title", "Body", "event123");
+                            Log.d("TEST1", "Fucntion should be called");
+                        });
             }
         });
 

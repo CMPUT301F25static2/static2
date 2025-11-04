@@ -6,41 +6,32 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.ualberta.eventlottery.model.Event;
 
-/**
- * Entry point for Firebase Cloud Messaging.
- * Receives FCM messages and hands them off to NotificationController.
- */
+//entry point for fcm messages
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "MyFirebaseMsgService";
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        Log.d(TAG, "FCM message received from: " + remoteMessage.getFrom());
-
-        String title = "Event Update";
-        String message = "You have a new notification!";
-        String entrantId = "unknown";
-        Event event = null; // In real code, parse event details from data payload
-
-        if (remoteMessage.getNotification() != null) {
-            title = remoteMessage.getNotification().getTitle();
-            message = remoteMessage.getNotification().getBody();
+        if (remoteMessage.getData().isEmpty()) {
+            Log.d(TAG, "Message data payload is empty");
+            return;
         }
+        String title = remoteMessage.getData().get("title");
+        String body = remoteMessage.getData().get("body");
+        String eventID = remoteMessage.getData().get("eventID");
+        String entrantId = remoteMessage.getData().get("entrantId");
+        // TODO: use eventID to get event from db
+        Event event = new Event();
+        event.setOrganizerId("test123");
 
-        if (!remoteMessage.getData().isEmpty()) {
-            // Extract custom data (optional)
-            entrantId = remoteMessage.getData().get("entrantId");
-            // Parse event object if needed
-        }
 
         NotificationController controller = new NotificationController(getApplicationContext());
-        controller.handleIncomingNotification(title, message, event, entrantId);
+        controller.receiveNotification(title, body, event, entrantId);
     }
-
     @Override
     public void onNewToken(String token) {
-        Log.d(TAG, "Refreshed FCM token: " + token);
-        // TODO: send token to backend
+        // TODO: update token in firebase
+        Log.d(TAG, "Refreshed token: " + token);
     }
 }
