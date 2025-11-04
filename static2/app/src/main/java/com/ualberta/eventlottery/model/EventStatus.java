@@ -1,9 +1,7 @@
 package com.ualberta.eventlottery.model;
 
 public enum EventStatus {
-    REGISTRATION_OPEN,      // Registration open
-    REGISTRATION_CLOSED, // Registration period ended
-    IN_PROGRESS,    // Event currently happening
-    OPEN,      // Event is open
-    CLOSED      // Event ended
+    UPCOMING,  // Event is about to begin
+    ONGOING,  // Event is ongoing
+    CLOSED  // Event ended
 }

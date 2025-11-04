@@ -1,13 +1,18 @@
 package com.ualberta.eventlottery.ui.organizer.adapter;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
+
 import com.ualberta.eventlottery.model.Event;
+import com.ualberta.eventlottery.model.EventStatus;
+import com.ualberta.eventlottery.model.RegistrationStatus;
 import com.ualberta.static2.R;
 
 import java.text.SimpleDateFormat;
@@ -52,6 +57,7 @@ public class OrganizerEventAdapter extends BaseAdapter {
             holder.tv_event_entrants_number = convertView.findViewById(R.id.tv_event_entrants_number);
             holder.tv_event_end_time = convertView.findViewById(R.id.tv_event_end_time);
             holder.tv_event_status = convertView.findViewById(R.id.tv_event_status);
+            holder.tv_event_registry_status = convertView.findViewById(R.id.tv_event_registry_status);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -59,11 +65,71 @@ public class OrganizerEventAdapter extends BaseAdapter {
 
         Event event = eventList.get(position);
 
+        // title
         holder.tv_event_title.setText(event.getTitle());
 
+        // event status
+        if (event.getEventStatus() != null) {
+            if (event.getEventStatus() == EventStatus.UPCOMING) {
+                holder.tv_event_status.setText("Upcoming");
+                holder.tv_event_status.setTextColor(
+                        ContextCompat.getColor(context, R.color.text_secondary)
+                );
+                holder.tv_event_status.setBackgroundTintList(
+                        ColorStateList.valueOf(ContextCompat.getColor(context, R.color.text_tertiary))
+                );
+            } else if (event.getEventStatus() == EventStatus.ONGOING) {
+                holder.tv_event_status.setText("Ongoing");
+                holder.tv_event_status.setTextColor(
+                        ContextCompat.getColor(context, R.color.green_deep)
+                );
+                holder.tv_event_status.setBackgroundTintList(
+                        ColorStateList.valueOf(ContextCompat.getColor(context, R.color.green_light))
+                );
+            } else if (event.getEventStatus() == EventStatus.CLOSED) {
+                holder.tv_event_status.setText("Closed");
+                holder.tv_event_status.setTextColor(
+                        ContextCompat.getColor(context, R.color.white)
+                );
+                holder.tv_event_status.setBackgroundTintList(
+                        ColorStateList.valueOf(ContextCompat.getColor(context, R.color.red_deep))
+                );
+            }
+
+        } else {
+            holder.tv_event_status.setText("Unknown");
+            holder.tv_event_status.setTextColor(
+                    ContextCompat.getColor(context, R.color.white)
+            );
+            holder.tv_event_status.setBackgroundColor(
+                    ContextCompat.getColor(context, R.color.text_primary)
+            );
+        }
+
+        // registration status
+        if (event.getRegistrationStatus() != null) {
+            if (event.getRegistrationStatus() == RegistrationStatus.REGISTRATION_OPEN) {
+                holder.tv_event_registry_status.setText("REGISTRATION OPEN");
+                holder.tv_event_registry_status.setTextColor(
+                        ContextCompat.getColor(context, R.color.green_deep)
+                );
+            } else if (event.getRegistrationStatus() == RegistrationStatus.REGISTRATION_CLOSED) {
+                holder.tv_event_registry_status.setText("REGISTRATION CLOSED");
+                holder.tv_event_registry_status.setTextColor(
+                        ContextCompat.getColor(context, R.color.red_deep)
+                );
+            }
+        } else {
+            holder.tv_event_registry_status.setText("Unknown");
+            holder.tv_event_registry_status.setTextColor(ContextCompat.getColor(context, R.color.text_secondary));
+        }
+
+
+        // entrant number
         String entrantsNumber = String.format("Entrants: %d/%d", event.getConfirmedCount(), event.getMaxAttendees());
         holder.tv_event_entrants_number.setText(entrantsNumber);
 
+        // end time
         if (event.getEndTime() != null) {
             String formattedTime = "End: " + dateFormat.format(event.getEndTime());
             holder.tv_event_end_time.setText(formattedTime);
@@ -71,9 +137,6 @@ public class OrganizerEventAdapter extends BaseAdapter {
             holder.tv_event_end_time.setText("End: TBD");
         }
 
-        if (event.getStatus() != null) {
-            holder.tv_event_status.setText(event.getStatus().toString());
-        }
 
         return convertView;
     }
@@ -83,5 +146,8 @@ public class OrganizerEventAdapter extends BaseAdapter {
         TextView tv_event_entrants_number;
         TextView tv_event_end_time;
         TextView tv_event_status;
+        TextView tv_event_registry_status;
+
+
     }
 }
