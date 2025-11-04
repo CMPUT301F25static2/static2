@@ -17,7 +17,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.ualberta.eventlottery.event.Event;
+import com.ualberta.eventlottery.model.Event;
+import com.ualberta.eventlottery.model.EventStatus;
 import com.ualberta.static2.R;
 import com.ualberta.static2.databinding.FragmentHomeBinding;
 
@@ -29,7 +30,8 @@ public class HomeFragment extends Fragment {
     private EditText searchInputHome;
     private RecyclerView recyclerView;
     private EventAdapter myEventsAdapter, availableEventsAdapter;
-    private List<Event> myEventsList, availableEventsList;
+    private List<Event> myEventsList;
+    private List<Event> availableEventsList;
     private FragmentHomeBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -51,7 +53,7 @@ public class HomeFragment extends Fragment {
 
         //Test List
         myEventsList = getmyMockEvents("My Event");
-        availableEventsList = getAvailableMockEvents("Available Event");
+        availableEventsList = getAvailableMockEvents();
 
         myEventsAdapter = new EventAdapter(myEventsList);
         availableEventsAdapter = new EventAdapter(availableEventsList);
@@ -116,26 +118,22 @@ public class HomeFragment extends Fragment {
     //Test
     private List<Event> getmyMockEvents(String prefix) {
         List<Event> list = new ArrayList<>();
-        for (int i = 1; i <= 5; i++) {
-            list.add(new Event(
-                    prefix + " " + i,
-                    "Registration: " + (10 + i) + "/40 entrants",
-                    "Ends Oct 16, 2025 - 8:00 AM",
-                    "Closed"
-            ));
-        }
+        Event modelEvent = new Event("789", "EzKYezj7iLXKlRqCIgFbp8CH1Hh2", "PickleBall Tournament", "Tournament for all skill levels!");
+        modelEvent.setStatus(EventStatus.REGISTRATION_CLOSED);
+        list.add(modelEvent);
+        modelEvent = new Event("012", "EzKYezj7iLXKlRqCIgFbp8CH1Hh2","Piano Lessons", "Play like Mozart");
+        modelEvent.setStatus(EventStatus.IN_PROGRESS);
+        list.add(modelEvent);
         return list;
     }
-    private List<Event> getAvailableMockEvents(String prefix) {
+    private List<Event> getAvailableMockEvents() {
         List<Event> list = new ArrayList<>();
-        for (int i = 1; i <= 5; i++) {
-            list.add(new Event(
-                    prefix + " " + i,
-                    "Registration: " + (10 + i) + "/40 entrants",
-                    "Ends Oct 16, 2025 - 8:00 AM",
-                    "Open"
-            ));
-        }
+        Event modelEvent = new Event("123", "EzKYezj7iLXKlRqCIgFbp8CH1Hh2", "Swimming Lessons", "Swimming for beginners");
+        modelEvent.setStatus(EventStatus.REGISTRATION_OPEN);
+        list.add(modelEvent);
+        modelEvent = new Event("456", "EzKYezj7iLXKlRqCIgFbp8CH1Hh2","Karate Lessons", "Fitness with a purpose");
+        modelEvent.setStatus(EventStatus.REGISTRATION_OPEN);
+        list.add(modelEvent);
         return list;
     }
 
