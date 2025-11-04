@@ -23,6 +23,8 @@ import com.ualberta.static2.R;
 import com.ualberta.static2.databinding.FragmentHomeBinding;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
@@ -119,9 +121,28 @@ public class HomeFragment extends Fragment {
     private List<Event> getmyMockEvents(String prefix) {
         List<Event> list = new ArrayList<>();
         Event modelEvent = new Event("789", "EzKYezj7iLXKlRqCIgFbp8CH1Hh2", "PickleBall Tournament", "Tournament for all skill levels!");
+        modelEvent.setStatus(EventStatus.REGISTRATION_OPEN);
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_MONTH,-1);
+        modelEvent.setRegistrationStart(cal.getTime());
+        cal.add(Calendar.DAY_OF_MONTH,+10);
+        modelEvent.setRegistrationEnd(cal.getTime());
+        modelEvent.addToWaitingList("EzKYezj7iLXKlRqCIgFbp8CH1Hh2");
+        modelEvent.addToWaitingList("AzKYezj7iLXKlRqCIgFbp8CH1Hh3");
+        modelEvent.addToWaitingList("BzKYezj7iLXKlRqCIgFbp8CH1Hh4");
         modelEvent.setStatus(EventStatus.REGISTRATION_CLOSED);
         list.add(modelEvent);
+
         modelEvent = new Event("012", "EzKYezj7iLXKlRqCIgFbp8CH1Hh2","Piano Lessons", "Play like Mozart");
+        modelEvent.setStatus(EventStatus.REGISTRATION_OPEN);
+        cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_MONTH,-1);
+        modelEvent.setRegistrationStart(cal.getTime());
+        cal.add(Calendar.DAY_OF_MONTH,+10);
+        modelEvent.setRegistrationEnd(cal.getTime());
+        modelEvent.addToWaitingList("EzKYezj7iLXKlRqCIgFbp8CH1Hh2");
+        modelEvent.addToWaitingList("AzKYezj7iLXKlRqCIgFbp8CH1Hh3");
+        modelEvent.addToWaitingList("BzKYezj7iLXKlRqCIgFbp8CH1Hh4");
         modelEvent.setStatus(EventStatus.IN_PROGRESS);
         list.add(modelEvent);
         return list;
@@ -130,9 +151,27 @@ public class HomeFragment extends Fragment {
         List<Event> list = new ArrayList<>();
         Event modelEvent = new Event("123", "EzKYezj7iLXKlRqCIgFbp8CH1Hh2", "Swimming Lessons", "Swimming for beginners");
         modelEvent.setStatus(EventStatus.REGISTRATION_OPEN);
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_MONTH,-1);
+        modelEvent.setRegistrationStart(cal.getTime());
+        cal.add(Calendar.DAY_OF_MONTH,+10);
+        modelEvent.setRegistrationEnd(cal.getTime());
+        modelEvent.addToWaitingList("EzKYezj7iLXKlRqCIgFbp8CH1Hh2");
+        modelEvent.addToWaitingList("AzKYezj7iLXKlRqCIgFbp8CH1Hh3");
+        modelEvent.addToWaitingList("BzKYezj7iLXKlRqCIgFbp8CH1Hh4");
+        modelEvent.setMaxWaitListSize(4);
+
         list.add(modelEvent);
+
         modelEvent = new Event("456", "EzKYezj7iLXKlRqCIgFbp8CH1Hh2","Karate Lessons", "Fitness with a purpose");
         modelEvent.setStatus(EventStatus.REGISTRATION_OPEN);
+        cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_MONTH,-1);
+        modelEvent.setRegistrationStart(cal.getTime());
+        cal.add(Calendar.DAY_OF_MONTH,+10);
+        modelEvent.setRegistrationEnd(cal.getTime());
+        modelEvent.addToWaitingList("EzKYezj7iLXKlRqCIgFbp8CH1Hh2");
+        modelEvent.addToWaitingList("AzKYezj7iLXKlRqCIgFbp8CH1Hh3");
         list.add(modelEvent);
         return list;
     }
