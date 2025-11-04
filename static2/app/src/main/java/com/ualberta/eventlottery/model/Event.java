@@ -24,7 +24,9 @@ public class Event {
     private String posterUrl;
     private String qrCodeUrl;
     private String locationUrl;
-    private EventStatus status;
+    private EventStatus eventStatus;
+    private EventRegistrationStatus eventRegistrationStatus;
+
     private int maxAttendees;
     private int maxWaitListSize;
     private int currentWaitListSize;
@@ -41,7 +43,7 @@ public class Event {
         this.waitListUserIds = new ArrayList<>();
         this.confirmedUserIds = new ArrayList<>();
         this.createdAt = new Date();
-        this.status = EventStatus.REGISTRATION_OPEN;
+        this.eventRegistrationStatus = EventRegistrationStatus.REGISTRATION_OPEN;
         this.currentWaitListSize = 0;
     }
 
@@ -114,8 +116,17 @@ public class Event {
     public String getQrCodeUrl() { return qrCodeUrl; }
     public void setQrCodeUrl(String qrCodeUrl) { this.qrCodeUrl = qrCodeUrl; }
 
-    public EventStatus getStatus() { return status; }
-    public void setStatus(EventStatus status) { this.status = status; }
+    public EventStatus getEventStatus() { return eventStatus; }
+
+    public EventRegistrationStatus getRegistrationStatus() {
+        return eventRegistrationStatus;
+    }
+
+    public void setRegistrationStatus(EventRegistrationStatus eventRegistrationStatus) {
+        this.eventRegistrationStatus = eventRegistrationStatus;
+    }
+
+    public void setEventStatus(EventStatus eventStatus) { this.eventStatus = eventStatus; }
 
     public int getMaxAttendees() { return maxAttendees; }
     public void setMaxAttendees(int maxAttendees) { this.maxAttendees = maxAttendees; }
@@ -140,7 +151,7 @@ public class Event {
     public boolean isRegistrationOpen() {
         Date now = new Date();
         return now.after(registrationStart) && now.before(registrationEnd) &&
-                status == EventStatus.REGISTRATION_OPEN;
+                eventRegistrationStatus == EventRegistrationStatus.REGISTRATION_OPEN;
     }
 
     /**

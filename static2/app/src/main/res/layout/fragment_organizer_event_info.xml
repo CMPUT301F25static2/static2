@@ -185,6 +185,43 @@
                        android:layout_height="1dp"
                        android:background="@color/gray_light"  />
 
+                   <!--                   status-->
+                   <LinearLayout
+                       android:id="@+id/btn_event_update_status"
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       android:gravity="center_vertical"
+                       android:paddingVertical="14dp">
+                       <TextView
+                           android:layout_width="0dp"
+                           android:layout_weight="1"
+                           android:layout_height="match_parent"
+                           android:text="Status"
+                           android:textColor="@color/black"
+                           android:textSize="16sp"/>
+
+                       <TextView
+                           android:id="@+id/tv_event_update_status"
+                           android:layout_width="wrap_content"
+                           android:layout_height="match_parent"
+                           android:text="Ongoing"
+                           android:textColor="@color/green_deep"
+                           android:textSize="14sp"
+                           android:layout_marginRight="4dp"/>
+
+
+                       <!--            forward button-->
+                       <ImageView
+                           android:layout_width="20dp"
+                           android:layout_height="20dp"
+                           android:src="@drawable/ic_arrow_forward_ios_24dp_000000_fill0_wght400_grad0_opsz24"
+                           app:tint="@color/text_secondary" />
+                   </LinearLayout>
+                   <View
+                       android:layout_width="match_parent"
+                       android:layout_height="1dp"
+                       android:background="@color/gray_light"  />
+
 <!--                   end time-->
                    <LinearLayout
                        android:id="@+id/btn_event_update_end_time"
@@ -196,7 +233,7 @@
                            android:layout_width="0dp"
                            android:layout_weight="1"
                            android:layout_height="match_parent"
-                           android:text="End time"
+                           android:text="Event End Time"
                            android:textColor="@color/black"
                            android:textSize="16sp"/>
 
@@ -222,6 +259,45 @@
                        android:layout_height="1dp"
                        android:background="@color/gray_light"  />
 
+                   <!--                   end time-->
+                   <LinearLayout
+                       android:id="@+id/btn_event_update_registry_end_time"
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       android:gravity="center_vertical"
+                       android:paddingVertical="14dp">
+                       <TextView
+                           android:layout_width="0dp"
+                           android:layout_weight="1"
+                           android:layout_height="match_parent"
+                           android:text="Registry End Time"
+                           android:textColor="@color/black"
+                           android:textSize="16sp"/>
+
+                       <TextView
+                           android:id="@+id/tv_event_update_registry_endTime"
+                           android:layout_width="wrap_content"
+                           android:layout_height="match_parent"
+                           android:text="8:00 AM, Dec 18, 2025"
+                           android:textColor="@color/text_secondary"
+                           android:textSize="14sp"
+                           android:layout_marginRight="4dp"/>
+
+
+                       <!--            forward button-->
+                       <ImageView
+                           android:layout_width="20dp"
+                           android:layout_height="20dp"
+                           android:src="@drawable/ic_arrow_forward_ios_24dp_000000_fill0_wght400_grad0_opsz24"
+                           app:tint="@color/text_secondary" />
+                   </LinearLayout>
+                   <View
+                       android:layout_width="match_parent"
+                       android:layout_height="1dp"
+                       android:background="@color/gray_light"  />
+
+
+
 
 
                    <!--                QR code-->
@@ -235,7 +311,7 @@
                            android:layout_width="0dp"
                            android:layout_weight="1"
                            android:layout_height="match_parent"
-                           android:text="QR code"
+                           android:text="QR Code"
                            android:textColor="@color/black"
                            android:textSize="16sp"/>
 

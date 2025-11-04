@@ -12,14 +12,13 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 
 import com.ualberta.eventlottery.model.Event;
+import com.ualberta.eventlottery.model.EventRegistrationStatus;
 import com.ualberta.eventlottery.repository.EventRepository;
 import com.ualberta.static2.databinding.FragmentOrganizerEventCreateBinding;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
-import java.util.UUID;
 
 public class OrganizerEventCreateFragment extends Fragment {
     private FragmentOrganizerEventCreateBinding binding;
@@ -248,7 +247,7 @@ public class OrganizerEventCreateFragment extends Fragment {
             // TODO: Get from tags
             newEvent.setCategory("General");
 
-            newEvent.setStatus(com.ualberta.eventlottery.model.EventStatus.REGISTRATION_OPEN);
+            newEvent.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_OPEN);
 
             // save to repository
             eventRepo.addEvent(newEvent);

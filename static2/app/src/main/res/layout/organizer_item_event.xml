@@ -11,7 +11,7 @@
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardWaitingList"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
+        android:layout_height="wrap_content"
         android:layout_margin="6dp"
         android:clipChildren="false"
         android:clipToPadding="false"
@@ -73,13 +73,15 @@
                             android:id="@+id/tv_event_status"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:paddingVertical="1dp"
+                            android:paddingVertical="2dp"
                             android:paddingHorizontal="8dp"
-                            android:text="open"
+                            android:text="Upcoming"
                             android:textColor="@color/green_deep"
                             android:background="@drawable/rounded_md"
                             android:backgroundTint="@color/green_light"
-                            android:textSize="12sp"/>
+                            android:textSize="12sp"
+                            android:textStyle="bold"/>
+
                     </LinearLayout>
 
                     <ImageView
@@ -91,7 +93,6 @@
 
                 </LinearLayout>
 
-
                 <TextView
                     android:id="@+id/tv_event_entrants_number"
                     android:layout_width="wrap_content"
@@ -100,11 +101,24 @@
                     android:textSize="14dp"
                     android:textColor="@color/text_secondary" />
 
+                <TextView
+                    android:id="@+id/tv_event_registry_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="REGISTRATION OPEN"
+                    android:translationY="-6dp"
+                    android:layout_gravity="right"
+                    android:textSize="14dp"
+                    android:textColor="@color/green_deep"
+                    android:textStyle="bold"
+                    android:rotation="-8"/>
+
 
                 <TextView
                     android:id="@+id/tv_event_end_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="-16dp"
                     android:text="End: 12:00AM, Oct 16, 2025"
                     android:textSize="14dp"
                     android:textColor="@color/text_secondary" />
