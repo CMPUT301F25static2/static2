@@ -1,17 +1,24 @@
 package com.ualberta.eventlottery;
 
+import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -29,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private ActivityEventLotteryMainBinding binding;
 
     private boolean isAdmin;
+    private static final String CHANNEL_ID = "demo_channel_id";
     private FirebaseAuth mAuth;
     private static String TAG = "Event Lottery";
 
@@ -36,6 +44,24 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        setupClickListeners();
+
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.w("FCM", "Fetching FCM token failed", task.getException());
+                        return;
+                    }
+
+                    // Get the new FCM registration token
+                    String token = task.getResult();
+                    Log.d("FCM", "Current FCM token: " + token);
+                });
+
+
+        askNotificationPermission();
         UserManager.initializeUser(this, new UserManager.InitCallback() {
             @Override
             public void onSuccess(String userId) {
@@ -82,6 +108,17 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    // Check for POST_NOTIFICATIONS permission
+    private void askNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
+            }
+        }
     }
 
 }
