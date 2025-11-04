@@ -38,8 +38,11 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
         Event event = eventList.get(position);
 
         holder.eventTitle.setText(event.getTitle());
-//        holder.eventDetails.setText(event.getDescription());
-//        holder.timeFrame.setText("");
+        if (event.getMaxWaitListSize() > 0) {
+            holder.entrantsNumber.setText("Entrants: " + event.getWaitListCount() + "/" + event.getMaxWaitListSize());
+        } else {
+            holder.entrantsNumber.setText("Entrants: " + event.getWaitListCount() + "/unlimited");
+        }
         holder.eventStaus.setText(event.getStatus().toString());
     }
 
@@ -49,12 +52,11 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
-        TextView eventTitle, eventDetails, timeFrame, eventStaus;
+        TextView eventTitle, entrantsNumber, timeFrame, eventStaus;
         public ViewHolder(@NonNull View itemView){
             super(itemView);
             eventTitle = itemView.findViewById(R.id.tv_event_title);
-//            eventDetails=  itemView.findViewById(R.id.eventDetails);
-//            timeFrame = itemView.findViewById(R.id.eventTimeFrame);
+            entrantsNumber = itemView.findViewById(R.id.tv_event_entrants_number);
             eventStaus = itemView.findViewById(R.id.tv_event_status);
         }
     }
