@@ -8,7 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.ualberta.eventlottery.event.Event;
+import com.ualberta.eventlottery.model.Event;
 import com.ualberta.static2.R;
 
 import java.util.List;
@@ -38,9 +38,9 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
         Event event = eventList.get(position);
 
         holder.eventTitle.setText(event.getTitle());
-        holder.eventDetails.setText(event.getEventDetails());
-        holder.timeFrame.setText(event.getTimeFrame());
-        holder.eventStaus.setText(event.getEventStatus());
+        holder.eventDetails.setText(event.getDescription());
+        holder.timeFrame.setText("");
+        holder.eventStaus.setText(event.getStatus().toString());
     }
 
     @Override
