@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 
 import com.ualberta.eventlottery.model.Event;
+import com.ualberta.eventlottery.model.EventRegistrationStatus;
 import com.ualberta.eventlottery.repository.EventRepository;
 import com.ualberta.static2.databinding.FragmentOrganizerEventCreateBinding;
 
@@ -246,7 +247,7 @@ public class OrganizerEventCreateFragment extends Fragment {
             // TODO: Get from tags
             newEvent.setCategory("General");
 
-            newEvent.setRegistrationStatus(com.ualberta.eventlottery.model.RegistrationStatus.REGISTRATION_OPEN);
+            newEvent.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_OPEN);
 
             // save to repository
             eventRepo.addEvent(newEvent);

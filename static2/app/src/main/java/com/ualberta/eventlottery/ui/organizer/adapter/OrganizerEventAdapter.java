@@ -12,7 +12,7 @@ import androidx.core.content.ContextCompat;
 
 import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.model.EventStatus;
-import com.ualberta.eventlottery.model.RegistrationStatus;
+import com.ualberta.eventlottery.model.EventRegistrationStatus;
 import com.ualberta.static2.R;
 
 import java.text.SimpleDateFormat;
@@ -108,12 +108,12 @@ public class OrganizerEventAdapter extends BaseAdapter {
 
         // registration status
         if (event.getRegistrationStatus() != null) {
-            if (event.getRegistrationStatus() == RegistrationStatus.REGISTRATION_OPEN) {
+            if (event.getRegistrationStatus() == EventRegistrationStatus.REGISTRATION_OPEN) {
                 holder.tv_event_registry_status.setText("REGISTRATION OPEN");
                 holder.tv_event_registry_status.setTextColor(
                         ContextCompat.getColor(context, R.color.green_deep)
                 );
-            } else if (event.getRegistrationStatus() == RegistrationStatus.REGISTRATION_CLOSED) {
+            } else if (event.getRegistrationStatus() == EventRegistrationStatus.REGISTRATION_CLOSED) {
                 holder.tv_event_registry_status.setText("REGISTRATION CLOSED");
                 holder.tv_event_registry_status.setTextColor(
                         ContextCompat.getColor(context, R.color.red_deep)

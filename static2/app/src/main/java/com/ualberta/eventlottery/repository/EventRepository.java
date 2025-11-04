@@ -2,7 +2,7 @@ package com.ualberta.eventlottery.repository;
 
 import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.model.EventStatus;
-import com.ualberta.eventlottery.model.RegistrationStatus;
+import com.ualberta.eventlottery.model.EventRegistrationStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,7 @@ public class EventRepository {
         event1.setId("1");
         event1.setTitle("Morning Yoga Session");
         event1.setEventStatus(EventStatus.UPCOMING);
-        event1.setRegistrationStatus(RegistrationStatus.REGISTRATION_OPEN);
+        event1.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_OPEN);
         event1.setDescription("Relaxing morning yoga for all levels");
         event1.setMaxAttendees(50);
         event1.setCategory("Health & Wellness");
@@ -38,7 +38,7 @@ public class EventRepository {
         event2.setId("2");
         event2.setTitle("Tech Conference 2024");
         event2.setEventStatus(EventStatus.ONGOING);
-        event2.setRegistrationStatus(RegistrationStatus.REGISTRATION_CLOSED);
+        event2.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_CLOSED);
         event2.setDescription("Annual technology conference");
         event2.setMaxAttendees(200);
         event2.setCategory("Technology");
@@ -47,7 +47,7 @@ public class EventRepository {
         event3.setId("3");
         event3.setTitle("Charity Run");
         event3.setEventStatus(EventStatus.CLOSED);
-        event3.setRegistrationStatus(RegistrationStatus.REGISTRATION_CLOSED);
+        event3.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_CLOSED);
         event3.setDescription("5K run for charity");
         event3.setMaxAttendees(100);
         event3.setCategory("Sports");
