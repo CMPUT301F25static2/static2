@@ -25,7 +25,7 @@ public class Event {
     private String qrCodeUrl;
     private String locationUrl;
     private EventStatus eventStatus;
-    private RegistrationStatus registrationStatus;
+    private EventRegistrationStatus eventRegistrationStatus;
 
     private int maxAttendees;
     private int maxWaitListSize;
@@ -43,7 +43,7 @@ public class Event {
         this.waitListUserIds = new ArrayList<>();
         this.confirmedUserIds = new ArrayList<>();
         this.createdAt = new Date();
-        this.registrationStatus = RegistrationStatus.REGISTRATION_OPEN;
+        this.eventRegistrationStatus = EventRegistrationStatus.REGISTRATION_OPEN;
         this.currentWaitListSize = 0;
     }
 
@@ -118,12 +118,12 @@ public class Event {
 
     public EventStatus getEventStatus() { return eventStatus; }
 
-    public RegistrationStatus getRegistrationStatus() {
-        return registrationStatus;
+    public EventRegistrationStatus getRegistrationStatus() {
+        return eventRegistrationStatus;
     }
 
-    public void setRegistrationStatus(RegistrationStatus registrationStatus) {
-        this.registrationStatus = registrationStatus;
+    public void setRegistrationStatus(EventRegistrationStatus eventRegistrationStatus) {
+        this.eventRegistrationStatus = eventRegistrationStatus;
     }
 
     public void setEventStatus(EventStatus eventStatus) { this.eventStatus = eventStatus; }
@@ -151,7 +151,7 @@ public class Event {
     public boolean isRegistrationOpen() {
         Date now = new Date();
         return now.after(registrationStart) && now.before(registrationEnd) &&
-                registrationStatus == RegistrationStatus.REGISTRATION_OPEN;
+                eventRegistrationStatus == EventRegistrationStatus.REGISTRATION_OPEN;
     }
 
     /**
