@@ -96,10 +96,9 @@
                     android:id="@+id/tv_event_entrants_number"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Entrants: 148/200"
+                    android:text="Entrants:"
                     android:textSize="14dp"
                     android:textColor="@color/text_secondary" />
-
 
                 <TextView
                     android:id="@+id/tv_event_end_time"
