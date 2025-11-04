@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:id="@android:id/text1"
+    android:layout_height="wrap_content"
+    android:textAppearance="?android:attr/textAppearanceListItem"
+    android:gravity="center_vertical"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:minHeight="?android:attr/listPreferredItemHeight"
+    android:text="Section name"
+    android:textStyle="bold"
+    android:textSize="20sp"
+    android:textColor="@color/black" />
