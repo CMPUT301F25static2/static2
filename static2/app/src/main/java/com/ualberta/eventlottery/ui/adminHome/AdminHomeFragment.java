@@ -21,7 +21,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.ualberta.eventlottery.event.Event;
+import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.ui.adminImages.AdminImagesFragment;
 import com.ualberta.eventlottery.ui.adminLogs.AdminLogFragment;
 import com.ualberta.eventlottery.ui.adminUsers.AdminUsersFragment;
