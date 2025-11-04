@@ -6,8 +6,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/white"
-    tools:context=".EntrantMainActivity"
-    android:id="@+id/entrant_main">
+    tools:context="com.ualberta.eventlottery.admin.AdminMainActivity"
+    android:id="@+id/admin_main">
 
     <FrameLayout
         android:id="@+id/fragment_container"
