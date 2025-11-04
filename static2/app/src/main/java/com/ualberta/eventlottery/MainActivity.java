@@ -33,27 +33,6 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private static String TAG = "Event Lottery";
 
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//
-//        binding = ActivityEventLotteryMainBinding.inflate(getLayoutInflater());
-//        setContentView(binding.getRoot());
-//
-//        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_event_lottery_main);
-//        NavigationUI.setupWithNavController(binding.navView, navController);
-//
-//        Class activity = EntrantMainActivity.class;
-//
-//        String userRole = "entrant"; // Change to admin or organizer to go to the admin or organizer screens
-//        if (userRole.compareTo("admin") == 0){
-//            activity = AdminMainActivity.class;
-//        } else{
-//            activity = EntrantMainActivity.class;
-//        }
-//        Intent myIntent = new Intent(MainActivity.this, activity);
-//        MainActivity.this.startActivity(myIntent);
-//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
