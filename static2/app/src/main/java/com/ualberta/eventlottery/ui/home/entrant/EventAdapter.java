@@ -43,7 +43,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
         } else {
             holder.entrantsNumber.setText("Entrants: " + event.getWaitListCount() + "/unlimited");
         }
-        holder.eventStaus.setText(event.getStatus().toString());
+        holder.eventStaus.setText(event.getRegistrationStatus().toString());
     }
 
     @Override
