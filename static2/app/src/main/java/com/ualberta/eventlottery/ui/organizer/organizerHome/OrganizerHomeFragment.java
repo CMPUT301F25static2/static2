@@ -11,6 +11,7 @@ import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.ui.organizer.adapter.OrganizerEventAdapter;
 import com.ualberta.eventlottery.repository.EventRepository;
 import com.ualberta.eventlottery.ui.organizer.organizerEventCreate.OrganizerEventCreateFragment;
+import com.ualberta.eventlottery.ui.organizer.organizerEventDraw.OrganizerEventDrawFragment;
 import com.ualberta.eventlottery.ui.organizer.organizerEventInfo.OrganizerEventInfoFragment;
 import com.ualberta.static2.R;
 import com.ualberta.static2.databinding.FragmentOrganizerHomeBinding;
@@ -53,6 +54,16 @@ public class OrganizerHomeFragment extends Fragment {
         adapter = new OrganizerEventAdapter(requireContext(), eventList);
         binding.lvOrganzierEventList.setAdapter(adapter);
 
+        // set up draw button (in each item) click listener
+        adapter.setOnDrawButtonClickListener(event -> {
+            OrganizerEventDrawFragment fragment = OrganizerEventDrawFragment.newInstance(event.getId());
+            requireActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container_organizer, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        });
+
+        // set up item click listener
         binding.lvOrganzierEventList.setOnItemClickListener((parent, view, position, id) -> {
             Event selectedEvent = eventList.get(position);
 
@@ -72,6 +83,7 @@ public class OrganizerHomeFragment extends Fragment {
                     .addToBackStack(null)
                     .commit();
         });
+
     }
 
     @Override
