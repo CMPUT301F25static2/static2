@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ualberta.eventlottery.model.Event;
-import com.ualberta.eventlottery.model.EventStatus;
+import com.ualberta.eventlottery.model.EventRegistrationStatus;
 import com.ualberta.static2.R;
 import com.ualberta.static2.databinding.FragmentHomeBinding;
 
@@ -121,7 +121,7 @@ public class HomeFragment extends Fragment {
     private List<Event> getmyMockEvents(String prefix) {
         List<Event> list = new ArrayList<>();
         Event modelEvent = new Event("789", "EzKYezj7iLXKlRqCIgFbp8CH1Hh2", "PickleBall Tournament", "Tournament for all skill levels!");
-        modelEvent.setStatus(EventStatus.REGISTRATION_OPEN);
+        modelEvent.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_OPEN);
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_MONTH,-1);
         modelEvent.setRegistrationStart(cal.getTime());
@@ -130,11 +130,11 @@ public class HomeFragment extends Fragment {
         modelEvent.addToWaitingList("EzKYezj7iLXKlRqCIgFbp8CH1Hh2");
         modelEvent.addToWaitingList("AzKYezj7iLXKlRqCIgFbp8CH1Hh3");
         modelEvent.addToWaitingList("BzKYezj7iLXKlRqCIgFbp8CH1Hh4");
-        modelEvent.setStatus(EventStatus.REGISTRATION_CLOSED);
+        modelEvent.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_CLOSED);
         list.add(modelEvent);
 
         modelEvent = new Event("012", "EzKYezj7iLXKlRqCIgFbp8CH1Hh2","Piano Lessons", "Play like Mozart");
-        modelEvent.setStatus(EventStatus.REGISTRATION_OPEN);
+        modelEvent.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_OPEN);
         cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_MONTH,-1);
         modelEvent.setRegistrationStart(cal.getTime());
@@ -143,14 +143,14 @@ public class HomeFragment extends Fragment {
         modelEvent.addToWaitingList("EzKYezj7iLXKlRqCIgFbp8CH1Hh2");
         modelEvent.addToWaitingList("AzKYezj7iLXKlRqCIgFbp8CH1Hh3");
         modelEvent.addToWaitingList("BzKYezj7iLXKlRqCIgFbp8CH1Hh4");
-        modelEvent.setStatus(EventStatus.IN_PROGRESS);
+        modelEvent.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_CLOSED);
         list.add(modelEvent);
         return list;
     }
     private List<Event> getAvailableMockEvents() {
         List<Event> list = new ArrayList<>();
         Event modelEvent = new Event("123", "EzKYezj7iLXKlRqCIgFbp8CH1Hh2", "Swimming Lessons", "Swimming for beginners");
-        modelEvent.setStatus(EventStatus.REGISTRATION_OPEN);
+        modelEvent.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_OPEN);
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_MONTH,-1);
         modelEvent.setRegistrationStart(cal.getTime());
@@ -164,7 +164,7 @@ public class HomeFragment extends Fragment {
         list.add(modelEvent);
 
         modelEvent = new Event("456", "EzKYezj7iLXKlRqCIgFbp8CH1Hh2","Karate Lessons", "Fitness with a purpose");
-        modelEvent.setStatus(EventStatus.REGISTRATION_OPEN);
+        modelEvent.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_OPEN);
         cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_MONTH,-1);
         modelEvent.setRegistrationStart(cal.getTime());
