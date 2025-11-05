@@ -1,4 +1,4 @@
-package com.ualberta.eventlottery.ui.home.entrant;
+package com.ualberta.eventlottery.repository;
 
 import android.util.Log;
 

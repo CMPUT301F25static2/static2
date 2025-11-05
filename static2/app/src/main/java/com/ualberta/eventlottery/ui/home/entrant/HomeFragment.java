@@ -28,12 +28,11 @@ import java.util.Calendar;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
-    private Button filterButton,sortButton,myEventsButton,availableEventsButton;
+    private Button filterButton, sortButton, myEventsButton, availableEventsButton;
     private EditText searchInputHome;
     private RecyclerView recyclerView;
     private EventAdapter myEventsAdapter, availableEventsAdapter;
     private List<Event> myEventsList;
-
     private FragmentHomeBinding binding;
     private HomeViewModel homeViewModel;
     private Observer<List<Event>> availableEventsObserver;
