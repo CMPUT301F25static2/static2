@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,6 +36,7 @@ public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
     private HomeViewModel homeViewModel;
+    private Observer<List<Event>> availableEventsObserver;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -57,6 +59,11 @@ public class HomeFragment extends Fragment {
 
         myEventsAdapter = new EventAdapter(myEventsList);
         availableEventsAdapter = new EventAdapter(new ArrayList<>());
+        availableEventsObserver = newData -> {
+            availableEventsAdapter.updateEvents(newData);
+            availableEventsAdapter.notifyDataSetChanged();
+        };
+
         recyclerView.setAdapter(myEventsAdapter);
         myEventsButton.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.white));
         myEventsButton.setTextColor(ContextCompat.getColorStateList(requireContext(), R.color.black));
@@ -98,6 +105,8 @@ public class HomeFragment extends Fragment {
     }
 
     private void showMyEvents() {
+        //Stop observing available events when we're showing my events
+        homeViewModel.getAvailableEvents().removeObserver(availableEventsObserver);
         myEventsAdapter.updateEvents(myEventsList);
         recyclerView.setAdapter(myEventsAdapter);
         myEventsButton.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.white));
@@ -107,11 +116,8 @@ public class HomeFragment extends Fragment {
 
     }
     private void showAvailableEvents(){
+        homeViewModel.getAvailableEvents().observe(getViewLifecycleOwner(),availableEventsObserver);
         recyclerView.setAdapter(availableEventsAdapter);
-        homeViewModel.getAvailableEvents().observe(getActivity(), newData -> {
-            availableEventsAdapter.updateEvents(newData);
-            availableEventsAdapter.notifyDataSetChanged();
-        });
 
         availableEventsButton.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.white));
         availableEventsButton.setTextColor(ContextCompat.getColorStateList(requireContext(),R.color.black));
