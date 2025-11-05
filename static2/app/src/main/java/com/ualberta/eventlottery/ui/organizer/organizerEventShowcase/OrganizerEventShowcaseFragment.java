@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 
 import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.repository.EventRepository;
+import com.ualberta.eventlottery.ui.organizer.fragment.EntrantsFragment;
 import com.ualberta.eventlottery.ui.organizer.organizerEventQrcode.OrganizerEventQrcodeFragment;
 import com.ualberta.static2.R;
 import com.ualberta.static2.databinding.FragmentOrganizerEventShowcaseBinding;
@@ -54,8 +55,8 @@ public class OrganizerEventShowcaseFragment extends Fragment {
         initData();
         setUpView();
         setUpListener();
+        addEntrantsFragment();
     }
-
 
 
     private void receiveArguments() {
@@ -120,6 +121,13 @@ public class OrganizerEventShowcaseFragment extends Fragment {
                     .addToBackStack(null)
                     .commit();
         });
+    }
 
+    private void addEntrantsFragment() {
+        EntrantsFragment entrantsFragment = EntrantsFragment.newInstance(eventId);
+
+        getChildFragmentManager().beginTransaction()
+                .replace(R.id.fragment_entrants_conatiner, entrantsFragment)
+                .commit();
     }
 }

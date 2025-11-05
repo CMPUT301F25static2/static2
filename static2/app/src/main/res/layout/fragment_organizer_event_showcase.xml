@@ -37,207 +37,210 @@
             app:tint="@color/white" />
     </LinearLayout>
 
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:orientation="vertical"
         android:background="@drawable/rounded_md"
         android:backgroundTint="@color/white"
         android:layout_marginTop="-20dp"
         android:padding="18dp"
+        android:fillViewport="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/iv_event_gallery">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical">
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                app:cardCornerRadius="35dp"
-                android:clipToPadding="true"
-                android:clipChildren="true" >
-
-                <ImageView
-                    android:id="@+id/iv_event_poster_img"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/yoga"
-                    android:scaleType="centerCrop"/>
-
-            </androidx.cardview.widget.CardView>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginLeft="10dp">
-
-                <TextView
-                    android:id="@+id/tv_event_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Morning Yoga Session"
-                    android:textColor="@color/black"
-                    android:textStyle="bold"
-                    android:textSize="20sp"/>
-
-                <TextView
-                    android:id="@+id/tv_event_current_entrants_count"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="148 entrants"
-                    android:textColor="@color/text_secondary"
-                    />
-            </LinearLayout>
-
-            <ImageView
-                android:id="@+id/btn_event_show_qrcode"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@drawable/ic_qr_code_duotone"
-                app:tint="@color/text_secondary" />
-        </LinearLayout>
-
-
-        <TextView
-            android:id="@+id/tv_event_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:lineHeight="20sp"
-            android:text="Yoga is a practice that connects the body, breath, and mind. It uses physical postures, breathing exercises, and meditation to improve overall health. Yoga was developed as a spiritual practice thousands of years ago"
-            android:textColor="@color/text_secondary"
-            android:textSize="14sp"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginTop="18dp">
-
-            <!--            date-->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center">
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_calendar"
-                    app:tint="@color/text_secondary" />
-
-                <TextView
-                    android:id="@+id/tv_start_to_end"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="4dp"
-                    android:text="8:00 AM, Oct 28, 2025 - 8:00 AM, Dec 28, 2025"
-                    android:textSize="14sp"
-                    android:textColor="@color/text_secondary"/>
-            </LinearLayout>
-
-            <!--            time-->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center">
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_nest_clock_farsight_analog_24dp_000000_fill0_wght400_grad0_opsz24"
-                    app:tint="@color/text_secondary"/>
-
-                <TextView
-                    android:id="@+id/tv_event_from_to"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="4dp"
-                    android:text="8:00 AM - 10:00AM"
-                    android:textSize="14sp"
-                    android:textColor="@color/text_secondary"
-                    android:layout_marginVertical="10dp"/>
-            </LinearLayout>
-
-            <!--            description-->
-        </LinearLayout>
-
-
-        <!--        status-->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            >
-
+            android:orientation="vertical">
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <!--               event capacity-->
-                <TextView
-                    android:id="@+id/tv_event_capacity"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    app:cardCornerRadius="35dp"
+                    android:clipToPadding="true"
+                    android:clipChildren="true" >
+
+                    <ImageView
+                        android:id="@+id/iv_event_poster_img"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/yoga"
+                        android:scaleType="centerCrop"/>
+
+                </androidx.cardview.widget.CardView>
+
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:text="Capacity: 200"
-                    android:textSize="14sp"
-                    android:textColor="@color/text_secondary"/>
+                    android:orientation="vertical"
+                    android:layout_marginLeft="10dp">
 
-                <!--                percentage-->
-                <TextView
-                    android:id="@+id/tv_event_fill_rate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="74%"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_primary"/>
+                    <TextView
+                        android:id="@+id/tv_event_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Morning Yoga Session"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        android:textSize="20sp"/>
+
+                    <TextView
+                        android:id="@+id/tv_event_current_entrants_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="148 entrants"
+                        android:textColor="@color/text_secondary"
+                        />
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/btn_event_show_qrcode"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/ic_qr_code_duotone"
+                    app:tint="@color/text_secondary" />
             </LinearLayout>
-            <!--            progress bar-->
-            <ProgressBar
-                android:id="@+id/pb_event_progeress"
-                style="?android:attr/progressBarStyleHorizontal"
+
+
+            <TextView
+                android:id="@+id/tv_event_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:max="100"
-                android:progress="74" />
+                android:layout_marginTop="10dp"
+                android:lineHeight="20sp"
+                android:text="Yoga is a practice that connects the body, breath, and mind. It uses physical postures, breathing exercises, and meditation to improve overall health. Yoga was developed as a spiritual practice thousands of years ago"
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="end">
-                <TextView
-                    android:id="@+id/tv_event_fill_ratio"
+                android:orientation="vertical"
+                android:layout_marginTop="18dp">
+
+                <!--            date-->
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="148/200  Filled"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
-                    android:textColor="@color/text_secondary"/>
+                    android:gravity="center">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_calendar"
+                        app:tint="@color/text_secondary" />
+
+                    <TextView
+                        android:id="@+id/tv_start_to_end"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="4dp"
+                        android:text="8:00 AM, Oct 28, 2025 - 8:00 AM, Dec 28, 2025"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_secondary"/>
+                </LinearLayout>
+
+                <!--            time-->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_nest_clock_farsight_analog_24dp_000000_fill0_wght400_grad0_opsz24"
+                        app:tint="@color/text_secondary"/>
+
+                    <TextView
+                        android:id="@+id/tv_event_from_to"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="4dp"
+                        android:text="8:00 AM - 10:00AM"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginVertical="10dp"/>
+                </LinearLayout>
+
+                <!--            description-->
             </LinearLayout>
+
+
+            <!--        status-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <!--               event capacity-->
+                    <TextView
+                        android:id="@+id/tv_event_capacity"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:text="Capacity: 200"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_secondary"/>
+
+                    <!--                percentage-->
+                    <TextView
+                        android:id="@+id/tv_event_fill_rate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="74%"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary"/>
+                </LinearLayout>
+                <!--            progress bar-->
+                <ProgressBar
+                    android:id="@+id/pb_event_progeress"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:max="100"
+                    android:progress="74" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="end">
+                    <TextView
+                        android:id="@+id/tv_event_fill_ratio"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="148/200  Filled"
+                        android:textStyle="bold"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_secondary"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/text_tertiary"
+                android:layout_marginVertical="6dp"/>
+
+
+            <!--    section showing the list of entrants based on selected button-->
+            <FrameLayout
+                android:id="@+id/fragment_entrants_conatiner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+            />
         </LinearLayout>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/text_tertiary"
-            android:layout_marginVertical="16dp"/>
-
-
-
-        <!--    section showing the list of entrants based on selected button-->
-        <FrameLayout
-            android:id="@+id/fragment_entrants_conatiner"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
-
-
-
-
-    </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
