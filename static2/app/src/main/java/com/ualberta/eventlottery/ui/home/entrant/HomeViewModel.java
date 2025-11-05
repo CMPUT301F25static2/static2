@@ -11,13 +11,13 @@ import java.util.List;
 
 public class HomeViewModel extends ViewModel {
 
-    private final EventListLiveData eventListLiveData;
+    private final EventListLiveData availableEventListLiveData;
 
 
     public HomeViewModel() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference eventsRef = db.collection("events");
-        eventListLiveData = new EventListLiveData(eventsRef);
+        availableEventListLiveData = new EventListLiveData(eventsRef.whereEqualTo("eventRegistrationStatus", "REGISTRATION_OPEN"));
     }
 
     // Google search terms:
@@ -26,6 +26,6 @@ public class HomeViewModel extends ViewModel {
     //  Firebase database android java design pattern example
     //  firebasefirestore livedata recyclerview android java
     public LiveData<List<Event>> getAvailableEvents() {
-        return eventListLiveData;
+        return availableEventListLiveData;
     }
 }
