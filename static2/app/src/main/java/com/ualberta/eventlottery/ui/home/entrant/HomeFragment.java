@@ -24,7 +24,6 @@ import com.ualberta.static2.databinding.FragmentHomeBinding;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
@@ -33,13 +32,13 @@ public class HomeFragment extends Fragment {
     private RecyclerView recyclerView;
     private EventAdapter myEventsAdapter, availableEventsAdapter;
     private List<Event> myEventsList;
-    private List<Event> availableEventsList;
+
     private FragmentHomeBinding binding;
+    private HomeViewModel homeViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        HomeViewModel homeViewModel =
-                new ViewModelProvider(this).get(HomeViewModel.class);
+        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
@@ -55,10 +54,9 @@ public class HomeFragment extends Fragment {
 
         //Test List
         myEventsList = getmyMockEvents("My Event");
-        availableEventsList = getAvailableMockEvents();
 
         myEventsAdapter = new EventAdapter(myEventsList);
-        availableEventsAdapter = new EventAdapter(availableEventsList);
+        availableEventsAdapter = new EventAdapter(new ArrayList<>());
         recyclerView.setAdapter(myEventsAdapter);
         myEventsButton.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.white));
         myEventsButton.setTextColor(ContextCompat.getColorStateList(requireContext(), R.color.black));
@@ -109,8 +107,12 @@ public class HomeFragment extends Fragment {
 
     }
     private void showAvailableEvents(){
-        availableEventsAdapter.updateEvents(availableEventsList);
         recyclerView.setAdapter(availableEventsAdapter);
+        homeViewModel.getAvailableEvents().observe(getActivity(), newData -> {
+            availableEventsAdapter.updateEvents(newData);
+            availableEventsAdapter.notifyDataSetChanged();
+        });
+
         availableEventsButton.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.white));
         availableEventsButton.setTextColor(ContextCompat.getColorStateList(requireContext(),R.color.black));
         myEventsButton.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.black));
@@ -147,33 +149,4 @@ public class HomeFragment extends Fragment {
         list.add(modelEvent);
         return list;
     }
-    private List<Event> getAvailableMockEvents() {
-        List<Event> list = new ArrayList<>();
-        Event modelEvent = new Event("123", "EzKYezj7iLXKlRqCIgFbp8CH1Hh2", "Swimming Lessons", "Swimming for beginners");
-        modelEvent.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_OPEN);
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DAY_OF_MONTH,-1);
-        modelEvent.setRegistrationStart(cal.getTime());
-        cal.add(Calendar.DAY_OF_MONTH,+10);
-        modelEvent.setRegistrationEnd(cal.getTime());
-        modelEvent.addToWaitingList("EzKYezj7iLXKlRqCIgFbp8CH1Hh2");
-        modelEvent.addToWaitingList("AzKYezj7iLXKlRqCIgFbp8CH1Hh3");
-        modelEvent.addToWaitingList("BzKYezj7iLXKlRqCIgFbp8CH1Hh4");
-        modelEvent.setMaxWaitListSize(4);
-
-        list.add(modelEvent);
-
-        modelEvent = new Event("456", "EzKYezj7iLXKlRqCIgFbp8CH1Hh2","Karate Lessons", "Fitness with a purpose");
-        modelEvent.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_OPEN);
-        cal = Calendar.getInstance();
-        cal.add(Calendar.DAY_OF_MONTH,-1);
-        modelEvent.setRegistrationStart(cal.getTime());
-        cal.add(Calendar.DAY_OF_MONTH,+10);
-        modelEvent.setRegistrationEnd(cal.getTime());
-        modelEvent.addToWaitingList("EzKYezj7iLXKlRqCIgFbp8CH1Hh2");
-        modelEvent.addToWaitingList("AzKYezj7iLXKlRqCIgFbp8CH1Hh3");
-        list.add(modelEvent);
-        return list;
-    }
-
 }
