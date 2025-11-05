@@ -90,13 +90,6 @@ public class EventListLiveData extends LiveData<List<Event>> implements EventLis
             for (DocumentSnapshot doc : snapshots.getDocuments()) {
                 Event model = doc.toObject(Event.class);
                 if (model != null) {
-                    // The dailyStartTime cannot be converted by doc.toObject() because of its type.
-                    // Using sessionStartTime as a string for demo purposes
-                    // Needs to be resolved
-                    String sessionStartTime = doc.getString("sessionStartTime");
-                    if (sessionStartTime != null) {
-                        model.setDailyStartTime(LocalTime.parse(sessionStartTime));
-                    }
                     data.add(model);
                 }
             }
