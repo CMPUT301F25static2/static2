@@ -3,9 +3,9 @@ package com.ualberta.eventlottery.ui.home.entrant;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.ualberta.eventlottery.model.Event;
+import com.ualberta.eventlottery.repository.EventListLiveData;
+import com.ualberta.eventlottery.repository.EventRepository;
 
 import java.util.List;
 
@@ -15,16 +15,9 @@ public class HomeViewModel extends ViewModel {
 
 
     public HomeViewModel() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference eventsRef = db.collection("events");
-        availableEventListLiveData = new EventListLiveData(eventsRef.whereEqualTo("eventRegistrationStatus", "REGISTRATION_OPEN"));
+        availableEventListLiveData = EventRepository.getInstance().getAvailableEvents();
     }
 
-    // Google search terms:
-    //  firebasefirestore iterate collection android java
-    //  android java recyclerview attached to firebase database
-    //  Firebase database android java design pattern example
-    //  firebasefirestore livedata recyclerview android java
     public LiveData<List<Event>> getAvailableEvents() {
         return availableEventListLiveData;
     }
