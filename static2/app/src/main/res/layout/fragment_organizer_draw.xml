@@ -21,7 +21,6 @@
         android:gravity="center_horizontal"
         android:orientation="vertical"
         android:padding="16dp"
-        app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -92,6 +91,7 @@
                 android:padding="12dp">
 
                 <TextView
+                    android:id="@+id/tv_event_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Morning Yoga Session"
@@ -106,15 +106,15 @@
                     android:layout_marginVertical="10dp"
                     android:text="Capacity: 200"
                     android:textColor="@color/text_secondary"
-                    android:textSize="@dimen/text_size_body" />
+                    android:textSize="@dimen/text_size_body_small" />
 
                 <TextView
                     android:id="@+id/tv_registration_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Mar 25,2024  14:00  -  Oct 25,2024  14:00  "
+                    android:text="Time: Mar 25,2024  14:00  -  Oct 25,2024  14:00"
                     android:textColor="@color/text_secondary"
-                    android:textSize="@dimen/text_size_body" />
+                    android:textSize="@dimen/text_size_body_small" />
 
 
             </LinearLayout>
@@ -167,7 +167,7 @@
                         app:layout_constraintStart_toStartOf="parent">
 
                         <TextView
-                            android:id="@+id/tv_event_waiting"
+                            android:id="@+id/tv_event_waiting_number"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="400"
@@ -193,7 +193,7 @@
                         app:layout_constraintStart_toEndOf="@+id/linearLayout2">
 
                         <TextView
-                            android:id="@+id/tv_event_accepted_rate"
+                            android:id="@+id/tv_event_accepted_ratio"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="148/200"
@@ -267,12 +267,15 @@
                 android:drawableStart="@drawable/ic_groups_24dp_000000_fill0_wght400_grad0_opsz24"
                 android:drawablePadding="8dp"
                 android:hint="Enter the number..."
+                android:inputType="number"
                 android:paddingVertical="16dp"
                 android:paddingStart="20dp"
+                android:paddingEnd="20dp"
                 android:textColor="@color/black"
                 android:textSize="18sp" />
 
             <TextView
+                android:id="@+id/tv_max_entrants_msg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -290,7 +293,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:layout_marginTop="48dp"
+            android:layout_marginTop="30dp"
             android:background="@drawable/rounded_sm"
             android:backgroundTint="@color/black"
             android:gravity="center"
@@ -300,20 +303,6 @@
             android:textSize="@dimen/text_size_subtitle"
             android:textStyle="bold" />
     </LinearLayout>
-
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        app:itemIconTint="@color/black"
-        app:labelVisibilityMode="unlabeled"
-
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/bottom_nav_menu" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
