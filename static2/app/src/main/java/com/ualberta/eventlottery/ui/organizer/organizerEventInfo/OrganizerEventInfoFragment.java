@@ -4,10 +4,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import com.ualberta.eventlottery.model.Event;
+import com.ualberta.eventlottery.model.EventStatus;
 import com.ualberta.eventlottery.ui.organizer.fragment.DialogCustomContent;
 import com.ualberta.eventlottery.repository.EventRepository;
+import com.ualberta.eventlottery.ui.organizer.fragment.DialogUpdateStatus;
 import com.ualberta.eventlottery.ui.organizer.organizerEventQrcode.OrganizerEventQrcodeFragment;
 import com.ualberta.eventlottery.ui.organizer.organizerEventShowcase.OrganizerEventShowcaseFragment;
 import com.ualberta.static2.R;
@@ -79,6 +83,30 @@ public class OrganizerEventInfoFragment extends Fragment {
         binding.tvEventUpdateDescription.setText(currentEvent.getDescription());
         binding.tvEventLocation.setText(currentEvent.getLocation());
 
+        //status
+        if (currentEvent.getEventStatus() != null) {
+            String status = currentEvent.getEventStatus().toString();
+            binding.tvEventUpdateStatus.setText(status);
+
+            switch (status.toLowerCase()) {
+                case "ongoing":
+                    binding.tvEventUpdateStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.green_deep));
+                    break;
+                case "closed":
+                    binding.tvEventUpdateStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.red_deep));
+                    break;
+                case "upcoming":
+                    binding.tvEventUpdateStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_secondary));
+                    break;
+                default:
+                    binding.tvEventUpdateStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_primary));
+                    break;
+            }
+
+        } else {
+            binding.tvEventUpdateStatus.setText("Not set");
+        }
+
         if (currentEvent.getEndTime() != null) {
             String formattedTime = "End: " + dateFormat.format(currentEvent.getEndTime());
             binding.tvEventUpdateEndTime.setText(formattedTime);
@@ -86,12 +114,22 @@ public class OrganizerEventInfoFragment extends Fragment {
             binding.tvEventUpdateEndTime.setText("End: TBD");
         }
 
+        //end time
+        if (currentEvent.getEndTime() != null) {
+            String formattedTime = "End: " + dateFormat.format(currentEvent.getEndTime());
+            binding.tvEventUpdateEndTime.setText(formattedTime);
+        } else {
+            binding.tvEventUpdateEndTime.setText("End: TBD");
+        }
+
+        //poster
         if (currentEvent.getPosterUrl() != null && !currentEvent.getPosterUrl().isEmpty()) {
             // TODO: use the image loading library to load images from web urls
         } else {
             binding.ivEventPosterImg.setImageResource(R.drawable.placeholder_background);
         }
 
+        //location
         if (currentEvent.getLocationUrl() != null && !currentEvent.getLocationUrl().isEmpty()) {
             // TODO: use the image loading library to load images from web urls
         } else {
@@ -120,6 +158,7 @@ public class OrganizerEventInfoFragment extends Fragment {
                     .commit();
         });
 
+
         binding.btnEventUpdateTitle.setOnClickListener(v -> {
             showEditDialog("title", currentEvent.getTitle());
         });
@@ -137,7 +176,22 @@ public class OrganizerEventInfoFragment extends Fragment {
         binding.btnEventUpdateLocation.setOnClickListener(v -> {
             showEditDialog("location", currentEvent.getLocation());
         });
+
+        binding.btnEventUpdateStatus.setOnClickListener(v -> {
+            String currentStatus = currentEvent.getEventStatus().toString();
+            showStatusDialog(currentStatus);
+        });
     }
+
+    private void showStatusDialog(String currentStatus) {
+        DialogUpdateStatus dialog = DialogUpdateStatus.newInstance(currentStatus);
+        dialog.setOnStatusChangeListener(newStatus -> {
+            handleFieldUpdate("status", newStatus);
+        });
+        dialog.show(getChildFragmentManager(), "status_dialog");
+    }
+
+
 
     private void showEditDialog(String fieldType, String currentValue) {
         DialogCustomContent dialog = DialogCustomContent.newInstance(fieldType, currentValue);
@@ -159,7 +213,10 @@ public class OrganizerEventInfoFragment extends Fragment {
                 currentEvent.setLocation(newValue);
                 break;
             case "endTime":
-
+                // TODO: add update endTime logic
+                break;
+            case "status":
+                currentEvent.setEventStatus(EventStatus.valueOf(newValue.toUpperCase()));
                 break;
         }
         eventRepo.updateEvent(currentEvent);

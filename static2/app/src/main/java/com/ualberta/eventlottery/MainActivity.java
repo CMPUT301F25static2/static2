@@ -1,11 +1,8 @@
 package com.ualberta.eventlottery;
 
 import android.Manifest;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,19 +11,15 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.NavigationUI;
 
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.ualberta.eventlottery.admin.AdminMainActivity;
 import com.ualberta.eventlottery.entrant.EntrantMainActivity;
 import com.ualberta.eventlottery.organzier.OrganizerMainActivity;
+import com.ualberta.eventlottery.ui.profile.ProfileViewModel;
+import com.ualberta.eventlottery.ui.profile.ProfileSetupActivity;
 import com.ualberta.eventlottery.utils.UserManager;
 import com.ualberta.static2.R;
 import com.ualberta.static2.databinding.ActivityEventLotteryMainBinding;
@@ -43,34 +36,11 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private static String TAG = "Event Lottery";
 
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//
-//        binding = ActivityEventLotteryMainBinding.inflate(getLayoutInflater());
-//        setContentView(binding.getRoot());
-//
-//        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_event_lottery_main);
-//        NavigationUI.setupWithNavController(binding.navView, navController);
-//
-//        Class activity = EntrantMainActivity.class;
-//
-//        String userRole = "entrant"; // Change to admin or organizer to go to the admin or organizer screens
-//        if (userRole.compareTo("admin") == 0){
-//            activity = AdminMainActivity.class;
-//        } else{
-//            activity = EntrantMainActivity.class;
-//        }
-//        Intent myIntent = new Intent(MainActivity.this, activity);
-//        MainActivity.this.startActivity(myIntent);
-//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        setupClickListeners();
+        //Only initialize the view after User initialization below
 
         // TODO: store into user profile
         FirebaseMessaging.getInstance().getToken()
@@ -110,8 +80,35 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_entrant).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, EntrantMainActivity.class);
-                startActivity(intent);
+                String userId = UserManager.getCurrentUserId();
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+                db.collection("users")
+                        .document(userId)
+                        .get()
+                        .addOnSuccessListener(documentSnapshot -> {
+                            if (documentSnapshot.exists()) {
+                                // Profile exists, go directly to EntrantMainActivity
+                                Intent intent = new Intent(MainActivity.this, EntrantMainActivity.class);
+                                startActivity(intent);
+                            } else {
+                                // Show dialog that profile is required
+                                new androidx.appcompat.app.AlertDialog.Builder(MainActivity.this)
+                                        .setTitle("Profile Required")
+                                        .setMessage("You need to set up your profile before continuing as an entrant.")
+                                        .setPositiveButton("Set Up Profile", (dialog, which) -> {
+                                            Intent intent = new Intent(MainActivity.this, ProfileSetupActivity.class);
+                                            startActivity(intent);
+                                        })
+                                        .setNegativeButton("Cancel", null)
+                                        .show();
+                            }
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(MainActivity.this,
+                                    "Error: " + e.getMessage(),
+                                    Toast.LENGTH_SHORT).show();
+                        });
             }
         });
         findViewById(R.id.btn_notification).setOnClickListener(new View.OnClickListener() {

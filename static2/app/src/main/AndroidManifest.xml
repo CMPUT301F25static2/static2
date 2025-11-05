@@ -57,6 +57,12 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name="com.ualberta.eventlottery.ui.profile.ProfileSetupActivity"
+            android:exported="false">
+        </activity>
+
+
 
     </application>
 

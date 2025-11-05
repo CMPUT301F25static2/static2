@@ -9,12 +9,38 @@ public class User {
     private String phone;
     private Date createdAt;
 
+    private String favRecCenter;
+
+
+    public User() {
+    }
+
+
     public User(String userId, String name, String email) {
         this.userId = userId;
         this.name = name;
         this.email = email;
         this.createdAt = new Date();
         this.phone = "";
+        this.favRecCenter = "";
+    }
+
+    public User(String userId, String name, String email, String phone) {
+        this.userId = userId;
+        this.name = name;
+        this.email = email;
+        this.createdAt = new Date();
+        this.phone = phone;
+        this.favRecCenter = "";
+    }
+
+    public User(String userId, String name, String email, String phone, String favRecCenter) {
+        this.userId = userId;
+        this.name = name;
+        this.email = email;
+        this.createdAt = new Date();
+        this.phone = phone;
+        this.favRecCenter = favRecCenter;
     }
 
     // Getters
@@ -23,11 +49,14 @@ public class User {
     public String getEmail() { return email; }
     public String getPhone() { return phone; }
     public Date getCreatedAt() { return createdAt; }
+    public String getFavRecCenter() { return favRecCenter; }
 
     // Setters
+    public void setUserId(String userId){this.userId = userId;}
     public void setName(String name) { this.name = name; }
     public void setEmail(String email) { this.email = email; }
     public void setPhone(String phone) { this.phone = phone; }
+    public void setFavRecCenter(String favRecCenter) { this.favRecCenter = favRecCenter; }
 
     /**
      * Updates user profile information
