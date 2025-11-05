@@ -1,5 +1,7 @@
 package com.ualberta.eventlottery.ui.home.entrant;
 
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 
@@ -8,6 +10,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.ualberta.eventlottery.model.Event;
 
@@ -20,10 +23,12 @@ import java.util.List;
  *
  * Google search terms:
  *       firebase firestore livedata recyclerview android java
+ *       android java recyclerview attached to firebase database
  */
 public class EventListLiveData extends LiveData<List<Event>> implements EventListener<QuerySnapshot> {
 
-    private final CollectionReference collectionRef;
+    private CollectionReference collectionRef = null;
+    private Query query = null;
     private ListenerRegistration registration;
 
     /**
@@ -34,10 +39,22 @@ public class EventListLiveData extends LiveData<List<Event>> implements EventLis
         this.collectionRef = collectionRef;
     }
 
+    /**
+     * Constructs a new {@code EventListLiveData} object with the specified collection reference.
+     * @param query Query object for the events to be included in the live data.
+     */
+    public EventListLiveData(Query query) {
+        this.query = query;
+    }
+
     @Override
     protected void onActive() {
         super.onActive();
-        registration = collectionRef.addSnapshotListener(this);
+        if(collectionRef != null) {
+            registration = collectionRef.addSnapshotListener(this);
+        } else if (query != null) {
+            registration = query.addSnapshotListener(this);
+        }
     }
 
     @Override
@@ -60,7 +77,7 @@ public class EventListLiveData extends LiveData<List<Event>> implements EventLis
     @Override
     public void onEvent(@Nullable QuerySnapshot snapshots, @Nullable FirebaseFirestoreException e) {
         if (e != null) {
-            // Handle errors
+            Log.e("Event Lottery", "Snapshot error", e);
             return;
         }
 
