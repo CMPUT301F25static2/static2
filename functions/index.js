@@ -7,7 +7,7 @@ const fcm = admin.messaging();
 
 // function 1: send notification to a single device
 exports.sendNotification = functions.https.onCall((request) => {
-  const {token, title, body, eventId, entrantId, organizerId} = request.data;
+  const {token, title, body, eventId} = request.data;
   if (!token) {
     throw new functions.https.HttpsError(
         "invalid-argument",
@@ -19,8 +19,6 @@ exports.sendNotification = functions.https.onCall((request) => {
       title: title || "",
       body: body || "",
       eventId: eventId || "",
-      entrantId: entrantId || "",
-      organizerId: organizerId || "",
     },
     token: token,
   };
@@ -38,7 +36,7 @@ exports.sendNotification = functions.https.onCall((request) => {
 
 // function 2: send notification to multiple devices
 exports.sendMultipleNotifications = functions.https.onCall((request) => {
-  const {tokens, title, body, eventId, entrantId, organizerId} = request.data;
+  const {tokens, title, body, eventId} = request.data;
   if (!tokens) {
     throw new functions.https.HttpsError(
         "invalid-argument",
@@ -50,10 +48,11 @@ exports.sendMultipleNotifications = functions.https.onCall((request) => {
       title: title || "",
       body: body || "",
       eventId: eventId || "",
-      entrantId: entrantId || "",
-      organizerId: organizerId || "",
     },
     tokens: tokens,
+    android: {
+      priority: "high",
+    },
   };
 
   fcm.sendEachForMulticast(message)
