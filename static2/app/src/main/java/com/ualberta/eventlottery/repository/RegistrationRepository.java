@@ -10,9 +10,12 @@ import java.util.List;
 public class RegistrationRepository {
     private static RegistrationRepository instance;
     private List<Registration> registrationCache;
+    private EntrantRepository entrantRepository;
+
 
     private RegistrationRepository() {
         registrationCache = new ArrayList<>();
+        entrantRepository = EntrantRepository.getInstance();
         initializeSampleData();
     }
 
@@ -27,80 +30,80 @@ public class RegistrationRepository {
         // Sample registrations for testing
         Registration reg1 = new Registration("reg1", "1", "entrant1");
         reg1.setStatus(EntrantRegistrationStatus.CONFIRMED);
-        reg1.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 3)); // 3天前
+        reg1.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 3));
 
 
         Registration reg2 = new Registration("reg2", "1", "entrant2");
         reg2.setStatus(EntrantRegistrationStatus.CONFIRMED);
-        reg2.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 2)); // 2天前
+        reg2.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 2));
 
         Registration reg3 = new Registration("reg3", "1", "entrant3");
         reg3.setStatus(EntrantRegistrationStatus.CONFIRMED);
-        reg3.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 1)); // 1天前
+        reg3.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 1));
 
         Registration reg4 = new Registration("reg4", "1", "entrant4");
         reg4.setStatus(EntrantRegistrationStatus.WAITING);
-        reg4.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 4)); // 4天前
+        reg4.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 4));
 
         Registration reg5 = new Registration("reg5", "1", "entrant5");
         reg5.setStatus(EntrantRegistrationStatus.WAITING);
-        reg5.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 3)); // 3天前
+        reg5.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 3));
 
         Registration reg6 = new Registration("reg6", "1", "entrant6");
         reg6.setStatus(EntrantRegistrationStatus.WAITING);
-        reg6.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 2)); // 2天前
+        reg6.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 2));
 
         Registration reg7 = new Registration("reg7", "1", "entrant7");
         reg7.setStatus(EntrantRegistrationStatus.SELECTED);
-        reg7.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 5)); // 5天前
+        reg7.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 5));
 
         Registration reg8 = new Registration("reg8", "1", "entrant8");
         reg8.setStatus(EntrantRegistrationStatus.SELECTED);
-        reg8.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 4)); // 4天前
+        reg8.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 4));
 
         Registration reg9 = new Registration("reg9", "1", "entrant9");
         reg9.setStatus(EntrantRegistrationStatus.DECLINED);
-        reg9.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 6)); // 6天前
-        reg9.setRespondedAt(new Date(System.currentTimeMillis() - 86400000 * 5)); // 5天前
+        reg9.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 6));
+        reg9.setRespondedAt(new Date(System.currentTimeMillis() - 86400000 * 5));
 
         Registration reg10 = new Registration("reg10", "1", "entrant10");
         reg10.setStatus(EntrantRegistrationStatus.DECLINED);
-        reg10.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 5)); // 5天前
-        reg10.setRespondedAt(new Date(System.currentTimeMillis() - 86400000 * 4)); // 4天前
+        reg10.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 5));
+        reg10.setRespondedAt(new Date(System.currentTimeMillis() - 86400000 * 4));
 
         Registration reg11 = new Registration("reg11", "2", "entrant1");
         reg11.setStatus(EntrantRegistrationStatus.CONFIRMED);
-        reg11.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 7)); // 7天前
+        reg11.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 7));
 
         Registration reg12 = new Registration("reg12", "2", "entrant2");
         reg12.setStatus(EntrantRegistrationStatus.CONFIRMED);
-        reg12.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 6)); // 6天前
+        reg12.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 6));
 
         Registration reg13 = new Registration("reg13", "2", "entrant3");
         reg13.setStatus(EntrantRegistrationStatus.WAITING);
-        reg13.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 5)); // 5天前
+        reg13.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 5));
 
         Registration reg14 = new Registration("reg14", "2", "entrant4");
         reg14.setStatus(EntrantRegistrationStatus.WAITING);
-        reg14.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 4)); // 4天前
+        reg14.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 4));
 
         Registration reg15 = new Registration("reg15", "2", "entrant5");
         reg15.setStatus(EntrantRegistrationStatus.SELECTED);
-        reg15.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 3)); // 3天前
+        reg15.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 3));
 
         Registration reg16 = new Registration("reg16", "3", "entrant6");
         reg16.setStatus(EntrantRegistrationStatus.CONFIRMED);
-        reg16.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 10)); // 10天前
+        reg16.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 10));
 
         Registration reg17 = new Registration("reg17", "3", "entrant7");
         reg17.setStatus(EntrantRegistrationStatus.CONFIRMED);
-        reg17.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 9)); // 9天前
+        reg17.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 9));
 
         Registration reg18 = new Registration("reg18", "3", "entrant8");
         reg18.setStatus(EntrantRegistrationStatus.CONFIRMED);
-        reg18.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 8)); // 8天前
+        reg18.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 8));
 
-        // 添加所有注册记录到缓存
+
         registrationCache.add(reg1);
         registrationCache.add(reg2);
         registrationCache.add(reg3);
@@ -169,6 +172,35 @@ public class RegistrationRepository {
         return result;
     }
 
+    public List<Registration> getRegistrationsByEntrantAndStatus(String entrantId, EntrantRegistrationStatus status) {
+        List<Registration> registrations = new ArrayList<>();
+        for (Registration reg : registrationCache) {
+            if (reg.getEntrantId().equals(entrantId) && reg.getStatus() == status) {
+                registrations.add(reg);
+            }
+        }
+        return registrations;
+    }
+
+    public List<Registration> getRegistrationsByEventAndStatus(String eventId, EntrantRegistrationStatus status) {
+        List<Registration> registrations = new ArrayList<>();
+        for (Registration reg : registrationCache) {
+
+            if (reg.getEventId().equals(eventId) && reg.getStatus() == status) {
+                registrations.add(reg);
+            }
+        }
+        return registrations;
+
+    }
+
+
+
+
+
+    public List<Registration> getAllRegistrations() {
+        return registrationCache;
+    }
     public void addRegistration(Registration registration) {
         registrationCache.add(registration);
     }
@@ -202,4 +234,5 @@ public class RegistrationRepository {
         }
         return count;
     }
+
 }
