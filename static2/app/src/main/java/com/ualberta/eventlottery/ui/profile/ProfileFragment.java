@@ -17,6 +17,8 @@ public class ProfileFragment extends Fragment {
 
     private FragmentProfileBinding binding;
     private ProfileViewModel profileViewModel;
+    private String userId;
+    private String isAdmin;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -25,11 +27,18 @@ public class ProfileFragment extends Fragment {
         binding = FragmentProfileBinding.inflate(inflater, container, false);
         profileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
 
+        if (getArguments() != null) {
+            isAdmin = getArguments().getString("isAdmin");
+            if (isAdmin != null && isAdmin.equals("true")) {
+                userId = getArguments().getString("userId");
+                Toast.makeText(getContext(), "Admin access granted", Toast.LENGTH_SHORT).show();
+            }
+        }
+        else{
+            userId = UserManager.getCurrentUserId();
+        }
 
-        String userId = UserManager.getCurrentUserId();
         profileViewModel.loadProfileFromFirebase(userId);
-
-
         profileViewModel.getName().observe(getViewLifecycleOwner(), name -> {
             binding.textName.setText(name);
             binding.editName.setText(name);
