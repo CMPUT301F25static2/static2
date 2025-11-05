@@ -1,8 +1,10 @@
 package com.ualberta.eventlottery.repository;
 
+import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.lifecycle.LiveData;
 
 import com.google.firebase.firestore.CollectionReference;
@@ -14,6 +16,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.ualberta.eventlottery.model.Event;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,6 +77,7 @@ public class EventListLiveData extends LiveData<List<Event>> implements EventLis
      * @param snapshots The value of the event. {@code null} if there was an error.
      * @param e The error if there was error. {@code null} otherwise.
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onEvent(@Nullable QuerySnapshot snapshots, @Nullable FirebaseFirestoreException e) {
         if (e != null) {
@@ -86,6 +90,13 @@ public class EventListLiveData extends LiveData<List<Event>> implements EventLis
             for (DocumentSnapshot doc : snapshots.getDocuments()) {
                 Event model = doc.toObject(Event.class);
                 if (model != null) {
+                    // The dailyStartTime cannot be converted by doc.toObject() because of its type.
+                    // Using sessionStartTime as a string for demo purposes
+                    // Needs to be resolved
+                    String sessionStartTime = doc.getString("sessionStartTime");
+                    if (sessionStartTime != null) {
+                        model.setDailyStartTime(LocalTime.parse(sessionStartTime));
+                    }
                     data.add(model);
                 }
             }
