@@ -1,67 +1,75 @@
-/*package com.ualberta.eventlottery.ui.adminUsers.
+package com.ualberta.eventlottery.ui.adminUsers;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.annotation.Nullable;
 
-import com.ualberta.eventlottery.admin.User;
-import com.ualberta.eventlottery.event.Event;
-import com.ualberta.eventlottery.ui.home.entrant.EventAdapter;
+import com.ualberta.eventlottery.model.User;
 import com.ualberta.static2.R;
 
-import java.util.List;
+import java.util.ArrayList;
 
-public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
-    private List<User> userList;
-/*
-    public UserAdapter(List<Event> userList){
-        this.userList = userList;
+public class UserAdapter extends BaseAdapter {
+    private ArrayList<User> users;
+    private Context context;
+    private LayoutInflater inflater;
+    private String searchText;
+
+
+    public UserAdapter(Context context, ArrayList<User> users) {
+        this.users = users;
+        this.context = context;
+        this.inflater = LayoutInflater.from(context);
     }
 
-    public void updateEvents(List<Event> newEvents){
-        this.userList = newEvents;
-        notifyDataSetChanged();
+    @Override
+    public int getCount() {
+        return users.size();
     }
+
+    @Override
+    public Object getItem(int position) {
+        return users.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.event_item, parent, false);
-        return new ViewHolder(view);
-    }
+    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+        ViewHolder holder;
 
+        if (convertView == null) {
+            convertView = inflater.inflate(R.layout.admin_user_item, parent, false);
 
-    @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Event event = userList.get(position);
+            holder = new ViewHolder();
+            holder.userName = convertView.findViewById(R.id.text_admin_user_name);
+            holder.userID = convertView.findViewById(R.id.text_admin_user_id);
 
-        holder.eventTitle.setText(event.getTitle());
-        holder.eventDetails.setText(event.getEventDetails());
-        holder.timeFrame.setText(event.getTimeFrame());
-        holder.eventStaus.setText(event.getEventStatus());
-    }
-
-    @Override
-    public int getItemCount(){
-        return userList.size();
-    }
-
-    public static class ViewHolder extends RecyclerView.ViewHolder{
-        TextView eventTitle, eventDetails, timeFrame, eventStaus;
-        public ViewHolder(@NonNull View itemView){
-            super(itemView);
-            eventTitle = itemView.findViewById(R.id.eventTitle);
-            eventDetails=  itemView.findViewById(R.id.eventDetails);
-            timeFrame = itemView.findViewById(R.id.eventTimeFrame);
-            eventStaus = itemView.findViewById(R.id.eventStatus);
+            convertView.setTag(holder); // cache holder in the view
+        } else {
+            holder = (ViewHolder) convertView.getTag(); // reuse cached holder
         }
+
+        User user = users.get(position);
+        holder.userName.setText(user.getName());
+        holder.userID.setText(user.getUserId());
+
+        return convertView;
     }
 
 
+    static class ViewHolder {
+        TextView userName;
+        TextView userID;
+    }
 }
-
- */
