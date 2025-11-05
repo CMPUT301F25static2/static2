@@ -1,5 +1,9 @@
 package com.ualberta.eventlottery.model;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -84,7 +88,19 @@ public class Event {
     public void setPrice(double price) { this.price = price; }
 
     public LocalTime getDailyStartTime() { return dailyStartTime; }
-    public void setDailyStartTime(LocalTime dailyStartTime) { this.dailyStartTime = dailyStartTime; }
+
+    // setDailyStartTime needs to take a string to allow reading from the database
+    // This is being replaced by the other setDailyStartTime that accepts a string param
+    // public void setDailyStartTime(LocalTime dailyStartTime) { this.dailyStartTime = dailyStartTime; }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void setDailyStartTime(String dailyStartTime) {
+        if (dailyStartTime != null) {
+            this.dailyStartTime = LocalTime.parse(dailyStartTime);
+        } else {
+            this.dailyStartTime = null;
+        }
+    }
 
     public int getSessionDuration() { return sessionDuration; }
     public void setSessionDuration(int sessionDuration) { this.sessionDuration = sessionDuration; }
