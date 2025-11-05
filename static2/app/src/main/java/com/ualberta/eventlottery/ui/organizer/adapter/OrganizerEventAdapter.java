@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
@@ -24,6 +25,16 @@ public class OrganizerEventAdapter extends BaseAdapter {
     private List<Event> eventList;
     private LayoutInflater inflater;
     private SimpleDateFormat dateFormat;
+    private OnDrawButtonClickListener onDrawButtonClickListener;
+
+    public interface OnDrawButtonClickListener {
+        void onDrawButtonClick(Event event);
+    }
+
+    public void setOnDrawButtonClickListener(OnDrawButtonClickListener listener) {
+        this.onDrawButtonClickListener = listener;
+    }
+
 
     public OrganizerEventAdapter(Context context, List<Event> eventList) {
         this.context = context;
@@ -58,6 +69,7 @@ public class OrganizerEventAdapter extends BaseAdapter {
             holder.tv_event_end_time = convertView.findViewById(R.id.tv_event_end_time);
             holder.tv_event_status = convertView.findViewById(R.id.tv_event_status);
             holder.tv_event_registry_status = convertView.findViewById(R.id.tv_event_registry_status);
+            holder.btn_draw = convertView.findViewById(R.id.btn_draw);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -137,6 +149,15 @@ public class OrganizerEventAdapter extends BaseAdapter {
             holder.tv_event_end_time.setText("End: TBD");
         }
 
+        // set up draw button event
+        if (holder.btn_draw != null) {
+            holder.btn_draw.setOnClickListener(v -> {
+                if (onDrawButtonClickListener != null) {
+                    onDrawButtonClickListener.onDrawButtonClick(event);
+                }
+            });
+        }
+
 
         return convertView;
     }
@@ -147,6 +168,7 @@ public class OrganizerEventAdapter extends BaseAdapter {
         TextView tv_event_end_time;
         TextView tv_event_status;
         TextView tv_event_registry_status;
+        LinearLayout btn_draw;
 
 
     }

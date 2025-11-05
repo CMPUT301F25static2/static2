@@ -166,13 +166,6 @@ public class EntrantsFragment extends Fragment {
         EntrantAdapter adapter = new EntrantAdapter(requireContext(), entrants, eventId);
         binding.lvEventEntrantList.setAdapter(adapter);
 
-//        binding.lvEventEntrantList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Entrant selectedEntrant = entrants.get(position);
-//                onEntrantSelected(selectedEntrant);
-//            }
-//        });
         adapter.setOnItemClickListener(entrant -> onEntrantSelected(entrant));
     }
 
