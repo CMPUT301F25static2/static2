@@ -114,19 +114,7 @@ public class MainActivity extends AppCompatActivity {
                         });
             }
         });
-        /*
-        findViewById(R.id.btn_notification).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                List<String> entrants = new ArrayList<>();
-                entrants.add("Z1F5ZglK8zUmygwpZQ4UWUi6L3Q2");
-                NotificationController notificationController = new NotificationController(MainActivity.this);
-                notificationController.sendNotification("Test", "Body", "s5Zl7eiTfGqXrw9HQtHu", entrants);
 
-            }
-        });
-        
-         */
         findViewById(R.id.btn_admin).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

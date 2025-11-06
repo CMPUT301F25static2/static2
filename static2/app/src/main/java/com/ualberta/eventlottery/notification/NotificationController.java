@@ -56,7 +56,7 @@ public class NotificationController {
         );
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 // replace with actual icon
-                .setSmallIcon(R.drawable.ic_add)
+                .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle(title)
                 .setContentText(body)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
@@ -76,6 +76,13 @@ public class NotificationController {
         }
         NotificationManagerCompat.from(context).notify(new Random().nextInt(), builder.build());
     }
+    /**
+     * Sends a notification to a list of recipients using Firebase Cloud Messaging.
+     * @param title           the title of the notification
+     * @param body            the body text of the notification
+     * @param eventId         the event ID associated with this notification
+     * @param recipientIdList a list of user IDs to receive the notification
+     */
     public void sendNotification(String title, String body, String eventId, List<String> recipientIdList) {
         FirebaseFunctions functions = FirebaseFunctions.getInstance();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
