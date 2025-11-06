@@ -16,7 +16,7 @@
         android:layout_weight ="1" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation"
+        android:id="@+id/nav_host_fragment_activity_admin_main"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"

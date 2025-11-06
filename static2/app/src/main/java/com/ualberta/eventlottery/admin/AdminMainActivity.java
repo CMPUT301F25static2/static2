@@ -13,22 +13,23 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.ualberta.eventlottery.ui.adminHome.AdminHomeFragment;
 import com.ualberta.static2.R;
+import com.ualberta.static2.databinding.ActivityAdminMainBinding;
 import com.ualberta.static2.databinding.ActivityEventLotteryMainBinding;
 
 
 public class AdminMainActivity extends AppCompatActivity{
 
-    private ActivityEventLotteryMainBinding binding;
+    private ActivityAdminMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
-        //binding = ActivityEventLotteryMainBinding.inflate(getLayoutInflater());
-        //setContentView(binding.getRoot());
+ //       binding = ActivityAdminMainBinding.inflate(getLayoutInflater());
+//        setContentView(binding.getRoot());
 
-        //NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_event_lottery_main);
-        //NavigationUI.setupWithNavController(binding.navView, navController);
+ //       NavController navController = Navigation.findNavController(this, R.id.fragment_container);
+//        NavigationUI.setupWithNavController(binding.navAdmin, navController);
 
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_admin_main);
@@ -43,6 +44,7 @@ public class AdminMainActivity extends AppCompatActivity{
                     .replace(R.id.fragment_container, new AdminHomeFragment())
                     .commit();
         }
+
     }
 
 }
