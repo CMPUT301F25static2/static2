@@ -7,21 +7,30 @@ import java.util.List;
 public class Organizer extends User {
     private List<String> createdEventIds;
     private List<String> joinedEventIds;
+    private String organizationName;
+    private String contactInfo;
 
-
-    public Organizer(String userId, String name, String email) {
-        super(userId, name, email);
-
+    public Organizer(String userId, String name, String email, String organizationName,String fcmToken) {
+        super(userId, name, email,fcmToken);
+        this.organizationName = organizationName;
         this.createdEventIds = new ArrayList<>();
         this.joinedEventIds = new ArrayList<>();
-
+        this.contactInfo = "";
     }
 
     // Getters
     public List<String> getCreatedEventIds() { return new ArrayList<>(createdEventIds); }
     public List<String> getJoinedEventIds() { return new ArrayList<>(joinedEventIds); }
+    public String getOrganizationName() { return organizationName; }
+    public String getContactInfo() { return contactInfo; }
 
-
+    // Setters
+    public void setOrganizationName(String organizationName) {
+        this.organizationName = organizationName;
+    }
+    public void setContactInfo(String contactInfo) {
+        this.contactInfo = contactInfo;
+    }
 
     /**
      * Adds an event to the organizer's created events list
@@ -86,7 +95,8 @@ public class Organizer extends User {
      * @param price Event price
      * @return The created Event object (simplified - would need Event class)
      */
-    public Event createEvent(String title, String description, Date startTime, Date endTime, Date registrationStart, Date registrationEnd, int maxAttendees, double price) {
+    public Event createEvent(String title, String description, Date startTime, Date endTime,
+                             Date registrationStart, Date registrationEnd, int maxAttendees, double price) {
         // This would typically call an EventService to create the event
         // For now, returns a simplified Event object
         Event newEvent = new Event();
