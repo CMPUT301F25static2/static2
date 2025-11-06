@@ -114,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
                         });
             }
         });
+        /*
         findViewById(R.id.btn_notification).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -124,6 +125,8 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+        
+         */
         findViewById(R.id.btn_admin).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
