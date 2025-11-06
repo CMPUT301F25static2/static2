@@ -291,7 +291,7 @@ public class Event {
     }
 
     public int getWaitListCount() {
-        return waitListUserIds.size();
+        return waitListUserIds != null ? waitListUserIds.size() : 0;
     }
 
     public int getConfirmedCount() {
