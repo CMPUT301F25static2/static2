@@ -245,8 +245,8 @@ public class OrganizerEventCreateFragment extends Fragment {
             // set times
             newEvent.setRegistrationStart(registrationStartCalendar.getTime());
             newEvent.setRegistrationEnd(registrationEndCalendar.getTime());
-            newEvent.setEventStart(eventStartCalendar.getTime());
-            newEvent.setEventEnd(eventEndCalendar.getTime());
+            newEvent.setStartTime(eventStartCalendar.getTime());
+            newEvent.setEndTime(eventEndCalendar.getTime());
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 newEvent.setDailyStartTime(

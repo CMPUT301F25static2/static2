@@ -1,6 +1,7 @@
 package com.ualberta.eventlottery.repository;
 
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
@@ -76,8 +77,8 @@ public class EventRepository {
         event.setOrganizerId(document.getString("organizerId"));
 
         // Date fields
-        event.setEventStart(document.getDate("eventStart"));
-        event.setEventEnd(document.getDate("eventEnd"));
+        event.setStartTime(document.getDate("eventStart"));
+        event.setEndTime(document.getDate("eventEnd"));
         event.setRegistrationStart(document.getDate("registrationStart"));
         event.setRegistrationEnd(document.getDate("registrationEnd"));
 
@@ -123,6 +124,74 @@ public class EventRepository {
         return event;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static Event fromDocument(DocumentSnapshot document) {
+        if (document == null || !document.exists()) {
+            return null;
+        }
+
+        Event event = new Event();
+        try {
+            event.setId(document.getId());
+            event.setOrganizerId(document.getString("organizerId"));
+            event.setTitle(document.getString("title"));
+            event.setDescription(document.getString("description"));
+            event.setCategory(document.getString("category"));
+            Double price = document.getDouble("price");
+            if (price != null) {
+                event.setPrice(price);
+            }
+            Long sessionDuration = document.getLong("sessionDuration");
+            if (sessionDuration != null) {
+                event.setSessionDuration(sessionDuration.intValue());
+            }
+            event.setLocation(document.getString("location"));
+            event.setLocationUrl(document.getString("locationUrl"));
+            event.setPosterUrl(document.getString("posterUrl"));
+            event.setQrCodeUrl(document.getString("qrCodeUrl"));
+
+            event.setCreatedAt(document.getDate("createdAt"));
+
+            String eventStatus = document.getString("eventStatus");
+            if (eventStatus != null) {
+                event.setEventStatus(EventStatus.valueOf(eventStatus));
+            }
+            String eventRegistrationStatus = document.getString("registrationStatus");
+            if (eventRegistrationStatus != null) {
+                event.setRegistrationStatus(EventRegistrationStatus.valueOf(eventRegistrationStatus));
+            }
+
+            event.setRegistrationStart(document.getDate("registrationStart"));
+            event.setRegistrationEnd(document.getDate("registrationEnd"));
+
+            event.setStartTime(document.getDate("startTime"));
+            event.setEndTime(document.getDate("endTime"));
+            String dailyStartTimeStr = document.getString("dailyStartTime");
+            if (dailyStartTimeStr != null) {
+                LocalTime dailyStartTime = LocalTime.parse(dailyStartTimeStr);
+                event.setDailyStartTime(dailyStartTime);
+            }
+
+            Long maxAttendees = document.getLong("maxAttendees");
+            if (maxAttendees != null) {
+                event.setMaxAttendees(maxAttendees.intValue());
+            }
+            Long maxWaitListSize = document.getLong("maxWaitListSize");
+            if (maxWaitListSize != null) {
+                event.setMaxWaitListSize(maxWaitListSize.intValue());
+            }
+            List<String> waitListUserIds = (List<String>) document.get("waitListUserIds");
+            event.setWaitListUserIds(waitListUserIds);
+            if (waitListUserIds != null) {
+                event.setCurrentWaitListSize(waitListUserIds.size());
+            }
+        } catch (Exception e) {
+            Log.e("EventLottery", "failed to convert document to event", e);
+        }
+
+        return event;
+    }
+
     /**
      * Converts Event object to Firestore data map
      */
@@ -134,8 +203,8 @@ public class EventRepository {
         eventMap.put("maxAttendees", event.getMaxAttendees());
         eventMap.put("category", event.getCategory());
         eventMap.put("organizerId", event.getOrganizerId());
-        eventMap.put("eventStart", event.getEventStart());
-        eventMap.put("eventEnd", event.getEventEnd());
+        eventMap.put("eventStart", event.getStartTime());
+        eventMap.put("eventEnd", event.getEndTime());
         eventMap.put("registrationStart", event.getRegistrationStart());
         eventMap.put("registrationEnd", event.getRegistrationEnd());
         eventMap.put("dailyStartTime", event.getDailyStartTime() != null ? event.getDailyStartTime().toString() : null);
@@ -160,9 +229,9 @@ public class EventRepository {
         Date now = new Date();
 
         // Update event status based on current time
-        if (event.getEventStart() != null && event.getEventEnd() != null) {
-            Date start = event.getEventStart();
-            Date end = event.getEventEnd();
+        if (event.getStartTime() != null && event.getEndTime() != null) {
+            Date start = event.getStartTime();
+            Date end = event.getEndTime();
 
             if (now.before(start)) {
                 event.setEventStatus(EventStatus.UPCOMING);

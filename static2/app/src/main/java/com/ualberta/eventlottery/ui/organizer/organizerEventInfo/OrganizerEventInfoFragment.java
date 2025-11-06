@@ -135,22 +135,15 @@ public class OrganizerEventInfoFragment extends Fragment {
             binding.tvEventUpdateStatus.setText("Not set");
         }
 
-        if (currentEvent.getEventEnd() != null) {
-            String formattedTime = dateFormat.format(currentEvent.getEventEnd());
+        if (currentEvent.getEndTime() != null) {
+            String formattedTime = dateFormat.format(currentEvent.getEndTime());
             binding.tvEventUpdateEndTime.setText(formattedTime);
         } else {
             binding.tvEventUpdateEndTime.setText("TBD");
         }
 
-        //event end time
-        if (currentEvent.getEventEnd() != null) {
-            String formattedTime = dateFormat.format(currentEvent.getEventEnd());
-            binding.tvEventUpdateEndTime.setText(formattedTime);
-        } else {
-            binding.tvEventUpdateEndTime.setText("TBD");
-        }
 
-        //event end time
+        //registration end time
         if (currentEvent.getRegistrationEnd() != null) {
             String formattedTime = dateFormat.format(currentEvent.getRegistrationEnd());
             binding.tvEventUpdateRegistryEndTime.setText(formattedTime);
@@ -204,7 +197,7 @@ public class OrganizerEventInfoFragment extends Fragment {
         });
 
         binding.btnEventUpdateEndTime.setOnClickListener(v -> {
-            showDateTimePicker("eventEndTime", currentEvent.getEventEnd());
+            showDateTimePicker("eventEndTime", currentEvent.getEndTime());
         });
 
         binding.btnEventUpdateRegistryEndTime.setOnClickListener(v -> {
@@ -303,7 +296,7 @@ public class OrganizerEventInfoFragment extends Fragment {
                 break;
             case "eventEndTime":
                 if (newValue instanceof Date) {
-                    currentEvent.setEventEnd((Date) newValue);
+                    currentEvent.setEndTime((Date) newValue);
                 }
                 break;
             case "registryEndTime":

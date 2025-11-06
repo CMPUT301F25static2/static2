@@ -101,9 +101,9 @@ public class OrganizerEventDrawFragment extends Fragment {
         binding.tvEventTitle.setText(currentEvent.getTitle());
         binding.tvEventCapacity.setText("Capacity: " + currentEvent.getMaxAttendees());
 
-        if (currentEvent.getEventStart() != null && currentEvent.getEventEnd() != null ) {
-            String formattedStart = dateFormat.format(currentEvent.getEventEnd());
-            String formattedEnd = dateFormat.format(currentEvent.getEventStart());
+        if (currentEvent.getStartTime() != null && currentEvent.getEndTime() != null ) {
+            String formattedStart = dateFormat.format(currentEvent.getEndTime());
+            String formattedEnd = dateFormat.format(currentEvent.getStartTime());
 
             binding.tvRegistrationTime.setText(formattedStart + "  -  " + formattedEnd);
 
