@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +22,6 @@ import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 public class OrganizerEventDrawFragment extends Fragment {
 
@@ -90,9 +88,9 @@ public class OrganizerEventDrawFragment extends Fragment {
         binding.tvEventCapacity.setText("Capacity: " + currentEvent.getMaxAttendees());
 
 
-        if (currentEvent.getStartTime() != null && currentEvent.getEndTime() != null ) {
-            String formattedStart = dateFormat.format(currentEvent.getEndTime());
-            String formattedEnd = dateFormat.format(currentEvent.getStartTime());
+        if (currentEvent.getEventStart() != null && currentEvent.getEventEnd() != null ) {
+            String formattedStart = dateFormat.format(currentEvent.getEventEnd());
+            String formattedEnd = dateFormat.format(currentEvent.getEventStart());
 
             binding.tvRegistrationTime.setText(formattedStart + "  -  " + formattedEnd);
 

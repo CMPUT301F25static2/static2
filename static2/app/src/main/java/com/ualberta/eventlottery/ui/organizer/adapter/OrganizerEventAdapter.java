@@ -142,8 +142,8 @@ public class OrganizerEventAdapter extends BaseAdapter {
         holder.tv_event_entrants_number.setText(entrantsNumber);
 
         // end time
-        if (event.getEndTime() != null) {
-            String formattedTime = "End: " + dateFormat.format(event.getEndTime());
+        if (event.getEventEnd() != null) {
+            String formattedTime = "End: " + dateFormat.format(event.getEventEnd());
             holder.tv_event_end_time.setText(formattedTime);
         } else {
             holder.tv_event_end_time.setText("End: TBD");

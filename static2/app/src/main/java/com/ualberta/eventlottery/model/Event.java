@@ -3,7 +3,6 @@ package com.ualberta.eventlottery.model;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.time.LocalTime;
 
 public class Event {
     private String id;
@@ -12,11 +11,15 @@ public class Event {
     private String description;
     private String category;
     private double price;
-    private LocalTime dailyStartTime;
+    private Date dailyStartTime;
+    private Date dailyEndTime;
+
+ 
+
     private int sessionDuration;
     private Date createdAt;
-    private Date startTime;
-    private Date endTime;
+    private Date eventStart;
+    private Date eventEnd;
     private Date registrationStart;
     private Date registrationEnd;
     private String location;
@@ -83,8 +86,14 @@ public class Event {
     public double getPrice() { return price; }
     public void setPrice(double price) { this.price = price; }
 
-    public LocalTime getDailyStartTime() { return dailyStartTime; }
-    public void setDailyStartTime(LocalTime dailyStartTime) { this.dailyStartTime = dailyStartTime; }
+    public Date getDailyStartTime() { return dailyStartTime; }
+    public void setDailyStartTime(Date dailyStartTime) { this.dailyStartTime = dailyStartTime; }
+
+    public Date getDailyEndTime() {  return dailyEndTime; }
+    
+
+    public void setDailyEndTime(Date dailyEndTime) {  this.dailyEndTime = dailyEndTime; }
+       
 
     public int getSessionDuration() { return sessionDuration; }
     public void setSessionDuration(int sessionDuration) { this.sessionDuration = sessionDuration; }
@@ -92,11 +101,11 @@ public class Event {
     public Date getCreatedAt() { return createdAt; }
     public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
 
-    public Date getStartTime() { return startTime; }
-    public void setStartTime(Date startTime) { this.startTime = startTime; }
+    public Date getEventStart() { return eventStart; }
+    public void setEventStart(Date eventStart) { this.eventStart = eventStart; }
 
-    public Date getEndTime() { return endTime; }
-    public void setEndTime(Date endTime) { this.endTime = endTime; }
+    public Date getEventEnd() { return eventEnd; }
+    public void setEventEnd(Date eventEnd) { this.eventEnd = eventEnd; }
 
     public Date getRegistrationStart() { return registrationStart; }
     public void setRegistrationStart(Date registrationStart) { this.registrationStart = registrationStart; }
