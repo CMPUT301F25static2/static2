@@ -22,21 +22,21 @@ public class EntrantRepository {
     }
 
     private void initializeSampleData() {
-        Entrant entrant1 = new Entrant("entrant1", "John Doe", "john.doe@ualberta.ca", "780-111-1111");
-        Entrant entrant2 = new Entrant("entrant2", "Jane Smith", "jane.smith@ualberta.ca", "780-111-1112");
-        Entrant entrant3 = new Entrant("entrant3", "Bob Johnson", "bob.johnson@ualberta.ca", "780-111-1113");
-        Entrant entrant4 = new Entrant("entrant4", "Alice Brown", "alice.brown@ualberta.ca", "780-111-1114");
-        Entrant entrant5 = new Entrant("entrant5", "Charlie Wilson", "charlie.wilson@ualberta.ca", "780-111-1115");
-        Entrant entrant6 = new Entrant("entrant6", "Diana Lee", "diana.lee@ualberta.ca", "780-111-1116");
-        Entrant entrant7 = new Entrant("entrant7", "Edward Zhang", "edward.zhang@ualberta.ca", "780-111-1117");
-        Entrant entrant8 = new Entrant("entrant8", "Fiona Chen", "fiona.chen@ualberta.ca", "780-111-1118");
-        Entrant entrant9 = new Entrant("entrant9", "George Kumar", "george.kumar@ualberta.ca", "780-111-1119");
-        Entrant entrant10 = new Entrant("entrant10", "Helen Park", "helen.park@ualberta.ca", "780-111-1120");
-        Entrant entrant11 = new Entrant("entrant11", "Ivan Rodriguez", "ivan.rodriguez@ualberta.ca", "780-111-1121");
-        Entrant entrant12 = new Entrant("entrant12", "Julia Kim", "julia.kim@ualberta.ca", "780-111-1122");
-        Entrant entrant13 = new Entrant("entrant13", "Kevin Wang", "kevin.wang@ualberta.ca", "780-111-1123");
-        Entrant entrant14 = new Entrant("entrant14", "Lisa Taylor", "lisa.taylor@ualberta.ca", "780-111-1124");
-        Entrant entrant15 = new Entrant("entrant15", "Mike Davis", "mike.davis@ualberta.ca", "780-111-1125");
+        Entrant entrant1 = new Entrant("entrant1", "John Doe", "john.doe@ualberta.ca", "780-111-1111","test");
+        Entrant entrant2 = new Entrant("entrant2", "Jane Smith", "jane.smith@ualberta.ca", "780-111-1112","test");
+        Entrant entrant3 = new Entrant("entrant3", "Bob Johnson", "bob.johnson@ualberta.ca", "780-111-1113","test");
+        Entrant entrant4 = new Entrant("entrant4", "Alice Brown", "alice.brown@ualberta.ca", "780-111-1114","test");
+        Entrant entrant5 = new Entrant("entrant5", "Charlie Wilson", "charlie.wilson@ualberta.ca", "780-111-1115","test");
+        Entrant entrant6 = new Entrant("entrant6", "Diana Lee", "diana.lee@ualberta.ca", "780-111-1116","test");
+        Entrant entrant7 = new Entrant("entrant7", "Edward Zhang", "edward.zhang@ualberta.ca", "780-111-1117","test");
+        Entrant entrant8 = new Entrant("entrant8", "Fiona Chen", "fiona.chen@ualberta.ca", "780-111-1118","test");
+        Entrant entrant9 = new Entrant("entrant9", "George Kumar", "george.kumar@ualberta.ca", "780-111-1119","test");
+        Entrant entrant10 = new Entrant("entrant10", "Helen Park", "helen.park@ualberta.ca", "780-111-1120","test");
+        Entrant entrant11 = new Entrant("entrant11", "Ivan Rodriguez", "ivan.rodriguez@ualberta.ca", "780-111-1121","test");
+        Entrant entrant12 = new Entrant("entrant12", "Julia Kim", "julia.kim@ualberta.ca", "780-111-1122","test");
+        Entrant entrant13 = new Entrant("entrant13", "Kevin Wang", "kevin.wang@ualberta.ca", "780-111-1123","test");
+        Entrant entrant14 = new Entrant("entrant14", "Lisa Taylor", "lisa.taylor@ualberta.ca", "780-111-1124","test");
+        Entrant entrant15 = new Entrant("entrant15", "Mike Davis", "mike.davis@ualberta.ca", "780-111-1125","test");
 
         entrantCache.add(entrant1);
         entrantCache.add(entrant2);
