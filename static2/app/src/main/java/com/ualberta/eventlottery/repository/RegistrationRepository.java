@@ -88,6 +88,7 @@ public class RegistrationRepository {
      */
     private Map<String, Object> registrationToMap(Registration registration) {
         Map<String, Object> registrationMap = new HashMap<>();
+        registrationMap.put("id", registration.getId());
         registrationMap.put("eventId", registration.getEventId());
         registrationMap.put("entrantId", registration.getEntrantId());
         registrationMap.put("status", registration.getStatus() != null ? registration.getStatus().name() : null);
@@ -243,7 +244,6 @@ public class RegistrationRepository {
      */
     public void addRegistration(Registration registration, OperationCallback callback) {
         if (registration.getId() == null || registration.getId().isEmpty()) {
-            // Create new document with auto-generated ID
             String newId = db.collection(COLLECTION_REGISTRATIONS).document().getId();
             registration.setId(newId);
         }
