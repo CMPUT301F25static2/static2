@@ -21,13 +21,15 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.ualberta.eventlottery.event.Event;
+import com.ualberta.eventlottery.model.Event;
+import com.ualberta.eventlottery.ui.adminEvents.AdminEventFragment;
 import com.ualberta.eventlottery.ui.adminImages.AdminImagesFragment;
 import com.ualberta.eventlottery.ui.adminLogs.AdminLogFragment;
 import com.ualberta.eventlottery.ui.adminUsers.AdminUsersFragment;
 import com.ualberta.eventlottery.ui.home.entrant.EventAdapter;
 import com.ualberta.eventlottery.ui.home.entrant.HomeFragment;
 import com.ualberta.eventlottery.ui.home.entrant.HomeViewModel;
+import com.ualberta.eventlottery.ui.profile.ProfileFragment;
 import com.ualberta.static2.R;
 import com.ualberta.static2.databinding.FragmentAdminHomeBinding;
 import com.ualberta.static2.databinding.FragmentHomeBinding;
@@ -69,7 +71,7 @@ public class AdminHomeFragment extends Fragment {
 
                 Toast.makeText(getContext(), "Clicked: " + browseOptions.getItemAtPosition(i), Toast.LENGTH_SHORT).show();
                 if (browseOptions.getItemAtPosition(i).equals("Browse Events")){
-                    selectedFragment = new HomeFragment();
+                    selectedFragment = new AdminEventFragment();
                 }
                 else if (browseOptions.getItemAtPosition(i).equals("Browse Logs")){
                     selectedFragment = new AdminLogFragment();
@@ -82,6 +84,9 @@ public class AdminHomeFragment extends Fragment {
                 }
 
                 if (selectedFragment != null) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("isAdmin", "true");
+                    selectedFragment.setArguments(bundle);
                     getParentFragmentManager()
                         .beginTransaction()
                         .replace(R.id.fragment_container, selectedFragment)

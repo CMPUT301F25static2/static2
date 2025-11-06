@@ -1,5 +1,8 @@
 package com.ualberta.eventlottery.repository;
 
+import com.google.firebase.Firebase;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.model.EventStatus;
 import com.ualberta.eventlottery.model.EventRegistrationStatus;
@@ -10,10 +13,12 @@ import java.util.List;
 public class EventRepository {
     private static EventRepository instance;
     private List<Event> eventCache;
+    private FirebaseFirestore db;
 
     private EventRepository() {
         eventCache = new ArrayList<>();
         initializeSampleData();
+        db = FirebaseFirestore.getInstance();
     }
 
     public static synchronized EventRepository getInstance() {
@@ -71,6 +76,12 @@ public class EventRepository {
         return new ArrayList<>(eventCache);
     }
 
+    public EventListLiveData getAvailableEvents(){
+        CollectionReference eventsRef = db.collection("events");
+
+        // https://firebase.google.com/docs/firestore/query-data/queries
+        return new EventListLiveData(eventsRef.whereEqualTo("eventRegistrationStatus","REGISTRATION_OPEN"));
+    }
 
     public List<Event> getEventsByOrganizer(String organizerId) {
         List<Event> result = new ArrayList<>();
@@ -80,6 +91,11 @@ public class EventRepository {
             }
         }
         return result;
+
+        // If reading from database use below:
+        // CollectionReference eventsRef = db.collection("events");
+        //
+        // return new EventListLiveData(eventsRef.whereEqualTo("organizerId",organizerId));
     }
 
 
