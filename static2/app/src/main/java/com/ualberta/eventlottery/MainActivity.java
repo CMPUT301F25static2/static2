@@ -11,18 +11,24 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.credentials.exceptions.domerrors.NotFoundError;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.auth.FirebaseAuth;
 import com.ualberta.eventlottery.admin.AdminMainActivity;
 import com.ualberta.eventlottery.entrant.EntrantMainActivity;
+import com.ualberta.eventlottery.notification.NotificationController;
 import com.ualberta.eventlottery.organzier.OrganizerMainActivity;
 import com.ualberta.eventlottery.ui.profile.ProfileViewModel;
 import com.ualberta.eventlottery.ui.profile.ProfileSetupActivity;
 import com.ualberta.eventlottery.utils.UserManager;
 import com.ualberta.static2.R;
 import com.ualberta.static2.databinding.ActivityEventLotteryMainBinding;
+
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         //Only initialize the view after User initialization below
 
+        // TODO: store into user profile
         FirebaseMessaging.getInstance().getToken()
                 .addOnCompleteListener(task -> {
                     if (!task.isSuccessful()) {
@@ -108,7 +115,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         findViewById(R.id.btn_admin).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -120,10 +126,45 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_organizer).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, OrganizerMainActivity.class);
-                startActivity(intent);
+                String userId = UserManager.getCurrentUserId();
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+                db.collection("users")
+                        .document(userId)
+                        .get()
+                        .addOnSuccessListener(documentSnapshot -> {
+                            if (documentSnapshot.exists() && "organizer".equals(documentSnapshot.getString("userType"))) {
+                                // Profile exists and user is organizer, go directly to OrganizerMainActivity
+                                Intent intent = new Intent(MainActivity.this, OrganizerMainActivity.class);
+                                startActivity(intent);
+                            } else {
+                                // Show dialog that organizer profile is required
+                                new androidx.appcompat.app.AlertDialog.Builder(MainActivity.this)
+                                        .setTitle("Organizer Setup Required")
+                                        .setMessage("You need to set up your organizer profile before continuing.")
+                                        .setPositiveButton("Set Up Profile", (dialog, which) -> {
+                                            Intent intent = new Intent(MainActivity.this, ProfileSetupActivity.class);
+                                            startActivity(intent);
+                                        })
+                                        .setNegativeButton("Cancel", null)
+                                        .show();
+                            }
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(MainActivity.this,
+                                    "Error: " + e.getMessage(),
+                                    Toast.LENGTH_SHORT).show();
+                        });
             }
         });
+
+//        findViewById(R.id.btn_organizer).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(MainActivity.this, OrganizerMainActivity.class);
+//                startActivity(intent);
+//            }
+//        });
 
 
     }

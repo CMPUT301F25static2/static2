@@ -38,6 +38,43 @@
         android:inputType="phone"
         android:layout_marginBottom="32dp"/>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select User Type:"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
+
+    <RadioGroup
+        android:id="@+id/radio_user_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="32dp">
+
+        <RadioButton
+            android:id="@+id/radio_entrant"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Entrant"
+            android:checked="true"/>
+
+        <RadioButton
+            android:id="@+id/radio_organizer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Organizer"/>
+
+        <RadioButton
+            android:id="@+id/radio_admin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Admin"/>
+
+    </RadioGroup>
+
+
     <Button
         android:id="@+id/btn_save_profile"
         android:layout_width="match_parent"

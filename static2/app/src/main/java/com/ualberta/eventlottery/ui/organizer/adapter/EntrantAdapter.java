@@ -41,20 +41,27 @@ public class EntrantAdapter extends RecyclerView.Adapter<EntrantAdapter.ViewHold
         Entrant entrant = entrants.get(position);
         holder.tvName.setText(entrant.getName());
 
-        Registration registration = registrationRepository.findRegistrationByEventAndUser(eventId, entrant.getUserId());
-        if (registration != null) {
-            holder.tvStatus.setText(registration.getStatus().toString());
-        } else {
-            holder.tvStatus.setText("Unknown");
-        }
+        registrationRepository.findRegistrationByEventAndUser(eventId, entrant.getUserId(), new RegistrationRepository.RegistrationCallback() {
+            @Override
+            public void onSuccess(Registration registration) {
+                if (registration != null) {
+                    holder.tvStatus.setText(registration.getStatus().toString());
+                } else {
+                    holder.tvStatus.setText("Unknown");
+                }
+                holder.itemView.setOnClickListener(v -> {
+                    if (onItemClickListener != null) {
+                        onItemClickListener.onItemClick(entrant);
+                    }
+                });
+            }
 
+            @Override
+            public void onFailure(Exception e) {
 
-
-        holder.itemView.setOnClickListener(v -> {
-            if (onItemClickListener != null) {
-                onItemClickListener.onItemClick(entrant);
             }
         });
+
     }
 
     @Override

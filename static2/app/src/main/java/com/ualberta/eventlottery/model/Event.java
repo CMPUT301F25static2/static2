@@ -17,6 +17,7 @@ public class Event {
     private String category;
     private double price;
     private LocalTime dailyStartTime;
+    private LocalTime dailyEndTime;
     private int sessionDuration;
     private Date createdAt;
     private Date startTime;
@@ -34,6 +35,8 @@ public class Event {
     private int maxAttendees;
     private int maxWaitListSize;
     private int currentWaitListSize;
+    private int currentAttendees;
+
 
 
     private List<String> registeredUserIds; //All users who registered
@@ -89,7 +92,22 @@ public class Event {
 
     public LocalTime getDailyStartTime() { return dailyStartTime; }
     public void setDailyStartTime(LocalTime dailyStartTime) { this.dailyStartTime = dailyStartTime; }
-    public int getSessionDuration() { return sessionDuration; }
+    public void setDailyStartTime(int hour, int minute) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            this.dailyStartTime = LocalTime.of(hour, minute);
+        }
+    };
+    public LocalTime getDailyEndTime() { return dailyEndTime; }
+
+    public void setDailyEndTime(LocalTime dailyEndTime) { this.dailyEndTime = dailyEndTime; }
+
+    public void setDailyEndTime(int hour, int minute) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            this.dailyEndTime = LocalTime.of(hour, minute);
+        }
+    }
+
+        public int getSessionDuration() { return sessionDuration; }
     public void setSessionDuration(int sessionDuration) { this.sessionDuration = sessionDuration; }
 
     public Date getCreatedAt() { return createdAt; }
@@ -112,6 +130,14 @@ public class Event {
 
     public boolean isLocationRequired() { return locationRequired; }
     public void setLocationRequired(boolean locationRequired) { this.locationRequired = locationRequired; }
+
+    public int getCurrentAttendees() {
+        return currentAttendees;
+    }
+
+    public void setCurrentAttendees(int currentAttendees) {
+        this.currentAttendees = currentAttendees;
+    }
 
     public String getPosterUrl() { return posterUrl; }
     public void setPosterUrl(String posterUrl) { this.posterUrl = posterUrl; }
