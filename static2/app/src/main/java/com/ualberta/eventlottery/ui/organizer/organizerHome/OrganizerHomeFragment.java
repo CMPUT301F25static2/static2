@@ -4,15 +4,17 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
 import com.ualberta.eventlottery.model.Event;
-import com.ualberta.eventlottery.ui.organizer.adapter.OrganizerEventAdapter;
 import com.ualberta.eventlottery.repository.EventRepository;
+import com.ualberta.eventlottery.ui.organizer.adapter.OrganizerEventAdapter;
 import com.ualberta.eventlottery.ui.organizer.organizerEventCreate.OrganizerEventCreateFragment;
 import com.ualberta.eventlottery.ui.organizer.organizerEventDraw.OrganizerEventDrawFragment;
 import com.ualberta.eventlottery.ui.organizer.organizerEventInfo.OrganizerEventInfoFragment;
+import com.ualberta.eventlottery.utils.UserManager;
 import com.ualberta.static2.R;
 import com.ualberta.static2.databinding.FragmentOrganizerHomeBinding;
 
@@ -21,7 +23,8 @@ import java.util.List;
 public class OrganizerHomeFragment extends Fragment {
     private FragmentOrganizerHomeBinding binding;
     private OrganizerEventAdapter adapter;
-    private EventRepository eventRepo;
+    private EventRepository eventRepository;
+    private String organizerId;
 
 
     @Override
@@ -41,7 +44,8 @@ public class OrganizerHomeFragment extends Fragment {
     }
 
     private void initData() {
-        eventRepo = EventRepository.getInstance();
+        eventRepository = EventRepository.getInstance();
+        organizerId = UserManager.getCurrentUserId();
     }
 
     private void initViews() {
@@ -50,7 +54,24 @@ public class OrganizerHomeFragment extends Fragment {
     }
 
     private void setupAdapter() {
-        List<Event> eventList = eventRepo.getAllEvents();
+        binding.lvOrganzierEventList.setVisibility(View.GONE);
+
+        eventRepository.getEventsByOrganizer(organizerId, new EventRepository.EventListCallback() {
+            @Override
+            public void onSuccess(List<Event> events) {
+                binding.lvOrganzierEventList.setVisibility(View.VISIBLE);
+                setupAdapterWithData(events);
+
+            }
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(requireContext(), "Failed to load events", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+    private void setupAdapterWithData(List<Event> eventList) {
         adapter = new OrganizerEventAdapter(requireContext(), eventList);
         binding.lvOrganzierEventList.setAdapter(adapter);
 

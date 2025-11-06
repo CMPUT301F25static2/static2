@@ -55,7 +55,9 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
         }
         holder.eventStatus.setText(event.getRegistrationStatus().toString());
         holder.eventFromTo.setText(getFromToText(event));
-        holder.eventSessionStartTime.setText(getSessionStartTimeText(event));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            holder.eventSessionStartTime.setText(getSessionStartTimeText(event));
+        }
     }
 
     private String getFromToText(Event event) {

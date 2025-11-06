@@ -12,6 +12,8 @@ public class Registration {
     private Date cancelledAt;
 
 
+    public Registration() {}
+
 
     public Registration(String id, String eventId, String entrantId) {
         this.id = id;
@@ -19,6 +21,16 @@ public class Registration {
         this.entrantId = entrantId;
         this.status = EntrantRegistrationStatus.WAITING;
         this.registeredAt = new Date();
+    }
+
+    public Registration(String id, String eventId, String entrantId, EntrantRegistrationStatus status, Date registeredAt, Date respondedAt, Date cancelledAt) {
+        this.id = id;
+        this.eventId = eventId;
+        this.entrantId = entrantId;
+        this.status = status;
+        this.registeredAt = registeredAt;
+        this.respondedAt = respondedAt;
+        this.cancelledAt = cancelledAt;
     }
 
     // Getters and Setters

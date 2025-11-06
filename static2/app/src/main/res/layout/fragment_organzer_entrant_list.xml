@@ -83,7 +83,7 @@
                     android:id="@+id/tv_entrants_waiting_number"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="(148)"
+                    android:text="(2000)"
                     android:textSize="12sp"
                     android:textColor="@drawable/button_text_selector"
                     android:textStyle="bold"/>
@@ -91,7 +91,7 @@
 
             <!--        waiting-->
             <LinearLayout
-                android:id="@+id/btn_entrants_pending"
+                android:id="@+id/btn_entrants_selected"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/button_selector"
@@ -103,7 +103,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Pending"
+                    android:text="Selected"
                     android:textSize="12sp"
                     android:textColor="@drawable/button_text_selector"
                     android:textStyle="bold"/>
@@ -114,10 +114,10 @@
 
                 <!--            number of invitation have sent to entrants-->
                 <TextView
-                    android:id="@+id/tv_entrants_pending_number"
+                    android:id="@+id/tv_entrants_selected_number"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="(2000)"
+                    android:text="(52)"
                     android:textSize="12sp"
                     android:textColor="@drawable/button_text_selector"
                     android:textStyle="bold"/>

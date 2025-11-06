@@ -13,6 +13,9 @@ public class User {
 
     private String fcmToken;
 
+    private String userType;
+
+
 
 
     public User() {
@@ -39,6 +42,19 @@ public class User {
         this.fcmToken = fcmToken;
     }
 
+    public User(String userId, String name, String email, String phone, String fcmToken, String userType, String favRecCenter) {
+        this.userId = userId;
+        this.name = name;
+        this.email = email;
+        this.createdAt = new Date();
+        this.phone = phone;
+        this.fcmToken = fcmToken;
+        this.userType = userType;
+        this.favRecCenter = favRecCenter;
+    }
+
+
+
     public User(String userId, String name, String email, String phone, String favRecCenter, String fcmToken) {
         this.userId = userId;
         this.name = name;
@@ -56,6 +72,18 @@ public class User {
     public String getPhone() { return phone; }
     public Date getCreatedAt() { return createdAt; }
     public String getFavRecCenter() { return favRecCenter; }
+
+    public String getUserType() {
+        return userType;
+    }
+
+    public void setUserType(String userType) {
+        this.userType = userType;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
 
     // Setters
     public void setUserId(String userId){this.userId = userId;}
