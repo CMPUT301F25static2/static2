@@ -1,4 +1,6 @@
 package com.ualberta.eventlottery.ui.organizer.organizerEventInfo;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +19,8 @@ import com.ualberta.eventlottery.ui.organizer.organizerEventShowcase.OrganizerEv
 import com.ualberta.static2.R;
 import com.ualberta.static2.databinding.FragmentOrganizerEventInfoBinding;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 public class OrganizerEventInfoFragment extends Fragment {
@@ -78,7 +82,7 @@ public class OrganizerEventInfoFragment extends Fragment {
         }
 
         binding.tvEventTitle.setText(currentEvent.getTitle());
-        binding.tvEventDescription.setText(currentEvent.getDescription());
+//        binding.tvEventDescription.setText(currentEvent.getDescription());
         binding.tvEventUpdateTitle.setText(currentEvent.getTitle());
         binding.tvEventUpdateDescription.setText(currentEvent.getDescription());
         binding.tvEventLocation.setText(currentEvent.getLocation());
@@ -108,18 +112,26 @@ public class OrganizerEventInfoFragment extends Fragment {
         }
 
         if (currentEvent.getEndTime() != null) {
-            String formattedTime = "End: " + dateFormat.format(currentEvent.getEndTime());
+            String formattedTime = dateFormat.format(currentEvent.getEndTime());
             binding.tvEventUpdateEndTime.setText(formattedTime);
         } else {
-            binding.tvEventUpdateEndTime.setText("End: TBD");
+            binding.tvEventUpdateEndTime.setText("TBD");
         }
 
-        //end time
+        //event end time
         if (currentEvent.getEndTime() != null) {
-            String formattedTime = "End: " + dateFormat.format(currentEvent.getEndTime());
+            String formattedTime = dateFormat.format(currentEvent.getEndTime());
             binding.tvEventUpdateEndTime.setText(formattedTime);
         } else {
-            binding.tvEventUpdateEndTime.setText("End: TBD");
+            binding.tvEventUpdateEndTime.setText("TBD");
+        }
+
+        //event end time
+        if (currentEvent.getRegistrationEnd() != null) {
+            String formattedTime = dateFormat.format(currentEvent.getRegistrationEnd());
+            binding.tvEventUpdateRegistryEndTime.setText(formattedTime);
+        } else {
+            binding.tvEventUpdateRegistryEndTime.setText("TBD");
         }
 
         //poster
@@ -168,9 +180,14 @@ public class OrganizerEventInfoFragment extends Fragment {
         });
 
         binding.btnEventUpdateEndTime.setOnClickListener(v -> {
-            String formattedTime = currentEvent.getEndTime() != null ?
-                    dateFormat.format(currentEvent.getEndTime()) : "TBD";
-            showEditDialog("endTime", formattedTime);
+//            String formattedTime = currentEvent.getEndTime() != null ?
+//                    dateFormat.format(currentEvent.getEndTime()) : "TBD";
+//            showEditDialog("endTime", formattedTime);
+            showDateTimePicker("eventEndTime", currentEvent.getEndTime());
+        });
+
+        binding.btnEventUpdateRegistryEndTime.setOnClickListener(v -> {
+            showDateTimePicker("registryEndTime", currentEvent.getRegistrationEnd());
         });
 
         binding.btnEventUpdateLocation.setOnClickListener(v -> {
@@ -181,6 +198,8 @@ public class OrganizerEventInfoFragment extends Fragment {
             String currentStatus = currentEvent.getEventStatus().toString();
             showStatusDialog(currentStatus);
         });
+
+
     }
 
     private void showStatusDialog(String currentStatus) {
@@ -201,22 +220,80 @@ public class OrganizerEventInfoFragment extends Fragment {
         dialog.show(getChildFragmentManager(), "edit_dialog_" + fieldType);
     }
 
-    private void handleFieldUpdate(String fieldType, String newValue) {
+    private void showDateTimePicker(String fieldType, Date currentDate) {
+        // initialize the calendar with the current date
+        final Calendar calendar = Calendar.getInstance();
+        if (currentDate != null) {
+            calendar.setTime(currentDate);
+        }
+
+        TimePickerDialog timePickerDialog = new TimePickerDialog(
+                requireContext(),
+                (view, hourOfDay, minute) -> {
+                    calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                    calendar.set(Calendar.MINUTE, minute);
+
+                    showDatePicker(fieldType, calendar.getTime());
+                },
+                calendar.get(Calendar.HOUR_OF_DAY),
+                calendar.get(Calendar.MINUTE),
+                false
+        );
+
+        timePickerDialog.setTitle("Select Time");
+        timePickerDialog.show();
+    }
+
+    private void showDatePicker(String fieldType, Date selectedTime) {
+        final Calendar calendar = Calendar.getInstance();
+        if (selectedTime != null) {
+            calendar.setTime(selectedTime);
+        }
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                requireContext(),
+                (view, year, month, dayOfMonth) -> {
+                    calendar.set(Calendar.YEAR, year);
+                    calendar.set(Calendar.MONTH, month);
+                    calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+                    handleFieldUpdate(fieldType, calendar.getTime());
+                },
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
+        );
+
+        datePickerDialog.setTitle("Select Date");
+        datePickerDialog.show();
+    }
+
+    private void handleFieldUpdate(String fieldType, Object newValue) {
         switch (fieldType) {
             case "title":
-                currentEvent.setTitle(newValue);
+                currentEvent.setTitle((String) newValue);
                 break;
             case "description":
-                currentEvent.setDescription(newValue);
+                currentEvent.setDescription((String) newValue);
                 break;
             case "location":
-                currentEvent.setLocation(newValue);
+                currentEvent.setLocation((String) newValue);
                 break;
-            case "endTime":
-                // TODO: add update endTime logic
+            case "eventEndTime":
+                if (newValue instanceof Date) {
+                    currentEvent.setEndTime((Date) newValue);
+                }
                 break;
+            case "registryEndTime":
+                if (newValue instanceof Date) {
+                    currentEvent.setRegistrationEnd((Date) newValue);
+                }
+                break;
+
             case "status":
-                currentEvent.setEventStatus(EventStatus.valueOf(newValue.toUpperCase()));
+                if (newValue instanceof String) {
+                    currentEvent.setEventStatus(EventStatus.valueOf(((String) newValue).toUpperCase()));
+                }
                 break;
         }
         eventRepo.updateEvent(currentEvent);

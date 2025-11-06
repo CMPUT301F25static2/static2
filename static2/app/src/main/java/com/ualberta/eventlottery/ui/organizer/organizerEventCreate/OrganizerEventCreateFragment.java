@@ -19,6 +19,7 @@ import com.ualberta.static2.databinding.FragmentOrganizerEventCreateBinding;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.UUID;
 
 public class OrganizerEventCreateFragment extends Fragment {
     private FragmentOrganizerEventCreateBinding binding;
@@ -226,7 +227,7 @@ public class OrganizerEventCreateFragment extends Fragment {
             // create new event
             Event newEvent = new Event();
             // TODO: get ID from database and set
-//            newEvent.setId(UUID.randomUUID().toString());
+            newEvent.setId(UUID.randomUUID().toString());
 //            newEvent.setOrganizerId("current_organizer_id");
             newEvent.setTitle(binding.etCreateEventTitle.getText().toString().trim());
             newEvent.setDescription(binding.etCreateEventDescription.getText().toString().trim());

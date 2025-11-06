@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -75,15 +74,15 @@ public class EntrantsFragment extends Fragment {
     private void initViews() {
         statusButtons.add(binding.btnEntrantsConfirmed);
         statusButtons.add(binding.btnEntrantsWaiting);
-        statusButtons.add(binding.btnEntrantsPending);
+        statusButtons.add(binding.btnEntrantsSelected);
         statusButtons.add(binding.btnEntrantsCancelled);
 
         List<Registration> registrations = registrationRepository.getRegistrationsByEvent(eventId);
         int confirmed = (int) registrations.stream().filter(registration -> registration.getStatus() == EntrantRegistrationStatus.CONFIRMED).count();
         int waiting = (int) registrations.stream().filter(registration -> registration.getStatus() == EntrantRegistrationStatus.WAITING).count();
-        int pending = (int) registrations.stream().filter(registration -> registration.getStatus() == EntrantRegistrationStatus.REGISTERED).count();
+        int selected = (int) registrations.stream().filter(registration -> registration.getStatus() == EntrantRegistrationStatus.SELECTED).count();
         int cancelled = (int) registrations.stream().filter(registration -> registration.getStatus() == EntrantRegistrationStatus.CANCELLED).count();
-        updateEntrantsCount(confirmed, waiting, pending, cancelled);
+        updateEntrantsCount(confirmed, waiting, selected, cancelled);
 
     }
 
@@ -104,11 +103,11 @@ public class EntrantsFragment extends Fragment {
             }
         });
 
-        binding.btnEntrantsPending.setOnClickListener(new View.OnClickListener() {
+        binding.btnEntrantsSelected.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updateButtonSelection(binding.btnEntrantsPending);
-                loadPendingEntrants();
+                updateButtonSelection(binding.btnEntrantsSelected);
+                loadSelectedEntrants();
             }
         });
 
@@ -151,8 +150,8 @@ public class EntrantsFragment extends Fragment {
         setupListView(entrants);
     }
 
-    private void loadPendingEntrants() {
-        List<Entrant> entrants = getPendingEntrants();
+    private void loadSelectedEntrants() {
+        List<Entrant> entrants = getSelectedEntrants();
         setupListView(entrants);
     }
 
@@ -193,10 +192,10 @@ public class EntrantsFragment extends Fragment {
         return entrants;
     }
 
-    private List<Entrant> getPendingEntrants() {
+    private List<Entrant> getSelectedEntrants() {
         List<Registration> registrations = registrationRepository.getRegistrationsByEvent(eventId);
         List<Entrant> entrants = registrations.stream()
-                .filter(registration -> registration.getStatus() == EntrantRegistrationStatus.REGISTERED)
+                .filter(registration -> registration.getStatus() == EntrantRegistrationStatus.SELECTED)
                 .map(Registration::getEntrantId)
                 .map(entrantRepository::findEntrantById)
                 .filter(Objects::nonNull)
@@ -221,10 +220,10 @@ public class EntrantsFragment extends Fragment {
         Toast.makeText(requireContext(), "Selected: " + entrant.getName(), Toast.LENGTH_SHORT).show();
     }
 
-    public void updateEntrantsCount(int confirmed, int waiting, int pending, int cancelled) {
+    public void updateEntrantsCount(int confirmed, int waiting, int selected, int cancelled) {
         binding.tvEventEntrantsConfirmedNumber.setText("(" + confirmed + ")");
         binding.tvEntrantsWaitingNumber.setText("(" + waiting + ")");
-        binding.tvEntrantsPendingNumber.setText("(" + pending + ")");
+        binding.tvEntrantsSelectedNumber.setText("(" + selected + ")");
         binding.tvEntrantsCancelledNumber.setText("(" + cancelled + ")");
     }
 

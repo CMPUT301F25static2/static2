@@ -84,7 +84,7 @@ public class OrganizerEventShowcaseFragment extends Fragment {
         binding.tvEventCurrentEntrantsCount.setText(currentEvent.getConfirmedCount() + " entrants");
 
         int fillRate = (currentEvent.getConfirmedCount() * 100) / currentEvent.getMaxAttendees();
-        binding.tvEventFillRate.setText(String.valueOf(fillRate));
+        binding.tvEventFillRate.setText(String.valueOf(fillRate) + "%");
 
         binding.tvEventFillRatio.setText(currentEvent.getConfirmedCount() + "/" + currentEvent.getMaxAttendees());
 
@@ -100,7 +100,7 @@ public class OrganizerEventShowcaseFragment extends Fragment {
         if (currentEvent.getStartTime() != null && currentEvent.getEndTime() != null) {
             String startTime = dateFormat.format(currentEvent.getStartTime());
             String endTime = dateFormat.format(currentEvent.getEndTime());
-            String formattedTime = startTime + "-" + endTime;
+            String formattedTime =startTime + "  -  " + endTime;
 
             binding.tvStartToEnd.setText(formattedTime);
         } else {
