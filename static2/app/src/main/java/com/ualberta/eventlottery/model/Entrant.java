@@ -5,15 +5,15 @@ public class Entrant extends User{
     public Entrant() {
     }
 
-    public Entrant(String userId, String name, String email) {
-        super(userId, name, email);
+    public Entrant(String userId, String name, String email, String fcmToken) {
+        super(userId, name, email, fcmToken);
     }
 
-    public Entrant(String userId, String name, String email, String phone) {
-        super(userId, name, email, phone);
+    public Entrant(String userId, String name, String email, String phone,String fcmToken) {
+        super(userId, name, email, phone,fcmToken);
     }
 
-    public Entrant(String userId, String name, String email, String phone, String favRecCenter) {
-        super(userId, name, email, phone, favRecCenter);
+    public Entrant(String userId, String name, String email, String phone, String favRecCenter,String fcmToken) {
+        super(userId, name, email, phone, favRecCenter,fcmToken);
     }
 }
