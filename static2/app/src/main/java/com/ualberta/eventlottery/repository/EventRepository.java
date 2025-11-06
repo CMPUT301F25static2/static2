@@ -1,12 +1,19 @@
 package com.ualberta.eventlottery.repository;
 
+import android.os.Build;
+import android.util.Log;
+
+import androidx.annotation.RequiresApi;
+
 import com.google.firebase.Firebase;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.model.EventStatus;
 import com.ualberta.eventlottery.model.EventRegistrationStatus;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -123,6 +130,71 @@ public class EventRepository {
         }
         return false;
     }
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static Event fromDocument(DocumentSnapshot document) {
+        if (document == null || !document.exists()) {
+            return null;
+        }
 
+        Event event = new Event();
+        try {
+            event.setId(document.getId());
+            event.setOrganizerId(document.getString("organizerId"));
+            event.setTitle(document.getString("title"));
+            event.setDescription(document.getString("description"));
+            event.setCategory(document.getString("category"));
+            Double price = document.getDouble("price");
+            if (price != null) {
+                event.setPrice(price);
+            }
+            Long sessionDuration = document.getLong("sessionDuration");
+            if (sessionDuration != null) {
+                event.setSessionDuration(sessionDuration.intValue());
+            }
+            event.setLocation(document.getString("location"));
+            event.setLocationUrl(document.getString("locationUrl"));
+            event.setPosterUrl(document.getString("posterUrl"));
+            event.setQrCodeUrl(document.getString("qrCodeUrl"));
 
+            event.setCreatedAt(document.getDate("createdAt"));
+
+            String eventStatus = document.getString("eventStatus");
+            if (eventStatus != null) {
+                event.setEventStatus(EventStatus.valueOf(eventStatus));
+            }
+            String eventRegistrationStatus = document.getString("registrationStatus");
+            if (eventRegistrationStatus != null) {
+                event.setRegistrationStatus(EventRegistrationStatus.valueOf(eventRegistrationStatus));
+            }
+
+            event.setRegistrationStart(document.getDate("registrationStart"));
+            event.setRegistrationEnd(document.getDate("registrationEnd"));
+
+            event.setStartTime(document.getDate("startTime"));
+            event.setEndTime(document.getDate("endTime"));
+            String dailyStartTimeStr = document.getString("dailyStartTime");
+            if (dailyStartTimeStr != null) {
+                LocalTime dailyStartTime = LocalTime.parse(dailyStartTimeStr);
+                event.setDailyStartTime(dailyStartTime);
+            }
+
+            Long maxAttendees = document.getLong("maxAttendees");
+            if (maxAttendees != null) {
+                event.setMaxAttendees(maxAttendees.intValue());
+            }
+            Long maxWaitListSize = document.getLong("maxWaitListSize");
+            if (maxWaitListSize != null) {
+                event.setMaxWaitListSize(maxWaitListSize.intValue());
+            }
+            List<String> waitListUserIds = (List<String>) document.get("waitListUserIds");
+            event.setWaitListUserIds(waitListUserIds);
+            if (waitListUserIds != null) {
+                event.setCurrentWaitListSize(waitListUserIds.size());
+            }
+        } catch (Exception e) {
+            Log.e("EventLottery", "failed to convert document to event", e);
+        }
+
+        return event;
+    }
 }
