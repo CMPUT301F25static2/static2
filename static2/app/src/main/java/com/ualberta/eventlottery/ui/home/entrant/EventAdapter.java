@@ -55,17 +55,19 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
         }
         holder.eventStatus.setText(event.getRegistrationStatus().toString());
         holder.eventFromTo.setText(getFromToText(event));
-        holder.eventSessionStartTime.setText(getSessionStartTimeText(event));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            holder.eventSessionStartTime.setText(getSessionStartTimeText(event));
+        }
     }
 
     private String getFromToText(Event event) {
-        if (event.getStartTime() == null || event.getEndTime() == null) {
+        if (event.getEventStart() == null || event.getEventEnd() == null) {
             return "Dates TBD";
         }
         Calendar startTime = Calendar.getInstance();
-        startTime.setTime(event.getStartTime());
+        startTime.setTime(event.getEventStart());
         Calendar endTime = Calendar.getInstance();
-        endTime.setTime(event.getEndTime());
+        endTime.setTime(event.getEventEnd());
         Calendar now = Calendar.getInstance();
 
         SimpleDateFormat sdf = sdfWithYear;

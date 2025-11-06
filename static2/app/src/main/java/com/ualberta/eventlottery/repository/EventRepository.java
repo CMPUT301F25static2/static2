@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi;
 
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.model.EventStatus;
 import com.ualberta.eventlottery.model.EventRegistrationStatus;
@@ -22,6 +23,8 @@ public class EventRepository {
     private static EventRepository instance;
     private FirebaseFirestore db;
     private static final String COLLECTION_EVENTS = "events";
+
+
 
     // callback interfaces
     public interface EventCallback {
@@ -305,6 +308,14 @@ public class EventRepository {
                 .delete()
                 .addOnSuccessListener(aVoid -> callback.onSuccess(true))
                 .addOnFailureListener(callback::onFailure);
+    }
+
+    public EventListLiveData getAvailableEvents() {
+        // Create a query for events with open registration
+        Query openRegistrationQuery = db.collection(COLLECTION_EVENTS)
+                .whereEqualTo("registrationStatus", EventRegistrationStatus.REGISTRATION_OPEN.toString());
+
+        return new EventListLiveData(openRegistrationQuery);
     }
 
     /**
