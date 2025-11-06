@@ -15,8 +15,7 @@
 | **US 01.04.01** | As an entrant I want to receive notification when I am chosen to participate from the waiting list (when I "win" the lottery) | 5 | Medium | ✅ | Win notification | Send push and in-app notification when the system selects entrant |
 | **US 01.04.02** | As an entrant I want to receive notification of when I am not chosen on the app (when I "lose" the lottery) | 3 | Low | ✅ | Lose notification | Send push and in-app notification when the system does not select entrant  |
 | **US 01.04.03** | As an entrant I want to opt out of receiving notifications from organizers and admins | 3 | Low | ❌ | Notification opt-out | Add toggle in profile settings to unsubscribe from notifications |
-| **US 01.05.01** | As an entrant I want to have another chance to be chosen from the waiting list if a selected user declines an invitation to sign up | 5 | Medium | ❌ | Replacement chance | Implement logic to draw replacement entrants
- |
+| **US 01.05.01** | As an entrant I want to have another chance to be chosen from the waiting list if a selected user declines an invitation to sign up | 5 | Medium | ❌ | Replacement chance | Implement logic to draw replacement entrants|
 | **US 01.05.02** | As an entrant I want to be able to accept the invitation to register/sign up when chosen to participate in an event | 3 | Low | ❌ | Accept invitation | Provide accept button and update registration status in database |
 | **US 01.05.03** | As an entrant I want to be able to decline an invitation when chosen to participate in an event | 2 | Low | ✅ | Decline invitation | Add decline button and free up slot for another entrant |
 | **US 01.05.04** | As an entrant, I want to know how many total entrants are on the waiting list for an event | 2 | Low | ✅ | View waiting list count | Show waiting list count retrieved from backend on event page |
