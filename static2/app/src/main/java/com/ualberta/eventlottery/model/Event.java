@@ -319,4 +319,6 @@ public class Event {
     public int getAttendanceCount() {
         return confirmedUserIds.size();
     }
+
+
 }
