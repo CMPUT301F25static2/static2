@@ -61,13 +61,13 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
     }
 
     private String getFromToText(Event event) {
-        if (event.getEventStart() == null || event.getEventEnd() == null) {
+        if (event.getStartTime() == null || event.getEndTime() == null) {
             return "Dates TBD";
         }
         Calendar startTime = Calendar.getInstance();
-        startTime.setTime(event.getEventStart());
+        startTime.setTime(event.getStartTime());
         Calendar endTime = Calendar.getInstance();
-        endTime.setTime(event.getEventEnd());
+        endTime.setTime(event.getEndTime());
         Calendar now = Calendar.getInstance();
 
         SimpleDateFormat sdf = sdfWithYear;

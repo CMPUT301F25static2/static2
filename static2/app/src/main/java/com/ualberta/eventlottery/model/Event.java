@@ -4,10 +4,10 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.time.LocalTime;
 
 public class Event {
     private String id;
@@ -18,11 +18,10 @@ public class Event {
     private double price;
     private LocalTime dailyStartTime;
     private LocalTime dailyEndTime;
-
     private int sessionDuration;
     private Date createdAt;
-    private Date eventStart;
-    private Date eventEnd;
+    private Date startTime;
+    private Date endTime;
     private Date registrationStart;
     private Date registrationEnd;
     private String location;
@@ -38,11 +37,11 @@ public class Event {
     private int currentWaitListSize;
     private int currentAttendees;
 
+
+
     private List<String> registeredUserIds; //All users who registered
     private List<String> waitListUserIds; //Users in waiting list
     private List<String> confirmedUserIds; //Users who confirmed attendance
-
-
 
 
     // Constructors
@@ -62,33 +61,6 @@ public class Event {
         this.title = title;
         this.description = description;
     }
-
-    public LocalTime getDailyStartTime() {
-        return dailyStartTime;
-    }
-
-    public LocalTime getDailyEndTime() {
-        return dailyEndTime;
-    }
-
-    public int getCurrentAttendees() {
-        return currentAttendees;
-    }
-
-    public void setCurrentAttendees(int currentAttendees) {
-        this.currentAttendees = currentAttendees;
-    }
-
-
-    public EventRegistrationStatus getEventRegistrationStatus() {
-        return eventRegistrationStatus;
-    }
-
-    public void setEventRegistrationStatus(EventRegistrationStatus eventRegistrationStatus) {
-        this.eventRegistrationStatus = eventRegistrationStatus;
-    }
-
-
 
     // Getters and Setters
     public String getId() { return id; }
@@ -118,36 +90,34 @@ public class Event {
     public double getPrice() { return price; }
     public void setPrice(double price) { this.price = price; }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    public LocalTime getDailyStartTime() { return dailyStartTime; }
+    public void setDailyStartTime(LocalTime dailyStartTime) { this.dailyStartTime = dailyStartTime; }
     public void setDailyStartTime(int hour, int minute) {
-        this.dailyStartTime = LocalTime.of(hour, minute);
-    }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            this.dailyStartTime = LocalTime.of(hour, minute);
+        }
+    };
+    public LocalTime getDailyEndTime() { return dailyEndTime; }
 
-    public void setDailyStartTime(LocalTime time) {
-        this.dailyStartTime = time;
-    }
+    public void setDailyEndTime(LocalTime dailyEndTime) { this.dailyEndTime = dailyEndTime; }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public void setDailyEndTime(int hour, int minute) {
-        this.dailyEndTime = LocalTime.of(hour, minute);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            this.dailyEndTime = LocalTime.of(hour, minute);
+        }
     }
 
-    public void setDailyEndTime(LocalTime time) {
-        this.dailyEndTime = time;
-    }
-       
-
-    public int getSessionDuration() { return sessionDuration; }
+        public int getSessionDuration() { return sessionDuration; }
     public void setSessionDuration(int sessionDuration) { this.sessionDuration = sessionDuration; }
 
     public Date getCreatedAt() { return createdAt; }
     public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
 
-    public Date getEventStart() { return eventStart; }
-    public void setEventStart(Date eventStart) { this.eventStart = eventStart; }
+    public Date getStartTime() { return startTime; }
+    public void setStartTime(Date startTime) { this.startTime = startTime; }
 
-    public Date getEventEnd() { return eventEnd; }
-    public void setEventEnd(Date eventEnd) { this.eventEnd = eventEnd; }
+    public Date getEndTime() { return endTime; }
+    public void setEndTime(Date endTime) { this.endTime = endTime; }
 
     public Date getRegistrationStart() { return registrationStart; }
     public void setRegistrationStart(Date registrationStart) { this.registrationStart = registrationStart; }
@@ -160,6 +130,14 @@ public class Event {
 
     public boolean isLocationRequired() { return locationRequired; }
     public void setLocationRequired(boolean locationRequired) { this.locationRequired = locationRequired; }
+
+    public int getCurrentAttendees() {
+        return currentAttendees;
+    }
+
+    public void setCurrentAttendees(int currentAttendees) {
+        this.currentAttendees = currentAttendees;
+    }
 
     public String getPosterUrl() { return posterUrl; }
     public void setPosterUrl(String posterUrl) { this.posterUrl = posterUrl; }
@@ -191,6 +169,10 @@ public class Event {
     // List getters (return copies to prevent external modification)
     public List<String> getRegisteredUserIds() { return new ArrayList<>(registeredUserIds); }
     public List<String> getWaitListUserIds() { return new ArrayList<>(waitListUserIds); }
+
+    public void setWaitListUserIds(List<String> waitListUserIds) {
+        this.waitListUserIds = waitListUserIds;
+    }
     public List<String> getConfirmedUserIds() { return new ArrayList<>(confirmedUserIds); }
 
     // Business Logic Methods
@@ -319,6 +301,4 @@ public class Event {
     public int getAttendanceCount() {
         return confirmedUserIds.size();
     }
-
-
 }

@@ -93,8 +93,8 @@ public class Organizer extends User {
         newEvent.setTitle(title);
         newEvent.setDescription(description);
         newEvent.setOrganizerId(this.getUserId());
-        newEvent.setEventStart(startTime);
-        newEvent.setEventEnd(endTime);
+        newEvent.setStartTime(startTime);
+        newEvent.setEndTime(endTime);
         newEvent.setRegistrationStart(registrationStart);
         newEvent.setRegistrationEnd(registrationEnd);
         newEvent.setMaxAttendees(maxAttendees);
