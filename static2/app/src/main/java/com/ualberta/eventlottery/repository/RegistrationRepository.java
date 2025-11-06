@@ -1,5 +1,7 @@
 package com.ualberta.eventlottery.repository;
 
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Firebase;
 import com.google.firebase.firestore.DocumentReference;
@@ -12,26 +14,47 @@ import com.ualberta.eventlottery.model.EntrantRegistrationStatus;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+/**
+ * Repository class for managing Registration operations with Firebase Firestore
+ * Uses callback pattern for asynchronous operations
+ */
 public class RegistrationRepository {
     private static RegistrationRepository instance;
-    private static String COLLECTION_REGISTRATIONS = "registrations";
-    private List<Registration> registrationCache;
-    private EntrantRepository entrantRepository;
     private FirebaseFirestore db;
+    private static final String COLLECTION_REGISTRATIONS = "registrations";
 
     public interface RegistrationCallback {
         void onSuccess(Registration registration);
         void onFailure(Exception e);
     }
 
+    public interface RegistrationListCallback {
+        void onSuccess(List<Registration> registrations);
+        void onFailure(Exception e);
+    }
+
+    public interface OperationCallback {
+        void onSuccess();
+        void onFailure(Exception e);
+    }
+
+    public interface BooleanCallback {
+        void onSuccess(boolean result);
+        void onFailure(Exception e);
+    }
+
+    public interface CountCallback {
+        void onSuccess(int count);
+        void onFailure(Exception e);
+    }
+
 
     private RegistrationRepository() {
-        registrationCache = new ArrayList<>();
-        entrantRepository = EntrantRepository.getInstance();
         db = FirebaseFirestore.getInstance();
-        initializeSampleData();
     }
 
     public static synchronized RegistrationRepository getInstance() {
@@ -41,210 +64,71 @@ public class RegistrationRepository {
         return instance;
     }
 
-    private void initializeSampleData() {
-        // Sample registrations for testing
-        Registration reg1 = new Registration("reg1", "1", "entrant1");
-        reg1.setStatus(EntrantRegistrationStatus.CONFIRMED);
-        reg1.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 3));
-
-
-        Registration reg2 = new Registration("reg2", "1", "entrant2");
-        reg2.setStatus(EntrantRegistrationStatus.CONFIRMED);
-        reg2.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 2));
-
-        Registration reg3 = new Registration("reg3", "1", "entrant3");
-        reg3.setStatus(EntrantRegistrationStatus.CONFIRMED);
-        reg3.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 1));
-
-        Registration reg4 = new Registration("reg4", "1", "entrant4");
-        reg4.setStatus(EntrantRegistrationStatus.WAITING);
-        reg4.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 4));
-
-        Registration reg5 = new Registration("reg5", "1", "entrant5");
-        reg5.setStatus(EntrantRegistrationStatus.WAITING);
-        reg5.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 3));
-
-        Registration reg6 = new Registration("reg6", "1", "entrant6");
-        reg6.setStatus(EntrantRegistrationStatus.WAITING);
-        reg6.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 2));
-
-        Registration reg7 = new Registration("reg7", "1", "entrant7");
-        reg7.setStatus(EntrantRegistrationStatus.SELECTED);
-        reg7.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 5));
-
-        Registration reg8 = new Registration("reg8", "1", "entrant8");
-        reg8.setStatus(EntrantRegistrationStatus.SELECTED);
-        reg8.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 4));
-
-        Registration reg9 = new Registration("reg9", "1", "entrant9");
-        reg9.setStatus(EntrantRegistrationStatus.DECLINED);
-        reg9.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 6));
-        reg9.setRespondedAt(new Date(System.currentTimeMillis() - 86400000 * 5));
-
-        Registration reg10 = new Registration("reg10", "1", "entrant10");
-        reg10.setStatus(EntrantRegistrationStatus.DECLINED);
-        reg10.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 5));
-        reg10.setRespondedAt(new Date(System.currentTimeMillis() - 86400000 * 4));
-
-        Registration reg11 = new Registration("reg11", "2", "entrant1");
-        reg11.setStatus(EntrantRegistrationStatus.CONFIRMED);
-        reg11.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 7));
-
-        Registration reg12 = new Registration("reg12", "2", "entrant2");
-        reg12.setStatus(EntrantRegistrationStatus.CONFIRMED);
-        reg12.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 6));
-
-        Registration reg13 = new Registration("reg13", "2", "entrant3");
-        reg13.setStatus(EntrantRegistrationStatus.WAITING);
-        reg13.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 5));
-
-        Registration reg14 = new Registration("reg14", "2", "entrant4");
-        reg14.setStatus(EntrantRegistrationStatus.WAITING);
-        reg14.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 4));
-
-        Registration reg15 = new Registration("reg15", "2", "entrant5");
-        reg15.setStatus(EntrantRegistrationStatus.SELECTED);
-        reg15.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 3));
-
-        Registration reg16 = new Registration("reg16", "3", "entrant6");
-        reg16.setStatus(EntrantRegistrationStatus.CONFIRMED);
-        reg16.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 10));
-
-        Registration reg17 = new Registration("reg17", "3", "entrant7");
-        reg17.setStatus(EntrantRegistrationStatus.CONFIRMED);
-        reg17.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 9));
-
-        Registration reg18 = new Registration("reg18", "3", "entrant8");
-        reg18.setStatus(EntrantRegistrationStatus.CONFIRMED);
-        reg18.setRegisteredAt(new Date(System.currentTimeMillis() - 86400000 * 8));
-
-
-        registrationCache.add(reg1);
-        registrationCache.add(reg2);
-        registrationCache.add(reg3);
-        registrationCache.add(reg4);
-        registrationCache.add(reg5);
-        registrationCache.add(reg6);
-        registrationCache.add(reg7);
-        registrationCache.add(reg8);
-        registrationCache.add(reg9);
-        registrationCache.add(reg10);
-        registrationCache.add(reg11);
-        registrationCache.add(reg12);
-        registrationCache.add(reg13);
-        registrationCache.add(reg14);
-        registrationCache.add(reg15);
-        registrationCache.add(reg16);
-        registrationCache.add(reg17);
-        registrationCache.add(reg18);
-    }
-
-    public Registration findRegistrationById(String registrationId) {
-        for (Registration reg : registrationCache) {
-            if (reg.getId().equals(registrationId)) {
-                return reg;
-            }
+    /**
+     * Converts Firestore document to Registration object
+     */
+    private Registration documentToRegistration(DocumentSnapshot document) {
+        if (document == null || !document.exists()) {
+            return null;
         }
-        return null;
-    }
 
-    public Registration findRegistrationByEventAndUser(String eventId, String userId) {
-        for (Registration reg : registrationCache) {
-            if (reg.getEventId().equals(eventId) && reg.getEntrantId().equals(userId)) {
-                return reg;
-            }
+        Registration registration = new Registration();
+        registration.setId(document.getId());
+        registration.setEventId(document.getString("eventId"));
+        registration.setEntrantId(document.getString("entrantId"));
+
+        // Status field
+        String status = document.getString("status");
+        if (status != null) {
+            registration.setStatus(EntrantRegistrationStatus.valueOf(status));
         }
-        return null;
+
+        // Date fields
+        registration.setRegisteredAt(document.getDate("registeredAt"));
+        registration.setRespondedAt(document.getDate("respondedAt"));
+        registration.setCancelledAt(document.getDate("cancelledAt"));
+
+        return registration;
     }
 
-    public List<Registration> getRegistrationsByEvent(String eventId) {
-        List<Registration> result = new ArrayList<>();
-        for (Registration reg : registrationCache) {
-            if (reg.getEventId().equals(eventId)) {
-                result.add(reg);
-            }
-        }
-        return result;
+    /**
+     * Converts Registration object to Firestore data map
+     */
+    private Map<String, Object> registrationToMap(Registration registration) {
+        Map<String, Object> registrationMap = new HashMap<>();
+        registrationMap.put("id", registration.getId());
+        registrationMap.put("eventId", registration.getEventId());
+        registrationMap.put("entrantId", registration.getEntrantId());
+        registrationMap.put("status", registration.getStatus() != null ? registration.getStatus().name() : null);
+        registrationMap.put("registeredAt", registration.getRegisteredAt());
+        registrationMap.put("respondedAt", registration.getRespondedAt());
+        registrationMap.put("cancelledAt", registration.getCancelledAt());
+        registrationMap.put("updatedAt", new Date());
+
+        return registrationMap;
     }
 
-    public List<Registration> getRegistrationsByEntrant(String entrantId) {
-        List<Registration> result = new ArrayList<>();
-        for (Registration reg : registrationCache) {
-            if (reg.getEntrantId().equals(entrantId)) {
-                result.add(reg);
-            }
-        }
-        return result;
+    /**
+     * Finds a registration by its ID
+     */
+    public void findRegistrationById(String registrationId, RegistrationCallback callback) {
+        db.collection(COLLECTION_REGISTRATIONS)
+                .document(registrationId)
+                .get()
+                .addOnSuccessListener(document -> {
+                    Registration registration = documentToRegistration(document);
+                    if (registration != null) {
+                        callback.onSuccess(registration);
+                    } else {
+                        callback.onFailure(new Exception("Registration not found"));
+                    }
+                })
+                .addOnFailureListener(callback::onFailure);
     }
 
-    public List<Registration> getRegistrationsByStatus(String eventId, EntrantRegistrationStatus status) {
-        List<Registration> result = new ArrayList<>();
-        for (Registration reg : registrationCache) {
-            if (reg.getEventId().equals(eventId) && reg.getStatus() == status) {
-                result.add(reg);
-            }
-        }
-        return result;
-    }
-
-    public List<Registration> getRegistrationsByEntrantAndStatus(String entrantId, EntrantRegistrationStatus status) {
-        List<Registration> registrations = new ArrayList<>();
-        for (Registration reg : registrationCache) {
-            if (reg.getEntrantId().equals(entrantId) && reg.getStatus() == status) {
-                registrations.add(reg);
-            }
-        }
-        return registrations;
-    }
-
-    public List<Registration> getRegistrationsByEventAndStatus(String eventId, EntrantRegistrationStatus status) {
-        List<Registration> registrations = new ArrayList<>();
-        for (Registration reg : registrationCache) {
-
-            if (reg.getEventId().equals(eventId) && reg.getStatus() == status) {
-                registrations.add(reg);
-            }
-        }
-        return registrations;
-
-    }
-
-    public List<Registration> getAllRegistrations() {
-        return registrationCache;
-    }
-    public void addRegistration(Registration registration) {
-        registrationCache.add(registration);
-    }
-
-    public boolean updateRegistration(Registration updatedRegistration) {
-        for (int i = 0; i < registrationCache.size(); i++) {
-            if (registrationCache.get(i).getId().equals(updatedRegistration.getId())) {
-                registrationCache.set(i, updatedRegistration);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean deleteRegistration(String registrationId) {
-        for (int i = 0; i < registrationCache.size(); i++) {
-            if (registrationCache.get(i).getId().equals(registrationId)) {
-                registrationCache.remove(i);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public int getRegistrationCountByStatus(String eventId, EntrantRegistrationStatus status) {
-        int count = 0;
-        for (Registration reg : registrationCache) {
-            if (reg.getEventId().equals(eventId) && reg.getStatus() == status) {
-                count++;
-            }
-        }
-        return count;
-    }
+    /**
+     * Finds registration by event ID and user ID
+     */
     public void findRegistrationByEventAndUser(String eventId, String userId, RegistrationCallback callback) {
         queryRegistrationByEventAndUser(eventId, userId)
                 .addOnSuccessListener(querySnapshot -> {
@@ -258,6 +142,204 @@ public class RegistrationRepository {
                 .addOnFailureListener(callback::onFailure);
     }
 
+
+    /**
+     * Retrieves all registrations for a specific event
+     */
+    public void getRegistrationsByEvent(String eventId, RegistrationListCallback callback) {
+        db.collection(COLLECTION_REGISTRATIONS)
+                .whereEqualTo("eventId", eventId)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<Registration> registrations = new ArrayList<>();
+                    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                        Registration registration = documentToRegistration(document);
+                        if (registration != null) {
+                            registrations.add(registration);
+                        }
+                    }
+                    callback.onSuccess(registrations);
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+
+    /**
+     * Retrieves all registrations for a specific entrant
+     */
+    public void getRegistrationsByEntrant(String entrantId, RegistrationListCallback callback) {
+        db.collection(COLLECTION_REGISTRATIONS)
+                .whereEqualTo("entrantId", entrantId)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<Registration> registrations = new ArrayList<>();
+                    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                        Registration registration = documentToRegistration(document);
+                        if (registration != null) {
+                            registrations.add(registration);
+                        }
+                    }
+                    callback.onSuccess(registrations);
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+
+    /**
+     * Retrieves registrations by status for a specific event
+     */
+    public void getRegistrationsByStatus(String eventId, EntrantRegistrationStatus status, RegistrationListCallback callback) {
+        db.collection(COLLECTION_REGISTRATIONS)
+                .whereEqualTo("eventId", eventId)
+                .whereEqualTo("status", status.name())
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<Registration> registrations = new ArrayList<>();
+                    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                        Registration registration = documentToRegistration(document);
+                        if (registration != null) {
+                            registrations.add(registration);
+                        }
+                    }
+                    callback.onSuccess(registrations);
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+
+    /**
+     * Retrieves registrations by entrant and status
+     */
+    public void getRegistrationsByEntrantAndStatus(String entrantId, EntrantRegistrationStatus status, RegistrationListCallback callback) {
+        db.collection(COLLECTION_REGISTRATIONS)
+                .whereEqualTo("entrantId", entrantId)
+                .whereEqualTo("status", status.name())
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<Registration> registrations = new ArrayList<>();
+                    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                        Registration registration = documentToRegistration(document);
+                        if (registration != null) {
+                            registrations.add(registration);
+                        }
+                    }
+                    callback.onSuccess(registrations);
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+
+    /**
+     * Retrieves all registrations
+     */
+    public void getAllRegistrations(RegistrationListCallback callback) {
+        db.collection(COLLECTION_REGISTRATIONS)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<Registration> registrations = new ArrayList<>();
+                    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                        Registration registration = documentToRegistration(document);
+                        if (registration != null) {
+                            registrations.add(registration);
+                        }
+                    }
+                    callback.onSuccess(registrations);
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+
+    /**
+     * Adds a new registration
+     */
+    public void addRegistration(Registration registration, OperationCallback callback) {
+        if (registration.getId() == null || registration.getId().isEmpty()) {
+            String newId = db.collection(COLLECTION_REGISTRATIONS).document().getId();
+            registration.setId(newId);
+        }
+
+        // Set registration date if not already set
+        if (registration.getRegisteredAt() == null) {
+            registration.setRegisteredAt(new Date());
+        }
+
+        Map<String, Object> registrationData = registrationToMap(registration);
+        db.collection(COLLECTION_REGISTRATIONS)
+                .document(registration.getId())
+                .set(registrationData)
+                .addOnSuccessListener(aVoid -> callback.onSuccess())
+                .addOnFailureListener(callback::onFailure);
+    }
+
+    /**
+     * Updates an existing registration
+     */
+    public void updateRegistration(Registration updatedRegistration, BooleanCallback callback) {
+        Map<String, Object> registrationData = registrationToMap(updatedRegistration);
+        db.collection(COLLECTION_REGISTRATIONS)
+                .document(updatedRegistration.getId())
+                .update(registrationData)
+                .addOnSuccessListener(aVoid -> callback.onSuccess(true))
+                .addOnFailureListener(callback::onFailure);
+    }
+
+    /**
+     * Deletes a registration by ID
+     */
+    public void deleteRegistration(String registrationId, BooleanCallback callback) {
+        db.collection(COLLECTION_REGISTRATIONS)
+                .document(registrationId)
+                .delete()
+                .addOnSuccessListener(aVoid -> callback.onSuccess(true))
+                .addOnFailureListener(callback::onFailure);
+    }
+
+    /**
+     * Gets count of registrations by status for an event
+     */
+    public void getRegistrationCountByStatus(String eventId, EntrantRegistrationStatus status, CountCallback callback) {
+        db.collection(COLLECTION_REGISTRATIONS)
+                .whereEqualTo("eventId", eventId)
+                .whereEqualTo("status", status.name())
+                .get()
+                .addOnSuccessListener(querySnapshot -> callback.onSuccess(querySnapshot.size()))
+                .addOnFailureListener(callback::onFailure);
+    }
+
+
+
+    /**
+     * Retrieves waiting registrations for an event
+     */
+    public void getWaitingRegistrationsByEvent(String eventId, RegistrationListCallback callback) {
+        getRegistrationsByStatus(eventId, EntrantRegistrationStatus.WAITING, callback);
+    }
+
+    /**
+     * Retrieves selected registrations for an event
+     */
+    public void getSelectedRegistrationsByEvent(String eventId, RegistrationListCallback callback) {
+        getRegistrationsByStatus(eventId, EntrantRegistrationStatus.SELECTED, callback);
+    }
+
+    /**
+     * Retrieves confirmed registrations for an event
+     */
+    public void getConfirmedRegistrationsByEvent(String eventId, RegistrationListCallback callback) {
+        getRegistrationsByStatus(eventId, EntrantRegistrationStatus.CONFIRMED, callback);
+    }
+
+    /**
+     * Checks if user is registered for an event
+     */
+    public void isUserRegisteredForEvent(String eventId, String userId, BooleanCallback callback) {
+        findRegistrationByEventAndUser(eventId, userId, new RegistrationCallback() {
+            @Override
+            public void onSuccess(Registration registration) {
+                callback.onSuccess(registration != null);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                callback.onFailure(e);
+            }
+        });
+    }
 
     private Task<QuerySnapshot> queryRegistrationByEventAndUser(String eventId, String userId) {
         return db.collection(COLLECTION_REGISTRATIONS)

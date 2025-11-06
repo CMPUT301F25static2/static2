@@ -64,6 +64,9 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
         holder.entrantsNumber.setText(getEntrantsText(event.getWaitListCount(), event.getMaxWaitListSize()));
         holder.eventStatus.setText(event.getRegistrationStatus().toString());
         holder.eventFromTo.setText(getFromToText(event));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            holder.eventSessionStartTime.setText(getSessionStartTimeText(event));
+        }
         holder.eventSessionStartTime.setText(getSessionStartTimeText(event));
 
         holder.btnActionText.setText(WAIT_SYMBOL);

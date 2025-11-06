@@ -1,98 +1,94 @@
 package com.ualberta.eventlottery.notification;
 
 import android.content.Context;
+import android.util.Log;
 
+import com.google.firebase.firestore.DocumentReference;
 import com.ualberta.eventlottery.model.Event;
+import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Date;
 
-/**
- * Represents a single notification AND
- * provides static methods to manage all notifications.
- * (Repository logic is combined here.)
- */
+
 public class NotificationModel {
-
-    // === Instance fields (per-notification data) ===
-    private final long id;
-    private String message;
-    private long timestamp;
-    private final Event event;
-    private final String organizerId;
-    private final String entrantId;
+    private String notificationId;
+    private String title;
+    private String body;
+    private final Date createdAt;
+    private String eventId;
+    private String senderId;
+    private List<String> recipientIdList;
     private boolean isRead;
-
-    // === Static fields (for managing multiple notifications) ===
-    private static final List<NotificationModel> notificationCache = new ArrayList<>();
     private static Context appContext;
-
-    // === Constructors ===
-    public NotificationModel(long id, String message, long timestamp, Event event, String entrantID) {
-        this.id = id;
-        this.message = message;
-        this.timestamp = timestamp;
-        this.event = event;
-        this.organizerId = event.getOrganizerId();
-        this.entrantId = entrantID;
-        this.isRead = false;
+    private static final String COLLECTION_NAME = "notifications";
+    // Firestore requires a public no-arg constructor
+    public NotificationModel() {
+        this.createdAt = new Date();
     }
 
-    public NotificationModel(String message, Event event, String entrantID) {
-        this.id = System.currentTimeMillis();
-        this.message = message;
-        this.timestamp = System.currentTimeMillis();
-        this.event = event;
-        this.organizerId = event.getOrganizerId();
-        this.entrantId = entrantID;
+    public NotificationModel(String title, String body, String eventId, List<String> recipientIdList) {
+        this.title = title;
+        this.body = body;
+        this.createdAt = new Date();
+        this.eventId = eventId;
+        this.recipientIdList = recipientIdList;
         this.isRead = false;
+        this.senderId =  null;
     }
 
-    // === Set up context (needed later for DB operations) ===
     public static void initialize(Context context) {
         appContext = context.getApplicationContext();
     }
+    public String getNotificationId() { return notificationId; }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+    public String getBody() { return body; }
+    public void setBody(String body) { this.body = body; }
+    public String getEventId() { return eventId; }
+    public Date getCreatedAt() { return createdAt; }
+    public String getSenderId() { return senderId; }
+    public List<String> getRecipientIdList() { return recipientIdList; }
+    public boolean getIsRead() { return isRead; }
+    public void setIsRead(boolean read) { isRead = read; }
 
-    // === Instance methods ===
-    public long getId() { return id; }
-    public String getMessage() { return message; }
-    public void setMessage(String message) { this.message = message; }
-    public Event getEvent() { return event; }
-    public long getTimestamp() { return timestamp; }
-    public void setTimestamp(long timestamp) { this.timestamp = timestamp; }
-    public String getSender() { return organizerId; }
-    public String getReceiver() { return entrantId; }
-    public boolean isRead() { return isRead; }
-    public void setRead(boolean read) { isRead = read; }
 
-    // === Combined repository-like methods ===
 
-    /** Save this notification instance (stub — DB logic goes here) */
+    public void markAsRead() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection(COLLECTION_NAME)
+                .document(this.notificationId)
+                .update("isRead", true)
+                .addOnSuccessListener(aVoid -> Log.d("Firestore", "Name successfully updated!"))
+                .addOnFailureListener(e -> Log.e("Firestore", "Error updating name", e));
+    }
+    public void fetchSenderIdAndSave() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("events").document(this.eventId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        this.senderId = documentSnapshot.getString("organizerId");
+                        save();
+                    } else {
+                        Log.e("Firestore", "Event not found for senderId");
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error fetching organizerId", e);
+                    save(); // still save on error
+                });
+    }
+
     public void save() {
-        // TODO: Replace with actual database save logic
-        notificationCache.add(this);
-    }
-
-    /** Retrieve all stored notifications */
-    public static List<NotificationModel> getAll() {
-        // TODO: Replace with actual DB query
-        return new ArrayList<>(notificationCache);
-    }
-
-    /** Mark a notification as read by ID */
-    public static void markAsRead(long id) {
-        // TODO: Update database entry when implemented
-        for (NotificationModel n : notificationCache) {
-            if (n.getId() == id) {
-                n.setRead(true);
-                break;
-            }
-        }
-    }
-
-    /** Delete all notifications */
-    public static void clearAll() {
-        // TODO: Replace with DB deletion
-        notificationCache.clear();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection(COLLECTION_NAME)
+                .add(this)
+                .addOnSuccessListener(documentReference -> {
+                    this.notificationId = documentReference.getId();
+                    documentReference.update("notificationId", this.notificationId);
+                    Log.d("NotificationModel", "Saved notification with ID: " + this.notificationId);
+                })
+                .addOnFailureListener(e ->
+                        Log.e("NotificationModel", "Error saving notification", e));
     }
 }

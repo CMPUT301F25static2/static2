@@ -22,6 +22,16 @@ public class Registration {
         this.registeredAt = new Date();
     }
 
+    public Registration(String id, String eventId, String entrantId, EntrantRegistrationStatus status, Date registeredAt, Date respondedAt, Date cancelledAt) {
+        this.id = id;
+        this.eventId = eventId;
+        this.entrantId = entrantId;
+        this.status = status;
+        this.registeredAt = registeredAt;
+        this.respondedAt = respondedAt;
+        this.cancelledAt = cancelledAt;
+    }
+
     // Getters and Setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }

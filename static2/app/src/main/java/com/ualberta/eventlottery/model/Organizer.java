@@ -10,8 +10,8 @@ public class Organizer extends User {
     private String organizationName;
     private String contactInfo;
 
-    public Organizer(String userId, String name, String email, String organizationName) {
-        super(userId, name, email);
+    public Organizer(String userId, String name, String email, String organizationName,String fcmToken) {
+        super(userId, name, email,fcmToken);
         this.organizationName = organizationName;
         this.createdEventIds = new ArrayList<>();
         this.joinedEventIds = new ArrayList<>();

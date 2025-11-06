@@ -1,4 +1,7 @@
 package com.ualberta.eventlottery.ui.organizer.organizerEventInfo;
+
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,16 +10,20 @@ import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+
 import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.model.EventStatus;
-import com.ualberta.eventlottery.ui.organizer.fragment.DialogCustomContent;
 import com.ualberta.eventlottery.repository.EventRepository;
+import com.ualberta.eventlottery.ui.organizer.fragment.DialogCustomContent;
 import com.ualberta.eventlottery.ui.organizer.fragment.DialogUpdateStatus;
 import com.ualberta.eventlottery.ui.organizer.organizerEventQrcode.OrganizerEventQrcodeFragment;
 import com.ualberta.eventlottery.ui.organizer.organizerEventShowcase.OrganizerEventShowcaseFragment;
 import com.ualberta.static2.R;
 import com.ualberta.static2.databinding.FragmentOrganizerEventInfoBinding;
+
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 public class OrganizerEventInfoFragment extends Fragment {
@@ -25,7 +32,8 @@ public class OrganizerEventInfoFragment extends Fragment {
     private FragmentOrganizerEventInfoBinding binding;
     private String eventId;
     private Event currentEvent;
-    private EventRepository eventRepo;
+
+    private EventRepository eventRepository;
     private SimpleDateFormat dateFormat;
 
     public static OrganizerEventInfoFragment newInstance(String eventId) {
@@ -49,15 +57,13 @@ public class OrganizerEventInfoFragment extends Fragment {
 
         receiveArguments();
         initData();
-        setUpView();
-        setUpListener();
+        loadEventData();
     }
 
     private void receiveArguments() {
         Bundle args = getArguments();
         if (args != null && args.containsKey(ARG_EVENT_ID)) {
             eventId = args.getString(ARG_EVENT_ID);
-            Toast.makeText(requireContext(), "Received Event ID: " + eventId, Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(requireContext(), "No event ID received", Toast.LENGTH_SHORT).show();
             requireActivity().onBackPressed();
@@ -65,12 +71,34 @@ public class OrganizerEventInfoFragment extends Fragment {
     }
 
     private void initData() {
-        eventRepo = EventRepository.getInstance();
+        eventRepository = EventRepository.getInstance();
         dateFormat = new SimpleDateFormat("h:mma, MMM dd, yyyy", Locale.getDefault());
     }
 
+    private void loadEventData() {
+        binding.scrollView.setVisibility(View.GONE);
+
+        eventRepository.findEventById(eventId, new EventRepository.EventCallback() {
+            @Override
+            public void onSuccess(Event event) {
+
+                binding.scrollView.setVisibility(View.VISIBLE);
+
+                currentEvent = event;
+                setUpView();
+                setUpListener();
+
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(requireContext(), "Failed to load event: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                requireActivity().onBackPressed();
+            }
+        });
+    }
+
     private void setUpView() {
-        currentEvent = eventRepo.findEventById(eventId);
         if (currentEvent == null) {
             Toast.makeText(requireContext(), "Event not found", Toast.LENGTH_SHORT).show();
             requireActivity().onBackPressed();
@@ -108,18 +136,19 @@ public class OrganizerEventInfoFragment extends Fragment {
         }
 
         if (currentEvent.getEndTime() != null) {
-            String formattedTime = "End: " + dateFormat.format(currentEvent.getEndTime());
+            String formattedTime = dateFormat.format(currentEvent.getEndTime());
             binding.tvEventUpdateEndTime.setText(formattedTime);
         } else {
-            binding.tvEventUpdateEndTime.setText("End: TBD");
+            binding.tvEventUpdateEndTime.setText("TBD");
         }
 
-        //end time
-        if (currentEvent.getEndTime() != null) {
-            String formattedTime = "End: " + dateFormat.format(currentEvent.getEndTime());
-            binding.tvEventUpdateEndTime.setText(formattedTime);
+
+        //registration end time
+        if (currentEvent.getRegistrationEnd() != null) {
+            String formattedTime = dateFormat.format(currentEvent.getRegistrationEnd());
+            binding.tvEventUpdateRegistryEndTime.setText(formattedTime);
         } else {
-            binding.tvEventUpdateEndTime.setText("End: TBD");
+            binding.tvEventUpdateRegistryEndTime.setText("TBD");
         }
 
         //poster
@@ -168,9 +197,11 @@ public class OrganizerEventInfoFragment extends Fragment {
         });
 
         binding.btnEventUpdateEndTime.setOnClickListener(v -> {
-            String formattedTime = currentEvent.getEndTime() != null ?
-                    dateFormat.format(currentEvent.getEndTime()) : "TBD";
-            showEditDialog("endTime", formattedTime);
+            showDateTimePicker("eventEndTime", currentEvent.getEndTime());
+        });
+
+        binding.btnEventUpdateRegistryEndTime.setOnClickListener(v -> {
+            showDateTimePicker("registryEndTime", currentEvent.getRegistrationEnd());
         });
 
         binding.btnEventUpdateLocation.setOnClickListener(v -> {
@@ -181,7 +212,10 @@ public class OrganizerEventInfoFragment extends Fragment {
             String currentStatus = currentEvent.getEventStatus().toString();
             showStatusDialog(currentStatus);
         });
+
+
     }
+
 
     private void showStatusDialog(String currentStatus) {
         DialogUpdateStatus dialog = DialogUpdateStatus.newInstance(currentStatus);
@@ -201,27 +235,101 @@ public class OrganizerEventInfoFragment extends Fragment {
         dialog.show(getChildFragmentManager(), "edit_dialog_" + fieldType);
     }
 
-    private void handleFieldUpdate(String fieldType, String newValue) {
+    private void showDateTimePicker(String fieldType, Date currentDate) {
+        // initialize the calendar with the current date
+        final Calendar calendar = Calendar.getInstance();
+        if (currentDate != null) {
+            calendar.setTime(currentDate);
+        }
+
+        TimePickerDialog timePickerDialog = new TimePickerDialog(
+                requireContext(),
+                (view, hourOfDay, minute) -> {
+                    calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                    calendar.set(Calendar.MINUTE, minute);
+
+                    showDatePicker(fieldType, calendar.getTime());
+                },
+                calendar.get(Calendar.HOUR_OF_DAY),
+                calendar.get(Calendar.MINUTE),
+                false
+        );
+
+        timePickerDialog.setTitle("Select Time");
+        timePickerDialog.show();
+    }
+
+    private void showDatePicker(String fieldType, Date selectedTime) {
+        final Calendar calendar = Calendar.getInstance();
+        if (selectedTime != null) {
+            calendar.setTime(selectedTime);
+        }
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                requireContext(),
+                (view, year, month, dayOfMonth) -> {
+                    calendar.set(Calendar.YEAR, year);
+                    calendar.set(Calendar.MONTH, month);
+                    calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+                    handleFieldUpdate(fieldType, calendar.getTime());
+                },
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
+        );
+
+        datePickerDialog.setTitle("Select Date");
+        datePickerDialog.show();
+    }
+
+    private void handleFieldUpdate(String fieldType, Object newValue) {
         switch (fieldType) {
             case "title":
-                currentEvent.setTitle(newValue);
+                currentEvent.setTitle((String) newValue);
                 break;
             case "description":
-                currentEvent.setDescription(newValue);
+                currentEvent.setDescription((String) newValue);
                 break;
             case "location":
-                currentEvent.setLocation(newValue);
+                currentEvent.setLocation((String) newValue);
                 break;
-            case "endTime":
-                // TODO: add update endTime logic
+            case "eventEndTime":
+                if (newValue instanceof Date) {
+                    currentEvent.setEndTime((Date) newValue);
+                }
                 break;
+            case "registryEndTime":
+                if (newValue instanceof Date) {
+                    currentEvent.setRegistrationEnd((Date) newValue);
+                }
+                break;
+
             case "status":
-                currentEvent.setEventStatus(EventStatus.valueOf(newValue.toUpperCase()));
+                if (newValue instanceof String) {
+                    currentEvent.setEventStatus(EventStatus.valueOf(((String) newValue).toUpperCase()));
+                }
                 break;
         }
-        eventRepo.updateEvent(currentEvent);
-        setUpView();
-        Toast.makeText(requireContext(), fieldType + " updated successfully", Toast.LENGTH_SHORT).show();
+
+
+        eventRepository.updateEvent(currentEvent, new EventRepository.BooleanCallback() {
+            @Override
+            public void onSuccess(boolean result) {
+
+                if (result) {
+                    setUpView();
+                    Toast.makeText(requireContext(), fieldType + " updated successfully", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(requireContext(), "Failed to update " + fieldType, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(requireContext(), "Error updating " + fieldType + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
