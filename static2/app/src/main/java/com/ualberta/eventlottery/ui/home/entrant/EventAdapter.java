@@ -4,6 +4,8 @@ import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -11,6 +13,8 @@ import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ualberta.eventlottery.model.Event;
+import com.ualberta.eventlottery.repository.RegistrationRepository;
+import com.ualberta.eventlottery.utils.UserManager;
 import com.ualberta.static2.R;
 
 import java.text.SimpleDateFormat;
@@ -43,6 +47,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Event event = eventList.get(position);
@@ -56,6 +61,21 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
         holder.eventStatus.setText(event.getRegistrationStatus().toString());
         holder.eventFromTo.setText(getFromToText(event));
         holder.eventSessionStartTime.setText(getSessionStartTimeText(event));
+
+        if (RegistrationRepository.getInstance().findRegistrationByEventAndUser(event.getId(), UserManager.getCurrentUserId()) != null) {
+            holder.btnActionText.setText("Withdraw");
+        } else {
+            holder.btnActionText.setText("Register");
+        }
+        holder.btnAction.setOnClickListener(v -> {
+            if (holder.btnActionText.getText().toString().compareTo("Register") == 0) {
+                event.addToWaitingList(UserManager.getCurrentUserId());
+                holder.btnActionText.setText("Withdraw");
+            } else {
+                event.removeFromWaitingList(UserManager.getCurrentUserId());
+                holder.btnActionText.setText("Register");
+            }
+        });
     }
 
     private String getFromToText(Event event) {
@@ -90,7 +110,8 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
-        TextView eventTitle, entrantsNumber, eventFromTo, eventStatus, eventSessionStartTime;
+        TextView eventTitle, entrantsNumber, eventFromTo, eventStatus, eventSessionStartTime, btnActionText;
+        LinearLayout btnAction;
         public ViewHolder(@NonNull View itemView){
             super(itemView);
             eventTitle = itemView.findViewById(R.id.tv_event_title);
@@ -98,6 +119,8 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
             eventStatus = itemView.findViewById(R.id.tv_event_status);
             eventFromTo = itemView.findViewById(R.id.tv_event_from_to);
             eventSessionStartTime = itemView.findViewById(R.id.tv_event_session_start_time);
+            btnAction = itemView.findViewById(R.id.btn_action);
+            btnActionText = itemView.findViewById(R.id.btn_action_text);
         }
     }
 }
