@@ -14,7 +14,6 @@ public class Registration {
 
     public Registration() {}
 
-
     public Registration(String id, String eventId, String entrantId) {
         this.id = id;
         this.eventId = eventId;
