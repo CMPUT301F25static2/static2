@@ -61,11 +61,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
         Event event = eventList.get(position);
 
         holder.eventTitle.setText(event.getTitle());
-        if (event.getMaxWaitListSize() > 0) {
-            holder.entrantsNumber.setText(event.getWaitListCount() + "/" + event.getMaxWaitListSize());
-        } else {
-            holder.entrantsNumber.setText(event.getWaitListCount() + "/unlimited");
-        }
+        holder.entrantsNumber.setText(getEntrantsText(event.getWaitListCount(), event.getMaxWaitListSize()));
         holder.eventStatus.setText(event.getRegistrationStatus().toString());
         holder.eventFromTo.setText(getFromToText(event));
         holder.eventSessionStartTime.setText(getSessionStartTimeText(event));
@@ -91,17 +87,32 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
 
         holder.btnAction.setOnClickListener(v -> {
             String btnActionText = holder.btnActionText.getText().toString();
+            String userId = UserManager.getCurrentUserId();
             if (btnActionText.compareTo(BTN_ACTION_TEXT_REGISTER) == 0) {
                 holder.btnActionText.setText(WAIT_SYMBOL);
-                event.addToWaitingList(UserManager.getCurrentUserId());
-                registrationRepository.findRegistrationByEventAndUser(event.getId(), UserManager.getCurrentUserId(), callback);
+                registrationRepository.registerUser(event.getId(), userId, callback);
             } else if (btnActionText.compareTo(BTN_ACTION_TEXT_WITHDRAW) == 0){
                 holder.btnActionText.setText(WAIT_SYMBOL);
-                event.removeFromWaitingList(UserManager.getCurrentUserId());
-                registrationRepository.findRegistrationByEventAndUser(event.getId(), UserManager.getCurrentUserId(), callback);
+                registrationRepository.unregisterUser(event.getId(), userId, callback);
             }
         });
         registrationRepository.findRegistrationByEventAndUser(event.getId(), UserManager.getCurrentUserId(), callback);
+    }
+
+    private String getEntrantsText(int waitListCount, int maxWaitListSize) {
+        StringBuffer buffer = new StringBuffer();
+        if (waitListCount >= 0) {
+            buffer.append(waitListCount);
+        } else {
+            buffer.append("-");
+        }
+        buffer.append("/");
+        if (maxWaitListSize > 0) {
+            buffer.append(maxWaitListSize);
+        } else {
+            buffer.append("unlimited");
+        }
+        return buffer.toString();
     }
 
     private String getFromToText(Event event) {
