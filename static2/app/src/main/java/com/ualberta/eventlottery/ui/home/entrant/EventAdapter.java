@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ualberta.eventlottery.model.EntrantRegistrationStatus;
 import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.model.Registration;
 import com.ualberta.eventlottery.repository.RegistrationRepository;
@@ -58,10 +59,24 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        RegistrationRepository registrationRepository = RegistrationRepository.getInstance();
         Event event = eventList.get(position);
 
         holder.eventTitle.setText(event.getTitle());
-        holder.entrantsNumber.setText(getEntrantsText(event.getWaitListCount(), event.getMaxWaitListSize()));
+        holder.entrantsNumber.setText(getEntrantsText(0, event.getMaxWaitListSize()));
+        registrationRepository.watchRegistrationCountByStatus(event.getId(), EntrantRegistrationStatus.WAITING, new RegistrationRepository.CountCallback() {
+            @Override
+            public void onSuccess(int count) {
+                holder.entrantsNumber.setText(getEntrantsText(count, event.getMaxWaitListSize()));
+            }
+
+
+            @Override
+            public void onFailure(Exception e) {
+                Log.e("EventLottery", "failure while watching count of waitlisted entrants", e);
+            }
+        });
+
         holder.eventStatus.setText(event.getRegistrationStatus().toString());
         holder.eventFromTo.setText(getFromToText(event));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -70,7 +85,6 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
         holder.eventSessionStartTime.setText(getSessionStartTimeText(event));
 
         holder.btnActionText.setText(WAIT_SYMBOL);
-        RegistrationRepository registrationRepository = RegistrationRepository.getInstance();
         RegistrationRepository.RegistrationCallback callback = new RegistrationRepository.RegistrationCallback() {
             @Override
             public void onSuccess(Registration registration) {

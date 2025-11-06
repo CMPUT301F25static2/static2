@@ -7,6 +7,7 @@ import com.google.firebase.Firebase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.ualberta.eventlottery.model.Registration;
 import com.ualberta.eventlottery.model.EntrantRegistrationStatus;
@@ -289,18 +290,33 @@ public class RegistrationRepository {
                 .addOnFailureListener(callback::onFailure);
     }
 
+    private Query queryRegistrationCountByStatus(String eventId, EntrantRegistrationStatus status) {
+        return db.collection(COLLECTION_REGISTRATIONS)
+                .whereEqualTo("eventId", eventId)
+                .whereEqualTo("status", status.name());
+    }
+
     /**
      * Gets count of registrations by status for an event
      */
     public void getRegistrationCountByStatus(String eventId, EntrantRegistrationStatus status, CountCallback callback) {
-        db.collection(COLLECTION_REGISTRATIONS)
-                .whereEqualTo("eventId", eventId)
-                .whereEqualTo("status", status.name())
+        queryRegistrationCountByStatus(eventId, status)
                 .get()
                 .addOnSuccessListener(querySnapshot -> callback.onSuccess(querySnapshot.size()))
                 .addOnFailureListener(callback::onFailure);
     }
 
+    public void watchRegistrationCountByStatus(String eventId, EntrantRegistrationStatus status, CountCallback callback) {
+        queryRegistrationCountByStatus(eventId, status)
+                .addSnapshotListener((querySnapshot, error) -> {
+                    if (querySnapshot != null) {
+                        callback.onSuccess(querySnapshot.size());
+                    }
+                    if (error != null) {
+                        callback.onFailure(error);
+                    }
+                });
+    }
 
 
     /**
