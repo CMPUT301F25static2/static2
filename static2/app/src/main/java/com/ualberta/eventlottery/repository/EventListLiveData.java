@@ -81,14 +81,14 @@ public class EventListLiveData extends LiveData<List<Event>> implements EventLis
     @Override
     public void onEvent(@Nullable QuerySnapshot snapshots, @Nullable FirebaseFirestoreException e) {
         if (e != null) {
-            Log.e("Event Lottery", "Snapshot error", e);
+            Log.e("EventLottery", "Snapshot error", e);
             return;
         }
 
         List<Event> data = new ArrayList<>();
         if (snapshots != null) {
             for (DocumentSnapshot doc : snapshots.getDocuments()) {
-                Event model = doc.toObject(Event.class);
+                Event model = EventRepository.fromDocument(doc);
                 if (model != null) {
                     data.add(model);
                 }
