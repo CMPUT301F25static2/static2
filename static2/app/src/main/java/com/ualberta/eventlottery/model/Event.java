@@ -88,20 +88,7 @@ public class Event {
     public void setPrice(double price) { this.price = price; }
 
     public LocalTime getDailyStartTime() { return dailyStartTime; }
-
-    // setDailyStartTime needs to take a string to allow reading from the database
-    // This is being replaced by the other setDailyStartTime that accepts a string param
-    // public void setDailyStartTime(LocalTime dailyStartTime) { this.dailyStartTime = dailyStartTime; }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public void setDailyStartTime(String dailyStartTime) {
-        if (dailyStartTime != null) {
-            this.dailyStartTime = LocalTime.parse(dailyStartTime);
-        } else {
-            this.dailyStartTime = null;
-        }
-    }
-
+    public void setDailyStartTime(LocalTime dailyStartTime) { this.dailyStartTime = dailyStartTime; }
     public int getSessionDuration() { return sessionDuration; }
     public void setSessionDuration(int sessionDuration) { this.sessionDuration = sessionDuration; }
 
@@ -156,6 +143,10 @@ public class Event {
     // List getters (return copies to prevent external modification)
     public List<String> getRegisteredUserIds() { return new ArrayList<>(registeredUserIds); }
     public List<String> getWaitListUserIds() { return new ArrayList<>(waitListUserIds); }
+
+    public void setWaitListUserIds(List<String> waitListUserIds) {
+        this.waitListUserIds = waitListUserIds;
+    }
     public List<String> getConfirmedUserIds() { return new ArrayList<>(confirmedUserIds); }
 
     // Business Logic Methods
