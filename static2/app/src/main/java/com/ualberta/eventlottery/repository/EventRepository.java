@@ -125,6 +125,7 @@ public class EventRepository {
      */
     private Map<String, Object> eventToMap(Event event) {
         Map<String, Object> eventMap = new HashMap<>();
+        eventMap.put("id", event.getId());
         eventMap.put("title", event.getTitle());
         eventMap.put("description", event.getDescription());
         eventMap.put("maxAttendees", event.getMaxAttendees());
