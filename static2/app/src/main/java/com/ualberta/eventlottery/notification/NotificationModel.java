@@ -16,12 +16,16 @@ public class NotificationModel {
     private String title;
     private String body;
     private final Date createdAt;
-    private final String eventId;
+    private String eventId;
     private String senderId;
-    private final List<String> recipientIdList;
+    private List<String> recipientIdList;
     private boolean isRead;
     private static Context appContext;
     private static final String COLLECTION_NAME = "notifications";
+    // Firestore requires a public no-arg constructor
+    public NotificationModel() {
+        this.createdAt = new Date();
+    }
 
     public NotificationModel(String title, String body, String eventId, List<String> recipientIdList) {
         this.title = title;
@@ -44,7 +48,7 @@ public class NotificationModel {
     public String getEventId() { return eventId; }
     public Date getCreatedAt() { return createdAt; }
     public String getSenderId() { return senderId; }
-    public List<String> getRecepientIdList() { return recipientIdList; }
+    public List<String> getRecipientIdList() { return recipientIdList; }
     public boolean getIsRead() { return isRead; }
     public void setIsRead(boolean read) { isRead = read; }
 
