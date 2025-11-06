@@ -22,8 +22,7 @@ public class OrganizerEventShowcaseFragment extends Fragment {
     private static final String ARG_EVENT_ID = "event_id";
     private FragmentOrganizerEventShowcaseBinding binding;
     private String eventId;
-    private Event currentEvent;
-    private EventRepository eventRepo;
+    private EventRepository eventRepository;
     private SimpleDateFormat dateFormat;
 
     public static OrganizerEventShowcaseFragment newInstance(String eventId) {
@@ -71,41 +70,49 @@ public class OrganizerEventShowcaseFragment extends Fragment {
     }
 
     private void initData() {
-        eventRepo = EventRepository.getInstance();
+        eventRepository = EventRepository.getInstance();
         dateFormat = new SimpleDateFormat("h:mma, MMM dd, yyyy", Locale.getDefault());
     }
 
     private void setUpView() {
-        currentEvent = eventRepo.findEventById(eventId);
+        eventRepository.findEventById(eventId, new EventRepository.EventCallback() {
+            @Override
+            public void onSuccess(Event event) {
+                binding.tvEventTitle.setText(event.getTitle());
+                binding.tvEventDescription.setText(event.getDescription());
+                binding.tvEventCapacity.setText("Capacity:" + String.valueOf(event.getMaxAttendees()));
+                binding.tvEventCurrentEntrantsCount.setText(event.getConfirmedCount() + " entrants");
 
-        binding.tvEventTitle.setText(currentEvent.getTitle());
-        binding.tvEventDescription.setText(currentEvent.getDescription());
-        binding.tvEventCapacity.setText("Capacity:" + String.valueOf(currentEvent.getMaxAttendees()));
-        binding.tvEventCurrentEntrantsCount.setText(currentEvent.getConfirmedCount() + " entrants");
+                int fillRate = (event.getConfirmedCount() * 100) / event.getMaxAttendees();
+                binding.tvEventFillRate.setText(String.valueOf(fillRate) + "%");
 
-        int fillRate = (currentEvent.getConfirmedCount() * 100) / currentEvent.getMaxAttendees();
-        binding.tvEventFillRate.setText(String.valueOf(fillRate));
-
-        binding.tvEventFillRatio.setText(currentEvent.getConfirmedCount() + "/" + currentEvent.getMaxAttendees());
+                binding.tvEventFillRatio.setText(event.getConfirmedCount() + "/" + event.getMaxAttendees());
 
 
 
-        if (currentEvent.getPosterUrl() != null && !currentEvent.getPosterUrl().isEmpty()) {
-            // TODO: use the image loading library to load images from web urls
-        } else {
-            binding.ivEventPosterImg.setImageResource(R.drawable.placeholder_background);
-            binding.ivEventGallery.setImageResource(R.drawable.placeholder_background);
-        }
+                if (event.getPosterUrl() != null && !event.getPosterUrl().isEmpty()) {
+                    // TODO: use the image loading library to load images from web urls
+                } else {
+                    binding.ivEventPosterImg.setImageResource(R.drawable.placeholder_background);
+                    binding.ivEventGallery.setImageResource(R.drawable.placeholder_background);
+                }
 
-        if (currentEvent.getStartTime() != null && currentEvent.getEndTime() != null) {
-            String startTime = dateFormat.format(currentEvent.getStartTime());
-            String endTime = dateFormat.format(currentEvent.getEndTime());
-            String formattedTime = startTime + "-" + endTime;
+                if (event.getStartTime() != null && event.getEndTime() != null) {
+                    String startTime = dateFormat.format(event.getStartTime());
+                    String endTime = dateFormat.format(event.getEndTime());
+                    String formattedTime =startTime + "  -  " + endTime;
 
-            binding.tvStartToEnd.setText(formattedTime);
-        } else {
-            binding.tvStartToEnd.setText("TBD");
-        }
+                    binding.tvStartToEnd.setText(formattedTime);
+                } else {
+                    binding.tvStartToEnd.setText("TBD");
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+
+            }
+        });
 
     }
 

@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -42,9 +41,9 @@ public class EntrantsFragment extends Fragment {
         return fragment;
     }
 
-//    public EntrantsFragment() {
-//        // Required empty public constructor
-//    }
+    public EntrantsFragment() {
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -75,16 +74,30 @@ public class EntrantsFragment extends Fragment {
     private void initViews() {
         statusButtons.add(binding.btnEntrantsConfirmed);
         statusButtons.add(binding.btnEntrantsWaiting);
-        statusButtons.add(binding.btnEntrantsPending);
+        statusButtons.add(binding.btnEntrantsSelected);
         statusButtons.add(binding.btnEntrantsCancelled);
 
-        List<Registration> registrations = registrationRepository.getRegistrationsByEvent(eventId);
-        int confirmed = (int) registrations.stream().filter(registration -> registration.getStatus() == EntrantRegistrationStatus.CONFIRMED).count();
-        int waiting = (int) registrations.stream().filter(registration -> registration.getStatus() == EntrantRegistrationStatus.WAITING).count();
-        int pending = (int) registrations.stream().filter(registration -> registration.getStatus() == EntrantRegistrationStatus.REGISTERED).count();
-        int cancelled = (int) registrations.stream().filter(registration -> registration.getStatus() == EntrantRegistrationStatus.CANCELLED).count();
-        updateEntrantsCount(confirmed, waiting, pending, cancelled);
+        loadRegistrationCounts();
+    }
 
+    private void loadRegistrationCounts() {
+        registrationRepository.getRegistrationsByEvent(eventId, new RegistrationRepository.RegistrationListCallback() {
+            @Override
+            public void onSuccess(List<Registration> registrations) {
+                int confirmed = (int) registrations.stream().filter(registration -> registration.getStatus() == EntrantRegistrationStatus.CONFIRMED).count();
+                int waiting = (int) registrations.stream().filter(registration -> registration.getStatus() == EntrantRegistrationStatus.WAITING).count();
+                int selected = (int) registrations.stream().filter(registration -> registration.getStatus() == EntrantRegistrationStatus.SELECTED).count();
+                int cancelled = (int) registrations.stream().filter(registration -> registration.getStatus() == EntrantRegistrationStatus.CANCELLED).count();
+                updateEntrantsCount(confirmed, waiting, selected, cancelled);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(requireContext(), "Failed to load registration counts", Toast.LENGTH_SHORT).show();
+                // Set default counts
+                updateEntrantsCount(0, 0, 0, 0);
+            }
+        });
     }
 
     private void setupClickListeners() {
@@ -104,11 +117,11 @@ public class EntrantsFragment extends Fragment {
             }
         });
 
-        binding.btnEntrantsPending.setOnClickListener(new View.OnClickListener() {
+        binding.btnEntrantsSelected.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updateButtonSelection(binding.btnEntrantsPending);
-                loadPendingEntrants();
+                updateButtonSelection(binding.btnEntrantsSelected);
+                loadSelectedEntrants();
             }
         });
 
@@ -128,11 +141,6 @@ public class EntrantsFragment extends Fragment {
             boolean isSelected = button == selectedButton;
             button.setSelected(isSelected);
 
-//            if (isSelected) {
-//                button.setBackgroundResource(R.drawable.button_selected);
-//            } else {
-//                button.setBackgroundResource(R.drawable.button_selector);
-//            }
             button.setBackgroundResource(R.drawable.button_selector);
         }
     }
@@ -142,23 +150,84 @@ public class EntrantsFragment extends Fragment {
     }
 
     private void loadConfirmedEntrants() {
-        List<Entrant> entrants = getConfirmedEntrants();
-        setupListView(entrants);
+        registrationRepository.getConfirmedRegistrationsByEvent(eventId, new RegistrationRepository.RegistrationListCallback() {
+            @Override
+            public void onSuccess(List<Registration> registrations) {
+                List<Entrant> entrants = registrations.stream()
+                        .map(Registration::getEntrantId)
+                        .map(entrantRepository::findEntrantById)
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+                setupListView(entrants);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(requireContext(), "Failed to load confirmed entrants", Toast.LENGTH_SHORT).show();
+                setupListView(new ArrayList<>());
+            }
+        });
     }
 
     private void loadWaitingEntrants() {
-        List<Entrant> entrants = getWaitingEntrants();
-        setupListView(entrants);
+        registrationRepository.getWaitingRegistrationsByEvent(eventId, new RegistrationRepository.RegistrationListCallback() {
+            @Override
+            public void onSuccess(List<Registration> registrations) {
+                List<Entrant> entrants = registrations.stream()
+                        .map(Registration::getEntrantId)
+                        .map(entrantRepository::findEntrantById)
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+                setupListView(entrants);
+
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(requireContext(), "Failed to load waiting entrants", Toast.LENGTH_SHORT).show();
+                setupListView(new ArrayList<>());
+            }
+        });
     }
 
-    private void loadPendingEntrants() {
-        List<Entrant> entrants = getPendingEntrants();
-        setupListView(entrants);
+    private void loadSelectedEntrants() {
+        registrationRepository.getSelectedRegistrationsByEvent(eventId, new RegistrationRepository.RegistrationListCallback() {
+            @Override
+            public void onSuccess(List<Registration> registrations) {
+                List<Entrant> entrants = registrations.stream()
+                        .map(Registration::getEntrantId)
+                        .map(entrantRepository::findEntrantById)
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+                setupListView(entrants);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(requireContext(), "Failed to load selected entrants", Toast.LENGTH_SHORT).show();
+                setupListView(new ArrayList<>());
+            }
+        });
     }
 
     private void loadCancelledEntrants() {
-        List<Entrant> entrants = getCancelledEntrants();
-        setupListView(entrants);
+        registrationRepository.getRegistrationsByStatus(eventId, EntrantRegistrationStatus.CANCELLED, new RegistrationRepository.RegistrationListCallback() {
+            @Override
+            public void onSuccess(List<Registration> registrations) {
+                List<Entrant> entrants = registrations.stream()
+                        .map(Registration::getEntrantId)
+                        .map(entrantRepository::findEntrantById)
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+                setupListView(entrants);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(requireContext(), "Failed to load cancelled entrants", Toast.LENGTH_SHORT).show();
+                setupListView(new ArrayList<>());
+            }
+        });
     }
 
     private void setupListView(List<Entrant> entrants) {
@@ -169,62 +238,14 @@ public class EntrantsFragment extends Fragment {
         adapter.setOnItemClickListener(entrant -> onEntrantSelected(entrant));
     }
 
-    private List<Entrant> getConfirmedEntrants() {
-        List<Registration> registrations = registrationRepository.getRegistrationsByEvent(eventId);
-        List<Entrant> entrants = registrations.stream()
-                .filter(registration -> registration.getStatus() == EntrantRegistrationStatus.CONFIRMED)
-                .map(Registration::getEntrantId)
-                .map(entrantRepository::findEntrantById)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-
-        return entrants;
-    }
-
-    private List<Entrant> getWaitingEntrants() {
-        List<Registration> registrations = registrationRepository.getRegistrationsByEvent(eventId);
-        List<Entrant> entrants = registrations.stream()
-                .filter(registration -> registration.getStatus() == EntrantRegistrationStatus.WAITING)
-                .map(Registration::getEntrantId)
-                .map(entrantRepository::findEntrantById)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-
-        return entrants;
-    }
-
-    private List<Entrant> getPendingEntrants() {
-        List<Registration> registrations = registrationRepository.getRegistrationsByEvent(eventId);
-        List<Entrant> entrants = registrations.stream()
-                .filter(registration -> registration.getStatus() == EntrantRegistrationStatus.REGISTERED)
-                .map(Registration::getEntrantId)
-                .map(entrantRepository::findEntrantById)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-
-        return entrants;
-    }
-
-    private List<Entrant> getCancelledEntrants() {
-        List<Registration> registrations = registrationRepository.getRegistrationsByEvent(eventId);
-        List<Entrant> entrants = registrations.stream()
-                .filter(registration -> registration.getStatus() == EntrantRegistrationStatus.CANCELLED)
-                .map(Registration::getEntrantId)
-                .map(entrantRepository::findEntrantById)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-
-        return entrants;
-    }
-
     private void onEntrantSelected(Entrant entrant) {
         Toast.makeText(requireContext(), "Selected: " + entrant.getName(), Toast.LENGTH_SHORT).show();
     }
 
-    public void updateEntrantsCount(int confirmed, int waiting, int pending, int cancelled) {
+    public void updateEntrantsCount(int confirmed, int waiting, int selected, int cancelled) {
         binding.tvEventEntrantsConfirmedNumber.setText("(" + confirmed + ")");
         binding.tvEntrantsWaitingNumber.setText("(" + waiting + ")");
-        binding.tvEntrantsPendingNumber.setText("(" + pending + ")");
+        binding.tvEntrantsSelectedNumber.setText("(" + selected + ")");
         binding.tvEntrantsCancelledNumber.setText("(" + cancelled + ")");
     }
 
