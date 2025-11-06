@@ -1,6 +1,7 @@
 package com.ualberta.eventlottery.ui.home.entrant;
 
 import android.os.Build;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ualberta.eventlottery.model.Event;
+import com.ualberta.eventlottery.model.Registration;
 import com.ualberta.eventlottery.repository.RegistrationRepository;
 import com.ualberta.eventlottery.utils.UserManager;
 import com.ualberta.static2.R;
@@ -27,6 +29,12 @@ import java.util.Locale;
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
     private static SimpleDateFormat sdfWithoutYear = new SimpleDateFormat("MMM dd", Locale.CANADA);
     private static SimpleDateFormat sdfWithYear = new SimpleDateFormat("MMM dd, yyyy", Locale.CANADA);
+
+    private static String WAIT_SYMBOL = "\u231B";
+    private static String NOT_ALLOWED_SYMBOL = "\u26D4";
+
+    private static String BTN_ACTION_TEXT_REGISTER = "Register";
+    private static String BTN_ACTION_TEXT_WITHDRAW = "Withdraw";
 
     private List<Event> eventList;
 
@@ -62,20 +70,38 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
         holder.eventFromTo.setText(getFromToText(event));
         holder.eventSessionStartTime.setText(getSessionStartTimeText(event));
 
-        if (RegistrationRepository.getInstance().findRegistrationByEventAndUser(event.getId(), UserManager.getCurrentUserId()) != null) {
-            holder.btnActionText.setText("Withdraw");
-        } else {
-            holder.btnActionText.setText("Register");
-        }
+        holder.btnActionText.setText(WAIT_SYMBOL);
+        RegistrationRepository registrationRepository = RegistrationRepository.getInstance();
+        RegistrationRepository.RegistrationCallback callback = new RegistrationRepository.RegistrationCallback() {
+            @Override
+            public void onSuccess(Registration registration) {
+                if (registration != null) {
+                    holder.btnActionText.setText(BTN_ACTION_TEXT_WITHDRAW);
+                } else {
+                    holder.btnActionText.setText(BTN_ACTION_TEXT_REGISTER);
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Log.e("EventLottery", "failed to find registration", e);
+                holder.btnActionText.setText(NOT_ALLOWED_SYMBOL);
+            }
+        };
+
         holder.btnAction.setOnClickListener(v -> {
-            if (holder.btnActionText.getText().toString().compareTo("Register") == 0) {
+            String btnActionText = holder.btnActionText.getText().toString();
+            if (btnActionText.compareTo(BTN_ACTION_TEXT_REGISTER) == 0) {
+                holder.btnActionText.setText(WAIT_SYMBOL);
                 event.addToWaitingList(UserManager.getCurrentUserId());
-                holder.btnActionText.setText("Withdraw");
-            } else {
+                registrationRepository.findRegistrationByEventAndUser(event.getId(), UserManager.getCurrentUserId(), callback);
+            } else if (btnActionText.compareTo(BTN_ACTION_TEXT_WITHDRAW) == 0){
+                holder.btnActionText.setText(WAIT_SYMBOL);
                 event.removeFromWaitingList(UserManager.getCurrentUserId());
-                holder.btnActionText.setText("Register");
+                registrationRepository.findRegistrationByEventAndUser(event.getId(), UserManager.getCurrentUserId(), callback);
             }
         });
+        registrationRepository.findRegistrationByEventAndUser(event.getId(), UserManager.getCurrentUserId(), callback);
     }
 
     private String getFromToText(Event event) {
