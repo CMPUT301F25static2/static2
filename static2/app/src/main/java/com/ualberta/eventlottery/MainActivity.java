@@ -11,18 +11,24 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.credentials.exceptions.domerrors.NotFoundError;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.auth.FirebaseAuth;
 import com.ualberta.eventlottery.admin.AdminMainActivity;
 import com.ualberta.eventlottery.entrant.EntrantMainActivity;
+import com.ualberta.eventlottery.notification.NotificationController;
 import com.ualberta.eventlottery.organzier.OrganizerMainActivity;
 import com.ualberta.eventlottery.ui.profile.ProfileViewModel;
 import com.ualberta.eventlottery.ui.profile.ProfileSetupActivity;
 import com.ualberta.eventlottery.utils.UserManager;
 import com.ualberta.static2.R;
 import com.ualberta.static2.databinding.ActivityEventLotteryMainBinding;
+
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         //Only initialize the view after User initialization below
 
+        // TODO: store into user profile
         FirebaseMessaging.getInstance().getToken()
                 .addOnCompleteListener(task -> {
                     if (!task.isSuccessful()) {
@@ -107,7 +114,6 @@ public class MainActivity extends AppCompatActivity {
                         });
             }
         });
-
 
         findViewById(R.id.btn_admin).setOnClickListener(new View.OnClickListener() {
             @Override
