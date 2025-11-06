@@ -1,5 +1,10 @@
 package com.ualberta.eventlottery.model;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -11,10 +16,8 @@ public class Event {
     private String description;
     private String category;
     private double price;
-    private Date dailyStartTime;
-    private Date dailyEndTime;
-
- 
+    private LocalTime dailyStartTime;
+    private LocalTime dailyEndTime;
 
     private int sessionDuration;
     private Date createdAt;
@@ -33,11 +36,13 @@ public class Event {
     private int maxAttendees;
     private int maxWaitListSize;
     private int currentWaitListSize;
-
+    private int currentAttendees;
 
     private List<String> registeredUserIds; //All users who registered
     private List<String> waitListUserIds; //Users in waiting list
     private List<String> confirmedUserIds; //Users who confirmed attendance
+
+
 
 
     // Constructors
@@ -57,6 +62,33 @@ public class Event {
         this.title = title;
         this.description = description;
     }
+
+    public LocalTime getDailyStartTime() {
+        return dailyStartTime;
+    }
+
+    public LocalTime getDailyEndTime() {
+        return dailyEndTime;
+    }
+
+    public int getCurrentAttendees() {
+        return currentAttendees;
+    }
+
+    public void setCurrentAttendees(int currentAttendees) {
+        this.currentAttendees = currentAttendees;
+    }
+
+
+    public EventRegistrationStatus getEventRegistrationStatus() {
+        return eventRegistrationStatus;
+    }
+
+    public void setEventRegistrationStatus(EventRegistrationStatus eventRegistrationStatus) {
+        this.eventRegistrationStatus = eventRegistrationStatus;
+    }
+
+
 
     // Getters and Setters
     public String getId() { return id; }
@@ -86,13 +118,23 @@ public class Event {
     public double getPrice() { return price; }
     public void setPrice(double price) { this.price = price; }
 
-    public Date getDailyStartTime() { return dailyStartTime; }
-    public void setDailyStartTime(Date dailyStartTime) { this.dailyStartTime = dailyStartTime; }
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void setDailyStartTime(int hour, int minute) {
+        this.dailyStartTime = LocalTime.of(hour, minute);
+    }
 
-    public Date getDailyEndTime() {  return dailyEndTime; }
-    
+    public void setDailyStartTime(LocalTime time) {
+        this.dailyStartTime = time;
+    }
 
-    public void setDailyEndTime(Date dailyEndTime) {  this.dailyEndTime = dailyEndTime; }
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void setDailyEndTime(int hour, int minute) {
+        this.dailyEndTime = LocalTime.of(hour, minute);
+    }
+
+    public void setDailyEndTime(LocalTime time) {
+        this.dailyEndTime = time;
+    }
        
 
     public int getSessionDuration() { return sessionDuration; }

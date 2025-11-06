@@ -1,21 +1,51 @@
 package com.ualberta.eventlottery.repository;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.model.EventStatus;
 import com.ualberta.eventlottery.model.EventRegistrationStatus;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class EventRepository {
     private static EventRepository instance;
-    private List<Event> eventCache;
+    private FirebaseFirestore db;
+    private static final String COLLECTION_EVENTS = "events";
+
+    // callback interfaces
+    public interface EventCallback {
+        void onSuccess(Event event);
+        void onFailure(Exception e);
+    }
+
+    public interface EventListCallback {
+        void onSuccess(List<Event> events);
+        void onFailure(Exception e);
+    }
+
+    public interface OperationCallback {
+        void onSuccess();
+        void onFailure(Exception e);
+    }
+
+    public interface BooleanCallback {
+        void onSuccess(boolean result);
+        void onFailure(Exception e);
+    }
 
     private EventRepository() {
-        eventCache = new ArrayList<>();
-        initializeSampleData();
+        db = FirebaseFirestore.getInstance();
     }
 
     public static synchronized EventRepository getInstance() {
@@ -25,79 +55,99 @@ public class EventRepository {
         return instance;
     }
 
-    private void initializeSampleData() {
-        //TODO: initialize data from database
-        Calendar calendar = Calendar.getInstance();
+    /**
+     * Converts Firestore document to Event object
+     */
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private Event documentToEvent(DocumentSnapshot document) {
+        if (document == null || !document.exists()) {
+            return null;
+        }
 
-        // example 1: Registration open + upcoming event
-        Event event1 = new Event();
-        event1.setId("1");
-        event1.setTitle("Morning Yoga Session");
-        event1.setDescription("Relaxing morning yoga for all levels");
-        event1.setMaxAttendees(50);
-        event1.setCategory("Health & Wellness");
+        Event event = new Event();
+        event.setId(document.getId());
+        event.setTitle(document.getString("title"));
+        event.setDescription(document.getString("description"));
+        event.setMaxAttendees(document.getLong("maxAttendees").intValue());
+        event.setCategory(document.getString("category"));
+        event.setOrganizerId(document.getString("organizerId"));
 
-        calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_MONTH, 2); // starts in 2 days
-        event1.setEventStart(calendar.getTime());
-        calendar.add(Calendar.HOUR, 2);
-        event1.setEventEnd(calendar.getTime());
+        // Date fields
+        event.setEventStart(document.getDate("eventStart"));
+        event.setEventEnd(document.getDate("eventEnd"));
+        event.setRegistrationStart(document.getDate("registrationStart"));
+        event.setRegistrationEnd(document.getDate("registrationEnd"));
 
-        calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_MONTH, -1); // registration started 1 day ago
-        event1.setRegistrationStart(calendar.getTime());
-        calendar.add(Calendar.DAY_OF_MONTH, 4); // registration ends in 3 days
-        event1.setRegistrationEnd(calendar.getTime());
+        String dailyStartTimeStr = document.getString("dailyStartTime");
+        String dailyEndTimeStr = document.getString("dailyEndTime");
 
-        // example 2: Registration closed + ongoing event
-        Event event2 = new Event();
-        event2.setId("2");
-        event2.setTitle("Tech Conference 2024");
-        event2.setDescription("Annual technology conference");
-        event2.setMaxAttendees(200);
-        event2.setCategory("Technology");
+        if (dailyStartTimeStr != null) {
+            try {
+                LocalTime startTime = LocalTime.parse(dailyStartTimeStr);
+                event.setDailyStartTime(startTime);
+            } catch (DateTimeParseException e) {
+                e.printStackTrace();
+            }
+        }
 
-        calendar = Calendar.getInstance();
-        calendar.add(Calendar.HOUR, -1); // started 1 hour ago
-        event2.setEventStart(calendar.getTime());
-        calendar.add(Calendar.HOUR, 3); // ends in 2 hours
-        event2.setEventEnd(calendar.getTime());
+        if (dailyEndTimeStr != null) {
+            try {
+                LocalTime endTime = LocalTime.parse(dailyEndTimeStr);
+                event.setDailyEndTime(endTime);
+            } catch (DateTimeParseException e) {
+                e.printStackTrace();
+            }
+        }
 
-        calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_MONTH, -7); // registration started 7 days ago
-        event2.setRegistrationStart(calendar.getTime());
-        calendar = Calendar.getInstance();
-        calendar.add(Calendar.HOUR, -2); // registration ended 2 hours ago
-        event2.setRegistrationEnd(calendar.getTime());
 
-        // example 3: finished event
-        Event event3 = new Event();
-        event3.setId("3");
-        event3.setTitle("Charity Run");
-        event3.setDescription("5K run for charity");
-        event3.setMaxAttendees(100);
-        event3.setCategory("Sports");
+        // status fields
+        String eventStatus = document.getString("eventStatus");
+        if (eventStatus != null) {
+            event.setEventStatus(EventStatus.valueOf(eventStatus));
+        }
 
-        calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_MONTH, -7); // started 7 days ago
-        event3.setEventStart(calendar.getTime());
-        calendar.add(Calendar.HOUR, 3);
-        event3.setEventEnd(calendar.getTime());
+        String registrationStatus = document.getString("registrationStatus");
+        if (registrationStatus != null) {
+            event.setRegistrationStatus(EventRegistrationStatus.valueOf(registrationStatus));
+        }
 
-        calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_MONTH, -14); // registration started 14 days ago
-        event3.setRegistrationStart(calendar.getTime());
-        calendar.add(Calendar.DAY_OF_MONTH, 7); // registration ended 7 days ago
-        event3.setRegistrationEnd(calendar.getTime());
+        // current attendees count
+        Long currentAttendees = document.getLong("currentAttendees");
+        if (currentAttendees != null) {
+            event.setCurrentAttendees(currentAttendees.intValue());
+        }
 
-        eventCache.add(event1);
-        eventCache.add(event2);
-        eventCache.add(event3);
-
-        // update status for all events during initialization
-        updateAllEventsStatus();
+        return event;
     }
 
+    /**
+     * Converts Event object to Firestore data map
+     */
+    private Map<String, Object> eventToMap(Event event) {
+        Map<String, Object> eventMap = new HashMap<>();
+        eventMap.put("title", event.getTitle());
+        eventMap.put("description", event.getDescription());
+        eventMap.put("maxAttendees", event.getMaxAttendees());
+        eventMap.put("category", event.getCategory());
+        eventMap.put("organizerId", event.getOrganizerId());
+        eventMap.put("eventStart", event.getEventStart());
+        eventMap.put("eventEnd", event.getEventEnd());
+        eventMap.put("registrationStart", event.getRegistrationStart());
+        eventMap.put("registrationEnd", event.getRegistrationEnd());
+        eventMap.put("dailyStartTime", event.getDailyStartTime() != null ? event.getDailyStartTime().toString() : null);
+        eventMap.put("dailyEndTime", event.getDailyEndTime() != null ? event.getDailyEndTime().toString() : null);
+        eventMap.put("currentAttendees", event.getCurrentAttendees());
+        eventMap.put("eventStatus", event.getEventStatus() != null ? event.getEventStatus().toString() : null);
+        eventMap.put("registrationStatus", event.getRegistrationStatus() != null ? event.getRegistrationStatus().toString() : null);
+        eventMap.put("updatedAt", new Date());
+
+
+        return eventMap;
+    }
+
+    /**
+     * Updates event status based on current time and registration period
+     */
     private void updateEventStatus(Event event) {
         if (event == null) {
             return;
@@ -105,7 +155,7 @@ public class EventRepository {
 
         Date now = new Date();
 
-        // update event status based on current time
+        // Update event status based on current time
         if (event.getEventStart() != null && event.getEventEnd() != null) {
             Date start = event.getEventStart();
             Date end = event.getEventEnd();
@@ -119,105 +169,165 @@ public class EventRepository {
             }
         }
 
-        // update event registration time based on current time
+        // Update registration status
         if (event.getRegistrationStart() != null && event.getRegistrationEnd() != null) {
             Date regStart = event.getRegistrationStart();
             Date regEnd = event.getRegistrationEnd();
 
             if (now.before(regStart)) {
-                // registration hasn't began
-                event.setEventStatus(EventStatus.UPCOMING);
                 event.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_CLOSED);
             } else if (now.after(regStart) && now.before(regEnd)) {
-                // within registration time, check and set event status
                 if (!event.isEventFull()) {
                     event.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_OPEN);
                 } else {
                     event.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_CLOSED);
                 }
             } else if (now.after(regEnd)) {
-                // registration has ended
                 event.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_CLOSED);
             }
         }
 
-        // if event is ongoing or closed, set registration to closed
-//        if (event.getEventStatus() == EventStatus.ONGOING ||
-//                event.getEventStatus() == EventStatus.CLOSED) {
-//            event.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_CLOSED);
-//        }
-
-        // if event is full, set registration to closed
+        // If event is full, set registration to closed
         if (event.isEventFull()) {
             event.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_CLOSED);
         }
     }
 
-    private void updateAllEventsStatus() {
-        for (Event event : eventCache) {
-            updateEventStatus(event);
-        }
+    /**
+     * Finds an event by its ID
+     */
+    public void findEventById(String eventId, EventCallback callback) {
+        db.collection(COLLECTION_EVENTS)
+                .document(eventId)
+                .get()
+                .addOnSuccessListener(document -> {
+                    Event event = null;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        event = documentToEvent(document);
+                    }
+                    if (event != null) {
+                        updateEventStatus(event);
+                        callback.onSuccess(event);
+                    } else {
+                        callback.onFailure(new Exception("Event not found"));
+                    }
+                })
+                .addOnFailureListener(callback::onFailure);
     }
 
-    public void refreshEventsStatus() {
-        updateAllEventsStatus();
+    /**
+     * Retrieves all events from the database
+     */
+    public void getAllEvents(EventListCallback callback) {
+        db.collection(COLLECTION_EVENTS)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<Event> events = new ArrayList<>();
+                    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                        Event event = null;
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            event = documentToEvent(document);
+                        }
+                        if (event != null) {
+                            updateEventStatus(event);
+                            events.add(event);
+                        }
+                    }
+                    callback.onSuccess(events);
+                })
+                .addOnFailureListener(callback::onFailure);
     }
 
-    public Event findEventById(String eventId) {
-        for (Event event : eventCache) {
-            if (event.getId().equals(eventId)) {
-                return event;
-            }
-        }
-        return null;
+    /**
+     * Retrieves events by organizer ID
+     */
+    public void getEventsByOrganizer(String organizerId, EventListCallback callback) {
+        db.collection(COLLECTION_EVENTS)
+                .whereEqualTo("organizerId", organizerId)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<Event> events = new ArrayList<>();
+                    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                        Event event = null;
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            event = documentToEvent(document);
+                        }
+                        if (event != null) {
+                            updateEventStatus(event);
+                            events.add(event);
+                        }
+                    }
+                    callback.onSuccess(events);
+                })
+                .addOnFailureListener(callback::onFailure);
     }
 
-
-
-    public List<Event> getAllEvents() {
-        updateAllEventsStatus();
-        return new ArrayList<>(eventCache);
-    }
-
-
-    public List<Event> getEventsByOrganizer(String organizerId) {
-        updateAllEventsStatus();
-        List<Event> result = new ArrayList<>();
-        for (Event event : eventCache) {
-            if (event.getOrganizerId() != null && event.getOrganizerId().equals(organizerId)) {
-                result.add(event);
-            }
-        }
-        return result;
-    }
-
-
-    public void addEvent(Event event) {
+    /**
+     * Adds a new event to the database
+     */
+    public void addEvent(Event event, OperationCallback callback) {
         updateEventStatus(event);
-        eventCache.add(event);
-    }
 
-
-    public boolean updateEvent(Event updatedEvent) {
-//        updateEventStatus(updatedEvent);
-        for (int i = 0; i < eventCache.size(); i++) {
-            if (eventCache.get(i).getId().equals(updatedEvent.getId())) {
-                eventCache.set(i, updatedEvent);
-                return true;
-            }
+        if (event.getId() == null || event.getId().isEmpty()) {
+            String newId = db.collection(COLLECTION_EVENTS).document().getId();
+            event.setId(newId);
         }
-        return false;
+
+        Map<String, Object> eventData = eventToMap(event);
+        db.collection(COLLECTION_EVENTS)
+                .document(event.getId())
+                .set(eventData)
+                .addOnSuccessListener(aVoid -> callback.onSuccess())
+                .addOnFailureListener(callback::onFailure);
     }
 
-    public boolean deleteEvent(String eventId) {
-        for (int i = 0; i < eventCache.size(); i++) {
-            if (eventCache.get(i).getId().equals(eventId)) {
-                eventCache.remove(i);
-                return true;
-            }
-        }
-        return false;
+    /**
+     * Updates an existing event
+     */
+    public void updateEvent(Event updatedEvent, BooleanCallback callback) {
+        updateEventStatus(updatedEvent);
+
+        Map<String, Object> eventData = eventToMap(updatedEvent);
+        db.collection(COLLECTION_EVENTS)
+                .document(updatedEvent.getId())
+                .update(eventData)
+                .addOnSuccessListener(aVoid -> callback.onSuccess(true))
+                .addOnFailureListener(callback::onFailure);
     }
 
+    /**
+     * Deletes an event by ID
+     */
+    public void deleteEvent(String eventId, BooleanCallback callback) {
+        db.collection(COLLECTION_EVENTS)
+                .document(eventId)
+                .delete()
+                .addOnSuccessListener(aVoid -> callback.onSuccess(true))
+                .addOnFailureListener(callback::onFailure);
+    }
 
+    /**
+     * Retrieves events with open registration
+     */
+    public void getEventsWithOpenRegistration(EventListCallback callback) {
+        db.collection(COLLECTION_EVENTS)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<Event> events = new ArrayList<>();
+                    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                        Event event = null;
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            event = documentToEvent(document);
+                        }
+                        if (event != null) {
+                            updateEventStatus(event);
+                            if (event.getRegistrationStatus() == EventRegistrationStatus.REGISTRATION_OPEN) {
+                                events.add(event);
+                            }
+                        }
+                    }
+                    callback.onSuccess(events);
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
 }

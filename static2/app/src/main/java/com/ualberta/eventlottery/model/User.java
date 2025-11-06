@@ -8,6 +8,7 @@ public class User {
     private String email;
     private String phone;
     private Date createdAt;
+    private String userType;
 
     private String favRecCenter;
 
@@ -34,6 +35,17 @@ public class User {
         this.favRecCenter = "";
     }
 
+    public User(String userId, String name, String email, String phone, String userType, String favRecCenter) {
+        this.userId = userId;
+        this.name = name;
+        this.email = email;
+        this.createdAt = new Date();
+        this.phone = phone;
+        this.userType = userType;
+        this.favRecCenter = favRecCenter;
+    }
+
+
     public User(String userId, String name, String email, String phone, String favRecCenter) {
         this.userId = userId;
         this.name = name;
@@ -42,6 +54,8 @@ public class User {
         this.phone = phone;
         this.favRecCenter = favRecCenter;
     }
+
+
 
     // Getters
     public String getUserId() { return userId; }

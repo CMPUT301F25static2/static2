@@ -29,11 +29,10 @@ public class OrganizerEventDrawFragment extends Fragment {
     private FragmentOrganizerDrawBinding binding;
     private String eventId;
     private Event currentEvent;
-    private EventRepository eventRepo;
-    private RegistrationRepository registrationRepo;
+
+    private EventRepository eventRepository;
+    private RegistrationRepository registrationRepository;
     private SimpleDateFormat dateFormat;
-
-
 
     public static OrganizerEventDrawFragment newInstance(String eventId) {
         OrganizerEventDrawFragment fragment = new OrganizerEventDrawFragment();
@@ -55,8 +54,7 @@ public class OrganizerEventDrawFragment extends Fragment {
 
         receiveArguments();
         initData();
-        setUpView();
-        setUpListener();
+        loadEventData();
     }
 
     private void receiveArguments() {
@@ -71,13 +69,29 @@ public class OrganizerEventDrawFragment extends Fragment {
     }
 
     private void initData() {
-        eventRepo = EventRepository.getInstance();
-        registrationRepo = RegistrationRepository.getInstance();
+        eventRepository = EventRepository.getInstance();
+        registrationRepository = RegistrationRepository.getInstance();
         dateFormat = new SimpleDateFormat("h:mma, MMM dd, yyyy", Locale.getDefault());
     }
 
+    private void loadEventData() {
+        eventRepository.findEventById(eventId, new EventRepository.EventCallback() {
+            @Override
+            public void onSuccess(Event event) {
+                currentEvent = event;
+                setUpView();
+                setUpListener();
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(requireContext(), "Failed to load event: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                requireActivity().onBackPressed();
+            }
+        });
+    }
+
     private void setUpView() {
-        currentEvent = eventRepo.findEventById(eventId);
         if (currentEvent == null) {
             Toast.makeText(requireContext(), "Event not found", Toast.LENGTH_SHORT).show();
             requireActivity().onBackPressed();
@@ -86,7 +100,6 @@ public class OrganizerEventDrawFragment extends Fragment {
 
         binding.tvEventTitle.setText(currentEvent.getTitle());
         binding.tvEventCapacity.setText("Capacity: " + currentEvent.getMaxAttendees());
-
 
         if (currentEvent.getEventStart() != null && currentEvent.getEventEnd() != null ) {
             String formattedStart = dateFormat.format(currentEvent.getEventEnd());
@@ -98,23 +111,44 @@ public class OrganizerEventDrawFragment extends Fragment {
             binding.tvRegistrationTime.setText("Registration Time: TBD");
         }
 
-        List<Registration> waiting= registrationRepo.getRegistrationsByEventAndStatus(eventId, EntrantRegistrationStatus.WAITING);
-        binding.tvEventWaitingNumber.setText(String.valueOf(waiting.size()));
+        loadRegistrationCounts();
+    }
 
-        List<Registration> confirmed = registrationRepo.getRegistrationsByEventAndStatus(eventId, EntrantRegistrationStatus.CONFIRMED);
-        String ratio = String.valueOf(confirmed.size()) + "/" + String.valueOf(currentEvent.getMaxAttendees());
-        binding.tvEventAcceptedRatio.setText(ratio);
+    private void loadRegistrationCounts() {
+        registrationRepository.getRegistrationCountByStatus(eventId, EntrantRegistrationStatus.CONFIRMED, new RegistrationRepository.CountCallback() {
+            @Override
+            public void onSuccess(int confirmedCount) {
+                registrationRepository.getRegistrationCountByStatus(eventId, EntrantRegistrationStatus.WAITING, new RegistrationRepository.CountCallback() {
+                    @Override
+                    public void onSuccess(int waitingCount) {
+                        binding.tvEventWaitingNumber.setText(String.valueOf(waitingCount));
 
-        int availableCount = currentEvent.getMaxAttendees() - confirmed.size();
-        binding.tvEventSpotsLeft.setText(String.valueOf(availableCount));
+                        String ratio = confirmedCount + "/" + currentEvent.getMaxAttendees();
+                        binding.tvEventAcceptedRatio.setText(ratio);
 
-        binding.tvMaxEntrantsMsg.setText("Maximum " + Math.min(availableCount, waiting.size()) + " entrants to draw");
+                        int availableCount = currentEvent.getMaxAttendees() - confirmedCount;
+                        binding.tvEventSpotsLeft.setText(String.valueOf(availableCount));
 
-        // clear input
-        binding.etNumberToDraw.setText("");
-        binding.btnDraw.setEnabled(false);
-        binding.btnDraw.setAlpha(0.5f);
+                        binding.tvMaxEntrantsMsg.setText("Maximum " + Math.min(availableCount, waitingCount) + " entrants to draw");
 
+                        // clear input
+                        binding.etNumberToDraw.setText("");
+                        binding.btnDraw.setEnabled(false);
+                        binding.btnDraw.setAlpha(0.5f);
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        Toast.makeText(requireContext(), "Failed to load waiting count", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(requireContext(), "Failed to load confirmed count", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void setUpListener() {
@@ -151,42 +185,66 @@ public class OrganizerEventDrawFragment extends Fragment {
 
         try {
             int numberToDraw = Integer.parseInt(input);
-            int availableSpots = currentEvent.getMaxAttendees() - registrationRepo.getRegistrationCountByStatus(eventId, EntrantRegistrationStatus.CONFIRMED);
-            int waitingCount = registrationRepo.getRegistrationCountByStatus(eventId, EntrantRegistrationStatus.WAITING);
 
-            // check if exceed available spots
-            if (numberToDraw > availableSpots) {
-                binding.etNumberToDraw.setError("Cannot draw more than " + availableSpots + " entrants");
-                binding.btnDraw.setEnabled(false);
-                binding.btnDraw.setAlpha(0.5f);
-            }
-            // check if exceed waiting list
-            else if (numberToDraw > waitingCount) {
-                binding.etNumberToDraw.setError("Only " + waitingCount + " entrants in waiting list");
-                binding.btnDraw.setEnabled(false);
-                binding.btnDraw.setAlpha(0.5f);
-            }
+            registrationRepository.getRegistrationCountByStatus(eventId, EntrantRegistrationStatus.CONFIRMED, new RegistrationRepository.CountCallback() {
+                @Override
+                public void onSuccess(int confirmedCount) {
+                    registrationRepository.getRegistrationCountByStatus(eventId, EntrantRegistrationStatus.WAITING, new RegistrationRepository.CountCallback() {
+                        @Override
+                        public void onSuccess(int waitingCount) {
+                            int availableSpots = currentEvent.getMaxAttendees() - confirmedCount;
 
-            // check if draw less than 1
-            else if (numberToDraw <= 0) {
-                binding.etNumberToDraw.setError("Must draw at least 1 entrant");
-                binding.btnDraw.setEnabled(false);
-                binding.btnDraw.setAlpha(0.5f);
-            }
+                            // check if exceed available spots
+                            if (numberToDraw > availableSpots) {
+                                binding.etNumberToDraw.setError("Cannot draw more than " + availableSpots + " entrants");
+                                binding.btnDraw.setEnabled(false);
+                                binding.btnDraw.setAlpha(0.5f);
+                            }
+                            // check if exceed waiting list
+                            else if (numberToDraw > waitingCount) {
+                                binding.etNumberToDraw.setError("Only " + waitingCount + " entrants in waiting list");
+                                binding.btnDraw.setEnabled(false);
+                                binding.btnDraw.setAlpha(0.5f);
+                            }
 
-            // valid input
-            else {
-                binding.etNumberToDraw.setError(null);
-                binding.btnDraw.setEnabled(true);
-                binding.btnDraw.setAlpha(1.0f);
-            }
+                            // check if draw less than 1
+                            else if (numberToDraw <= 0) {
+                                binding.etNumberToDraw.setError("Must draw at least 1 entrant");
+                                binding.btnDraw.setEnabled(false);
+                                binding.btnDraw.setAlpha(0.5f);
+                            }
+
+                            // valid input
+                            else {
+                                binding.etNumberToDraw.setError(null);
+                                binding.btnDraw.setEnabled(true);
+                                binding.btnDraw.setAlpha(1.0f);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Exception e) {
+                            binding.etNumberToDraw.setError("Error loading waiting list");
+                            binding.btnDraw.setEnabled(false);
+                            binding.btnDraw.setAlpha(0.5f);
+                        }
+                    });
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    binding.etNumberToDraw.setError("Error loading event data");
+                    binding.btnDraw.setEnabled(false);
+                    binding.btnDraw.setAlpha(0.5f);
+                }
+            });
+
         } catch (NumberFormatException e) {
             binding.etNumberToDraw.setError("Please enter a valid number");
             binding.btnDraw.setEnabled(false);
             binding.btnDraw.setAlpha(0.5f);
         }
     }
-
 
     private void performLotteryDraw() {
         String input = binding.etNumberToDraw.getText().toString().trim();
@@ -198,27 +256,48 @@ public class OrganizerEventDrawFragment extends Fragment {
 
         try {
             int numberToDraw = Integer.parseInt(input);
-            int availableSpots = currentEvent.getMaxAttendees() - registrationRepo.getRegistrationCountByStatus(eventId, EntrantRegistrationStatus.CONFIRMED);
-            int waitingCount = registrationRepo.getRegistrationCountByStatus(eventId, EntrantRegistrationStatus.WAITING);
 
-            // check if exceed available spots
-            if (numberToDraw > availableSpots) {
-                Toast.makeText(requireContext(), "Cannot draw more than available spots: " + availableSpots, Toast.LENGTH_LONG).show();
-                return;
-            }
+            // validate with current counts
+            registrationRepository.getRegistrationCountByStatus(eventId, EntrantRegistrationStatus.CONFIRMED, new RegistrationRepository.CountCallback() {
+                @Override
+                public void onSuccess(int confirmedCount) {
+                    registrationRepository.getRegistrationCountByStatus(eventId, EntrantRegistrationStatus.WAITING, new RegistrationRepository.CountCallback() {
+                        @Override
+                        public void onSuccess(int waitingCount) {
+                            int availableSpots = currentEvent.getMaxAttendees() - confirmedCount;
 
-            if (numberToDraw > waitingCount) {
-                Toast.makeText(requireContext(), "Not enough entrants in waiting list", Toast.LENGTH_LONG).show();
-                return;
-            }
+                            // check if exceed available spots
+                            if (numberToDraw > availableSpots) {
+                                Toast.makeText(requireContext(), "Cannot draw more than available spots: " + availableSpots, Toast.LENGTH_LONG).show();
+                                return;
+                            }
 
-            if (numberToDraw <= 0) {
-                Toast.makeText(requireContext(), "Must draw at least 1 entrant", Toast.LENGTH_SHORT).show();
-                return;
-            }
+                            if (numberToDraw > waitingCount) {
+                                Toast.makeText(requireContext(), "Not enough entrants in waiting list", Toast.LENGTH_LONG).show();
+                                return;
+                            }
 
-            // draw
-            executeRandomDraw(numberToDraw);
+                            if (numberToDraw <= 0) {
+                                Toast.makeText(requireContext(), "Must draw at least 1 entrant", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
+                            // Execute the draw
+                            executeRandomDraw(numberToDraw);
+                        }
+
+                        @Override
+                        public void onFailure(Exception e) {
+                            Toast.makeText(requireContext(), "Failed to load waiting list", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    Toast.makeText(requireContext(), "Failed to load event data", Toast.LENGTH_SHORT).show();
+                }
+            });
 
         } catch (NumberFormatException e) {
             Toast.makeText(requireContext(), "Please enter a valid number", Toast.LENGTH_SHORT).show();
@@ -226,32 +305,51 @@ public class OrganizerEventDrawFragment extends Fragment {
     }
 
     private void executeRandomDraw(int numberToDraw) {
-        List<Registration> waitingRegistrations = registrationRepo.getRegistrationsByStatus(eventId, EntrantRegistrationStatus.WAITING);
+        registrationRepository.getWaitingRegistrationsByEvent(eventId, new RegistrationRepository.RegistrationListCallback() {
+            @Override
+            public void onSuccess(List<Registration> waitingRegistrations) {
+                if (waitingRegistrations.isEmpty()) {
+                    Toast.makeText(requireContext(), "No entrants in waiting list", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-        if (waitingRegistrations.isEmpty()) {
-            Toast.makeText(requireContext(), "No entrants in waiting list", Toast.LENGTH_SHORT).show();
-            return;
-        }
+                Collections.shuffle(waitingRegistrations);
 
-        Collections.shuffle(waitingRegistrations);
+                int actualDrawCount = Math.min(numberToDraw, waitingRegistrations.size());
+                List<Registration> selectedRegistrations = waitingRegistrations.subList(0, actualDrawCount);
 
-        int actualDrawCount = Math.min(numberToDraw, waitingRegistrations.size());
-        List<Registration> selectedRegistrations = waitingRegistrations.subList(0, actualDrawCount);
+                // update each selected registration's status
+                updateSelectedRegistrations(selectedRegistrations, actualDrawCount);
+            }
 
-        // update each selected registration's status
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(requireContext(), "Failed to load waiting list: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void updateSelectedRegistrations(List<Registration> selectedRegistrations, int actualDrawCount) {
         for (Registration registration : selectedRegistrations) {
             registration.setStatus(EntrantRegistrationStatus.SELECTED);
-            registrationRepo.updateRegistration(registration);
+            registrationRepository.updateRegistration(registration, new RegistrationRepository.BooleanCallback() {
+                @Override
+                public void onSuccess(boolean result) {
+                    showDrawResult(actualDrawCount, selectedRegistrations);
+                    loadEventData(); // refresh the view
 
-            // TODO: send notifictaions to all selected entrants
+                    // TODO: Send notifications to all selected entrants
+                }
 
+                @Override
+                public void onFailure(Exception e) {
+
+                }
+            });
         }
 
-        // show result
-        showDrawResult(actualDrawCount, selectedRegistrations);
 
-//        refreshUI();
-        setUpView();
+
     }
 
     private void showDrawResult(int actualDrawCount, List<Registration> selectedRegistrations) {
@@ -266,28 +364,4 @@ public class OrganizerEventDrawFragment extends Fragment {
                 })
                 .show();
     }
-
-//    private void refreshUI() {
-//        // update waiting list
-//        List<Registration> waiting = registrationRepo.getRegistrationsByStatus(eventId, EntrantRegistrationStatus.WAITING);
-//        binding.tvEventWaitingNumber.setText(String.valueOf(waiting.size()));
-//
-//        // update confirmed list and available spots
-//        List<Registration> confirmed = registrationRepo.getRegistrationsByStatus(eventId, EntrantRegistrationStatus.CONFIRMED);
-//        String ratio = confirmed.size() + "/" + currentEvent.getMaxAttendees();
-//        binding.tvEventAcceptedRatio.setText(ratio);
-//
-//        int availableCount = currentEvent.getMaxAttendees() - confirmed.size();
-//        binding.tvEventSpotsLeft.setText(String.valueOf(availableCount));
-//
-//        binding.tvMaxEntrantsMsg.setText("Maximum " + Math.min(availableCount, waiting.size()) + " entrants to draw");
-//
-//        // clear input
-//        binding.etNumberToDraw.setText("");
-//        binding.btnDraw.setEnabled(false);
-//        binding.btnDraw.setAlpha(0.5f);
-//    }
-
-
-
 }
