@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 public class OrganizerEventDrawFragment extends Fragment {
 
@@ -93,14 +94,14 @@ public class OrganizerEventDrawFragment extends Fragment {
             String formattedStart = dateFormat.format(currentEvent.getEndTime());
             String formattedEnd = dateFormat.format(currentEvent.getStartTime());
 
-            binding.tvRegistrationTime.setText("Time: " + formattedStart + " - " + formattedEnd);
+            binding.tvRegistrationTime.setText(formattedStart + "  -  " + formattedEnd);
 
         } else {
-            binding.tvRegistrationTime.setText("Time: TBD");
+            binding.tvRegistrationTime.setText("Registration Time: TBD");
         }
 
-        List<Registration> registered= registrationRepo.getRegistrationsByEventAndStatus(eventId, EntrantRegistrationStatus.REGISTERED);
-        binding.tvEventWaitingNumber.setText(String.valueOf(registered.size()));
+        List<Registration> waiting= registrationRepo.getRegistrationsByEventAndStatus(eventId, EntrantRegistrationStatus.WAITING);
+        binding.tvEventWaitingNumber.setText(String.valueOf(waiting.size()));
 
         List<Registration> confirmed = registrationRepo.getRegistrationsByEventAndStatus(eventId, EntrantRegistrationStatus.CONFIRMED);
         String ratio = String.valueOf(confirmed.size()) + "/" + String.valueOf(currentEvent.getMaxAttendees());
@@ -109,7 +110,12 @@ public class OrganizerEventDrawFragment extends Fragment {
         int availableCount = currentEvent.getMaxAttendees() - confirmed.size();
         binding.tvEventSpotsLeft.setText(String.valueOf(availableCount));
 
-        binding.tvMaxEntrantsMsg.setText("Maximum " + availableCount + " entrants spots available");
+        binding.tvMaxEntrantsMsg.setText("Maximum " + Math.min(availableCount, waiting.size()) + " entrants to draw");
+
+        // clear input
+        binding.etNumberToDraw.setText("");
+        binding.btnDraw.setEnabled(false);
+        binding.btnDraw.setAlpha(0.5f);
 
     }
 
@@ -240,12 +246,14 @@ public class OrganizerEventDrawFragment extends Fragment {
             registrationRepo.updateRegistration(registration);
 
             // TODO: send notifictaions to all selected entrants
+
         }
 
         // show result
         showDrawResult(actualDrawCount, selectedRegistrations);
 
-        refreshUI();
+//        refreshUI();
+        setUpView();
     }
 
     private void showDrawResult(int actualDrawCount, List<Registration> selectedRegistrations) {
@@ -259,31 +267,28 @@ public class OrganizerEventDrawFragment extends Fragment {
                     dialog.dismiss();
                 })
                 .show();
-
-
-
     }
 
-    private void refreshUI() {
-        // update waiting list
-        List<Registration> waiting = registrationRepo.getRegistrationsByStatus(eventId, EntrantRegistrationStatus.WAITING);
-        binding.tvEventWaitingNumber.setText(String.valueOf(waiting.size()));
-
-        // update confirmed list and available spots
-        List<Registration> confirmed = registrationRepo.getRegistrationsByStatus(eventId, EntrantRegistrationStatus.CONFIRMED);
-        String ratio = confirmed.size() + "/" + currentEvent.getMaxAttendees();
-        binding.tvEventAcceptedRatio.setText(ratio);
-
-        int availableSpots = currentEvent.getMaxAttendees() - confirmed.size();
-        binding.tvEventSpotsLeft.setText(String.valueOf(availableSpots));
-
-        binding.tvMaxEntrantsMsg.setText("Maximum " + availableSpots + " entrants spots available");
-
-        // clear input
-        binding.etNumberToDraw.setText("");
-        binding.btnDraw.setEnabled(false);
-        binding.btnDraw.setAlpha(0.5f);
-    }
+//    private void refreshUI() {
+//        // update waiting list
+//        List<Registration> waiting = registrationRepo.getRegistrationsByStatus(eventId, EntrantRegistrationStatus.WAITING);
+//        binding.tvEventWaitingNumber.setText(String.valueOf(waiting.size()));
+//
+//        // update confirmed list and available spots
+//        List<Registration> confirmed = registrationRepo.getRegistrationsByStatus(eventId, EntrantRegistrationStatus.CONFIRMED);
+//        String ratio = confirmed.size() + "/" + currentEvent.getMaxAttendees();
+//        binding.tvEventAcceptedRatio.setText(ratio);
+//
+//        int availableCount = currentEvent.getMaxAttendees() - confirmed.size();
+//        binding.tvEventSpotsLeft.setText(String.valueOf(availableCount));
+//
+//        binding.tvMaxEntrantsMsg.setText("Maximum " + Math.min(availableCount, waiting.size()) + " entrants to draw");
+//
+//        // clear input
+//        binding.etNumberToDraw.setText("");
+//        binding.btnDraw.setEnabled(false);
+//        binding.btnDraw.setAlpha(0.5f);
+//    }
 
 
 
