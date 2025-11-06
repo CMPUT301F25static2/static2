@@ -1,5 +1,6 @@
 package com.ualberta.eventlottery.ui.adminUsers;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.util.Log;
@@ -11,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -20,10 +22,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.ualberta.eventlottery.MainActivity;
+import com.ualberta.eventlottery.admin.AdminMainActivity;
 import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.model.User;
 import com.ualberta.eventlottery.ui.organizer.adapter.OrganizerEventAdapter;
 import com.ualberta.eventlottery.ui.organizer.organizerEventInfo.OrganizerEventInfoFragment;
+import com.ualberta.eventlottery.ui.profile.ProfileFragment;
 import com.ualberta.static2.R;
 import com.ualberta.static2.databinding.FragmentAdminUsersBinding;
 
@@ -79,7 +84,7 @@ public class AdminUsersFragment extends Fragment {
                             String phone = snapshot.getString("phone");
                             String favRecCenter = snapshot.getString("favRecCenter");
 
-                            userArrayList.add(new User("ID: " + userId, name, email, phone, favRecCenter));
+                            userArrayList.add(new User(userId, name, email, phone, favRecCenter));
                         }
 
                         // dummy data
@@ -103,6 +108,22 @@ public class AdminUsersFragment extends Fragment {
 
                         userArrayAdapter.notifyDataSetChanged();
                     }
+                });
+
+        binding.userListView.setOnItemClickListener((parent, view, position, id) -> {
+            User user = userArrayList.get(position);
+            Toast.makeText(requireContext(), "Clicked: " + user.getName(), Toast.LENGTH_SHORT).show();
+            Bundle bundle = new Bundle();
+            bundle.putString("isAdmin", "true");
+            bundle.putString("userId", user.getUserId());
+            Fragment userProfile = new ProfileFragment();
+            userProfile.setArguments(bundle);
+            getParentFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, userProfile)
+                    .addToBackStack(null)
+                    .commit();
+
                 });
 
         binding.searchUsers.addTextChangedListener(new android.text.TextWatcher() {
