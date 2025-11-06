@@ -12,6 +12,7 @@ public class Registration {
     private Date cancelledAt;
 
 
+    public Registration() {}
 
     public Registration(String id, String eventId, String entrantId) {
         this.id = id;

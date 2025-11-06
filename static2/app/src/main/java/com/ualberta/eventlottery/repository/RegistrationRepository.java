@@ -1,5 +1,7 @@
 package com.ualberta.eventlottery.repository;
 
+import com.google.firebase.Firebase;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.ualberta.eventlottery.model.Registration;
 import com.ualberta.eventlottery.model.EntrantRegistrationStatus;
 
@@ -11,11 +13,18 @@ public class RegistrationRepository {
     private static RegistrationRepository instance;
     private List<Registration> registrationCache;
     private EntrantRepository entrantRepository;
+    private FirebaseFirestore db;
+
+    public interface RegistrationCallback {
+        void onSuccess(Registration registration);
+        void onFailure(Exception e);
+    }
 
 
     private RegistrationRepository() {
         registrationCache = new ArrayList<>();
         entrantRepository = EntrantRepository.getInstance();
+        db = FirebaseFirestore.getInstance();
         initializeSampleData();
     }
 
@@ -192,6 +201,23 @@ public class RegistrationRepository {
         }
         return registrations;
 
+    }
+
+    public void findRegistrationByEventAndUser(String eventId, String userId, RegistrationCallback callback) {
+        db.collection("registrations")
+                .whereEqualTo("eventId", eventId)
+                .whereEqualTo("entrantId", userId)
+                .limit(1)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    if (!querySnapshot.isEmpty()) {
+                        Registration registration = querySnapshot.getDocuments().get(0).toObject(Registration.class);
+                        callback.onSuccess(registration);
+                    } else {
+                        callback.onSuccess(null); // No registration found
+                    }
+                })
+                .addOnFailureListener(callback::onFailure);
     }
 
 
