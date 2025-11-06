@@ -39,9 +39,9 @@ public class EventRepository {
 
         calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_MONTH, 2); // starts in 2 days
-        event1.setStartTime(calendar.getTime());
+        event1.setEventStart(calendar.getTime());
         calendar.add(Calendar.HOUR, 2);
-        event1.setEndTime(calendar.getTime());
+        event1.setEventEnd(calendar.getTime());
 
         calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_MONTH, -1); // registration started 1 day ago
@@ -59,9 +59,9 @@ public class EventRepository {
 
         calendar = Calendar.getInstance();
         calendar.add(Calendar.HOUR, -1); // started 1 hour ago
-        event2.setStartTime(calendar.getTime());
+        event2.setEventStart(calendar.getTime());
         calendar.add(Calendar.HOUR, 3); // ends in 2 hours
-        event2.setEndTime(calendar.getTime());
+        event2.setEventEnd(calendar.getTime());
 
         calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_MONTH, -7); // registration started 7 days ago
@@ -80,9 +80,9 @@ public class EventRepository {
 
         calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_MONTH, -7); // started 7 days ago
-        event3.setStartTime(calendar.getTime());
+        event3.setEventStart(calendar.getTime());
         calendar.add(Calendar.HOUR, 3);
-        event3.setEndTime(calendar.getTime());
+        event3.setEventEnd(calendar.getTime());
 
         calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_MONTH, -14); // registration started 14 days ago
@@ -106,9 +106,9 @@ public class EventRepository {
         Date now = new Date();
 
         // update event status based on current time
-        if (event.getStartTime() != null && event.getEndTime() != null) {
-            Date start = event.getStartTime();
-            Date end = event.getEndTime();
+        if (event.getEventStart() != null && event.getEventEnd() != null) {
+            Date start = event.getEventStart();
+            Date end = event.getEventEnd();
 
             if (now.before(start)) {
                 event.setEventStatus(EventStatus.UPCOMING);

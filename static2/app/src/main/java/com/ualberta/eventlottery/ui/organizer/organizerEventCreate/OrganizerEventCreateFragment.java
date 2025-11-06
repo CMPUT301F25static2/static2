@@ -242,8 +242,12 @@ public class OrganizerEventCreateFragment extends Fragment {
             // set times
             newEvent.setRegistrationStart(registrationStartCalendar.getTime());
             newEvent.setRegistrationEnd(registrationEndCalendar.getTime());
-            newEvent.setStartTime(eventStartCalendar.getTime());
-            newEvent.setEndTime(eventEndCalendar.getTime());
+            newEvent.setEventStart(eventStartCalendar.getTime());
+            newEvent.setEventEnd(eventEndCalendar.getTime());
+            newEvent.setDailyStartTime(eventFromCalendar.getTime());
+            newEvent.setDailyEndTime(eventToCalendar.getTime());
+
+
 
             // TODO: Get from tags
             newEvent.setCategory("General");

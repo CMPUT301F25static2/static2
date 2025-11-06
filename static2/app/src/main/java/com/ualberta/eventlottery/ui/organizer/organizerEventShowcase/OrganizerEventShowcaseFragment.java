@@ -97,9 +97,9 @@ public class OrganizerEventShowcaseFragment extends Fragment {
             binding.ivEventGallery.setImageResource(R.drawable.placeholder_background);
         }
 
-        if (currentEvent.getStartTime() != null && currentEvent.getEndTime() != null) {
-            String startTime = dateFormat.format(currentEvent.getStartTime());
-            String endTime = dateFormat.format(currentEvent.getEndTime());
+        if (currentEvent.getEventStart() != null && currentEvent.getEventEnd() != null) {
+            String startTime = dateFormat.format(currentEvent.getEventStart());
+            String endTime = dateFormat.format(currentEvent.getEventEnd());
             String formattedTime =startTime + "  -  " + endTime;
 
             binding.tvStartToEnd.setText(formattedTime);
