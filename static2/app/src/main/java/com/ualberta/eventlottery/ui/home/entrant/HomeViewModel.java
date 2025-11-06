@@ -1,19 +1,24 @@
 package com.ualberta.eventlottery.ui.home.entrant;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+
+import com.ualberta.eventlottery.model.Event;
+import com.ualberta.eventlottery.repository.EventListLiveData;
+import com.ualberta.eventlottery.repository.EventRepository;
+
+import java.util.List;
 
 public class HomeViewModel extends ViewModel {
 
-    private final MutableLiveData<String> mText;
+    private final EventListLiveData availableEventListLiveData;
+
 
     public HomeViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("This is home fragment");
+        availableEventListLiveData = EventRepository.getInstance().getAvailableEvents();
     }
 
-    public LiveData<String> getText() {
-        return mText;
+    public LiveData<List<Event>> getAvailableEvents() {
+        return availableEventListLiveData;
     }
 }
