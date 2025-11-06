@@ -21,6 +21,9 @@ import com.ualberta.eventlottery.model.User;
 import com.ualberta.eventlottery.utils.UserManager;
 import com.ualberta.static2.R;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ProfileViewModel extends ViewModel {
 
     private static final String TAG = "ProfileViewModel";
@@ -80,22 +83,18 @@ public class ProfileViewModel extends ViewModel {
     }
 
     // Save data to Firebase
+    //Changed to prevent overwriting of FCM Tokens
     public void saveProfileToFirebase(String userId) {
         isLoading.setValue(true);
-
-        User profile = new User(
-                userId,
-                name.getValue(),
-                email.getValue(),
-                phone.getValue(),
-                favoriteRecCenter.getValue()
-        );
-
-
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("name", name.getValue());
+        updates.put("email", email.getValue());
+        updates.put("phone", phone.getValue());
+        updates.put("favRecCenter", favoriteRecCenter.getValue());
 
         db.collection("users")
                 .document(userId)
-                .set(profile)
+                .update(updates)
                 .addOnSuccessListener(aVoid -> {
                     isLoading.setValue(false);
                     errorMessage.setValue("Profile saved successfully");
