@@ -1,9 +1,12 @@
 package com.ualberta.eventlottery.notification;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
@@ -17,6 +20,7 @@ import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.ualberta.eventlottery.entrant.EntrantMainActivity;
 import com.ualberta.static2.R;
 import com.ualberta.eventlottery.model.Event;
 
@@ -24,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 
 public class NotificationController {
@@ -39,13 +44,25 @@ public class NotificationController {
 
     //display incoming fcm notifications to users
     public void displayNotification(String title, String body, String eventId) {
-        // TODO: implement functionality where clicking on notification takes you to event page
+        //create intent to set up onClick action of notification
+        Intent intent = new Intent(context, EntrantMainActivity.class);
+        intent.putExtra("eventId", eventId);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                context,
+                0,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 // replace with actual icon
                 .setSmallIcon(R.drawable.ic_add)
                 .setContentTitle(title)
                 .setContentText(body)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true);
+
 
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -57,7 +74,7 @@ public class NotificationController {
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        NotificationManagerCompat.from(context).notify(1, builder.build());
+        NotificationManagerCompat.from(context).notify(new Random().nextInt(), builder.build());
     }
     public void sendNotification(String title, String body, String eventId, List<String> recipientIdList) {
         FirebaseFunctions functions = FirebaseFunctions.getInstance();
@@ -66,7 +83,6 @@ public class NotificationController {
         // Save the notification record
         NotificationModel notification = new NotificationModel(title, body, eventId, recipientIdList);
         notification.fetchSenderIdAndSave();
-
         // Prepare tasks to fetch all users
         List<Task<DocumentSnapshot>> tasks = new ArrayList<>();
         for (String recipientId : recipientIdList) {
@@ -77,7 +93,6 @@ public class NotificationController {
         Tasks.whenAllSuccess(tasks)
                 .addOnSuccessListener(results -> {
                     List<String> tokens = new ArrayList<>();
-
                     for (Object result : results) {
                         DocumentSnapshot userDoc = (DocumentSnapshot) result;
                         if (userDoc.exists()) {

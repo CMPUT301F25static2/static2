@@ -49,9 +49,14 @@ public class NotificationModel {
     public void setIsRead(boolean read) { isRead = read; }
 
 
-    // TODO: implement markAsRead
-    public static void markAsRead(long id) {
 
+    public void markAsRead() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection(COLLECTION_NAME)
+                .document(this.notificationId)
+                .update("isRead", true)
+                .addOnSuccessListener(aVoid -> Log.d("Firestore", "Name successfully updated!"))
+                .addOnFailureListener(e -> Log.e("Firestore", "Error updating name", e));
     }
     public void fetchSenderIdAndSave() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();

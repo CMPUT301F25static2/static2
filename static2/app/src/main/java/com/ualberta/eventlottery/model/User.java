@@ -11,36 +11,42 @@ public class User {
 
     private String favRecCenter;
 
+    private String fcmToken;
+
+
 
     public User() {
     }
 
 
-    public User(String userId, String name, String email) {
+    public User(String userId, String name, String email, String fcmToken) {
         this.userId = userId;
         this.name = name;
         this.email = email;
         this.createdAt = new Date();
         this.phone = "";
         this.favRecCenter = "";
+        this.fcmToken = fcmToken;
     }
 
-    public User(String userId, String name, String email, String phone) {
+    public User(String userId, String name, String email, String phone, String fcmToken) {
         this.userId = userId;
         this.name = name;
         this.email = email;
         this.createdAt = new Date();
         this.phone = phone;
         this.favRecCenter = "";
+        this.fcmToken = fcmToken;
     }
 
-    public User(String userId, String name, String email, String phone, String favRecCenter) {
+    public User(String userId, String name, String email, String phone, String favRecCenter, String fcmToken) {
         this.userId = userId;
         this.name = name;
         this.email = email;
         this.createdAt = new Date();
         this.phone = phone;
         this.favRecCenter = favRecCenter;
+        this.fcmToken = fcmToken;
     }
 
     // Getters
@@ -57,6 +63,8 @@ public class User {
     public void setEmail(String email) { this.email = email; }
     public void setPhone(String phone) { this.phone = phone; }
     public void setFavRecCenter(String favRecCenter) { this.favRecCenter = favRecCenter; }
+    public String getFcmToken() { return fcmToken; }
+    public void setFcmToken(String fcmToken) { this.fcmToken = fcmToken; }
 
     /**
      * Updates user profile information

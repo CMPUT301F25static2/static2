@@ -3,6 +3,7 @@ package com.ualberta.eventlottery.ui.profile;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.ualberta.eventlottery.entrant.EntrantMainActivity;
 import com.ualberta.eventlottery.model.User;
 import com.ualberta.eventlottery.utils.UserManager;
@@ -20,6 +22,7 @@ import com.ualberta.static2.R;
 public class ProfileSetupActivity extends AppCompatActivity {
 
     private EditText etName, etEmail, etPhoneNumber;
+    private String fcmToken;
     private Button btnSaveProfile;
     private FirebaseFirestore db;
 
@@ -37,12 +40,9 @@ public class ProfileSetupActivity extends AppCompatActivity {
 
         btnSaveProfile.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                saveProfile();
-            }
+            public void onClick(View v) { setFCMTokenAndSaveProfile(); }
         });
     }
-
     private void saveProfile() {
         String name = etName.getText().toString().trim();
         String email = etEmail.getText().toString().trim();
@@ -77,7 +77,9 @@ public class ProfileSetupActivity extends AppCompatActivity {
         String userId = UserManager.getCurrentUserId();
 
         // Create user profile
-        User userProfile = new User(userId, name, email, phoneNumber);
+        User userProfile = new User(userId, name, email, phoneNumber, this.fcmToken);
+        Log.d("FCM", "Get method:"+userProfile.getFcmToken());
+
 
         // Save to Firestore
         db.collection("users")
@@ -98,4 +100,22 @@ public class ProfileSetupActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                 });
     }
+    private void setFCMTokenAndSaveProfile() {
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.w("FCM", "Fetching FCM token failed", task.getException());
+                        Toast.makeText(this, "Failed to get FCM token", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    // Get the new FCM registration token
+                    this.fcmToken = task.getResult();
+                    Log.d("FCM", "Fetched FCM token: " + fcmToken);
+
+                    // Now that we have the token, save the profile
+                    saveProfile();
+                });
+    }
+
 }
