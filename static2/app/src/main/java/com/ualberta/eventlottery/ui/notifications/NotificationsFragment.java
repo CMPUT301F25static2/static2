@@ -17,12 +17,24 @@ import com.ualberta.static2.databinding.FragmentNotificationsBinding;
 
 import java.util.List;
 
+/**
+ * Fragment that displays a list of notifications for the current user.
+ * Observes the {@link NotificationsViewModel} and updates the UI in real time.
+ */
 public class NotificationsFragment extends Fragment {
 
     private FragmentNotificationsBinding binding;
     private NotificationsAdapter adapter;
     private NotificationsViewModel notificationsViewModel;
 
+    /**
+     * Inflates the layout, sets up the RecyclerView, and starts observing notification data.
+     *
+     * @param inflater  layout inflater
+     * @param container parent view group
+     * @param savedInstanceState saved state
+     * @return the root view of the fragment
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -35,19 +47,25 @@ public class NotificationsFragment extends Fragment {
         notificationsViewModel = new ViewModelProvider(this).get(NotificationsViewModel.class);
 
         // Setup RecyclerView
-        RecyclerView recyclerView = binding.recyclerNotifications; // ID from binding matches XML
+        RecyclerView recyclerView = binding.recyclerNotifications;
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         adapter = new NotificationsAdapter(notification -> {
-            // Handle onClick here if needed
+            // Handle item click if needed
         });
         recyclerView.setAdapter(adapter);
 
-        // Observe LiveData
+        // Observe LiveData from ViewModel
         notificationsViewModel.getNotifications().observe(getViewLifecycleOwner(), this::updateNotifications);
 
         return root;
     }
 
+    /**
+     * Updates the RecyclerView with the latest notifications.
+     * Shows or hides the empty state view based on data availability.
+     *
+     * @param notifications list of notifications retrieved from Firestore
+     */
     private void updateNotifications(List<NotificationModel> notifications) {
         if (notifications != null && !notifications.isEmpty()) {
             adapter.submitList(notifications);
@@ -57,6 +75,9 @@ public class NotificationsFragment extends Fragment {
         }
     }
 
+    /**
+     * Cleans up the view binding when the fragment's view is destroyed.
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();

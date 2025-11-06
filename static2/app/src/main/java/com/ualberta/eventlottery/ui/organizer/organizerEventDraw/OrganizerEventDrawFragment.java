@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +15,14 @@ import androidx.fragment.app.Fragment;
 import com.ualberta.eventlottery.model.EntrantRegistrationStatus;
 import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.model.Registration;
+import com.ualberta.eventlottery.notification.NotificationController;
 import com.ualberta.eventlottery.repository.EventRepository;
 import com.ualberta.eventlottery.repository.RegistrationRepository;
+import com.ualberta.eventlottery.ui.notifications.NotificationTemplate;
 import com.ualberta.static2.databinding.FragmentOrganizerDrawBinding;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -313,22 +317,96 @@ public class OrganizerEventDrawFragment extends Fragment {
                     return;
                 }
 
+                // Shuffle and select winners
                 Collections.shuffle(waitingRegistrations);
-
                 int actualDrawCount = Math.min(numberToDraw, waitingRegistrations.size());
                 List<Registration> selectedRegistrations = waitingRegistrations.subList(0, actualDrawCount);
 
-                // update each selected registration's status
-                updateSelectedRegistrations(selectedRegistrations, actualDrawCount);
+                // Lists of entrantIds for notifications
+                List<String> selectedEntrantIds = new ArrayList<>();
+                List<String> notSelectedEntrantIds = new ArrayList<>();
+
+                // Track completion of async updates
+                List<Registration> registrationsToUpdate = new ArrayList<>(selectedRegistrations);
+                final int[] updatesCompleted = {0};
+
+                for (Registration registration : waitingRegistrations) {
+                    if (selectedRegistrations.contains(registration)) {
+                        selectedEntrantIds.add(registration.getEntrantId());
+                        registration.setStatus(EntrantRegistrationStatus.SELECTED);
+
+                        registrationRepository.updateRegistration(registration, new RegistrationRepository.BooleanCallback() {
+                            @Override
+                            public void onSuccess(boolean result) {
+                                updatesCompleted[0]++;
+                                checkAllUpdatesDone();
+                            }
+
+                            @Override
+                            public void onFailure(Exception e) {
+                                Log.e("RegistrationUpdate", "Failed to update registration", e);
+                                updatesCompleted[0]++;
+                                checkAllUpdatesDone();
+                            }
+
+                            private void checkAllUpdatesDone() {
+                                if (updatesCompleted[0] >= registrationsToUpdate.size()) {
+                                    // All selected registrations updated, now send notifications
+                                    sendNotifications(selectedEntrantIds, waitingRegistrations, selectedRegistrations);
+                                }
+                            }
+                        });
+                    } else {
+                        notSelectedEntrantIds.add(registration.getEntrantId());
+                    }
+                }
+
+                // Handle case where there are no selected registrations to update
+                if (registrationsToUpdate.isEmpty()) {
+                    sendNotifications(selectedEntrantIds, waitingRegistrations, selectedRegistrations);
+                }
             }
 
             @Override
             public void onFailure(Exception e) {
                 Toast.makeText(requireContext(), "Failed to load waiting list: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
+
+            private void sendNotifications(List<String> selectedEntrantIds, List<Registration> waitingRegistrations, List<Registration> selectedRegistrations) {
+                // Compute not selected IDs
+                List<String> notSelectedEntrantIds = new ArrayList<>();
+                for (Registration registration : waitingRegistrations) {
+                    if (!selectedRegistrations.contains(registration)) {
+                        notSelectedEntrantIds.add(registration.getEntrantId());
+                    }
+                }
+
+                NotificationTemplate notificationTemplate = new NotificationTemplate();
+                NotificationController notificationController = new NotificationController(requireContext());
+
+                // Send notifications
+                notificationController.sendNotification(
+                        notificationTemplate.getAcceptedTitle(currentEvent.getTitle()),
+                        notificationTemplate.getAcceptedBody(currentEvent.getTitle()),
+                        eventId,
+                        selectedEntrantIds
+                );
+
+                notificationController.sendNotification(
+                        notificationTemplate.getAcceptedTitle(currentEvent.getTitle()),
+                        notificationTemplate.getAcceptedBody(currentEvent.getTitle()),
+                        eventId,
+                        notSelectedEntrantIds
+                );
+
+                // Show result
+                showDrawResult(selectedRegistrations.size(), selectedRegistrations);
+
+                // Optional: update local UI or cache if needed
+                updateSelectedRegistrations(selectedRegistrations, selectedRegistrations.size());
+            }
         });
     }
-
     private void updateSelectedRegistrations(List<Registration> selectedRegistrations, int actualDrawCount) {
         for (Registration registration : selectedRegistrations) {
             registration.setStatus(EntrantRegistrationStatus.SELECTED);
