@@ -2,10 +2,18 @@ package com.ualberta.eventlottery.repository;
 
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.Firebase;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.ualberta.eventlottery.model.Registration;
 import com.ualberta.eventlottery.model.EntrantRegistrationStatus;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +52,7 @@ public class RegistrationRepository {
         void onSuccess(int count);
         void onFailure(Exception e);
     }
+
 
     private RegistrationRepository() {
         db = FirebaseFirestore.getInstance();
@@ -122,14 +131,10 @@ public class RegistrationRepository {
      * Finds registration by event ID and user ID
      */
     public void findRegistrationByEventAndUser(String eventId, String userId, RegistrationCallback callback) {
-        db.collection(COLLECTION_REGISTRATIONS)
-                .whereEqualTo("eventId", eventId)
-                .whereEqualTo("entrantId", userId)
-                .limit(1)
-                .get()
+        queryRegistrationByEventAndUser(eventId, userId)
                 .addOnSuccessListener(querySnapshot -> {
                     if (!querySnapshot.isEmpty()) {
-                        Registration registration = documentToRegistration(querySnapshot.getDocuments().get(0));
+                        Registration registration = querySnapshot.getDocuments().get(0).toObject(Registration.class);
                         callback.onSuccess(registration);
                     } else {
                         callback.onSuccess(null); // No registration found
@@ -137,6 +142,7 @@ public class RegistrationRepository {
                 })
                 .addOnFailureListener(callback::onFailure);
     }
+
 
     /**
      * Retrieves all registrations for a specific event
@@ -284,18 +290,33 @@ public class RegistrationRepository {
                 .addOnFailureListener(callback::onFailure);
     }
 
+    private Query queryRegistrationCountByStatus(String eventId, EntrantRegistrationStatus status) {
+        return db.collection(COLLECTION_REGISTRATIONS)
+                .whereEqualTo("eventId", eventId)
+                .whereEqualTo("status", status.name());
+    }
+
     /**
      * Gets count of registrations by status for an event
      */
     public void getRegistrationCountByStatus(String eventId, EntrantRegistrationStatus status, CountCallback callback) {
-        db.collection(COLLECTION_REGISTRATIONS)
-                .whereEqualTo("eventId", eventId)
-                .whereEqualTo("status", status.name())
+        queryRegistrationCountByStatus(eventId, status)
                 .get()
                 .addOnSuccessListener(querySnapshot -> callback.onSuccess(querySnapshot.size()))
                 .addOnFailureListener(callback::onFailure);
     }
 
+    public void watchRegistrationCountByStatus(String eventId, EntrantRegistrationStatus status, CountCallback callback) {
+        queryRegistrationCountByStatus(eventId, status)
+                .addSnapshotListener((querySnapshot, error) -> {
+                    if (querySnapshot != null) {
+                        callback.onSuccess(querySnapshot.size());
+                    }
+                    if (error != null) {
+                        callback.onFailure(error);
+                    }
+                });
+    }
 
 
     /**
@@ -327,6 +348,78 @@ public class RegistrationRepository {
             @Override
             public void onSuccess(Registration registration) {
                 callback.onSuccess(registration != null);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                callback.onFailure(e);
+            }
+        });
+    }
+
+    private Task<QuerySnapshot> queryRegistrationByEventAndUser(String eventId, String userId) {
+        return db.collection(COLLECTION_REGISTRATIONS)
+                .whereEqualTo("eventId", eventId)
+                .whereEqualTo("entrantId", userId)
+                .limit(1)
+                .get();
+    }
+
+    public void registerUser(String eventId, String userId, RegistrationCallback callback) {
+        findRegistrationByEventAndUser(eventId, userId, new RegistrationCallback() {
+            @Override
+            public void onSuccess(Registration registration) {
+                if (registration != null) {
+                    // Already registered so nothing to do.
+                    callback.onSuccess(registration);
+                } else {
+                    final Registration newRegistration = new Registration();
+                    DocumentReference docRef = db.collection(COLLECTION_REGISTRATIONS).document();
+                    newRegistration.setId(docRef.getId());
+                    newRegistration.setEventId(eventId);
+                    newRegistration.setEntrantId(userId);
+                    newRegistration.setStatus(EntrantRegistrationStatus.WAITING);
+                    newRegistration.setRegisteredAt(new Date());
+
+                    docRef.set(newRegistration)
+                            .addOnSuccessListener(aVoid -> callback.onSuccess(newRegistration))
+                            .addOnFailureListener(callback::onFailure);
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                callback.onFailure(e);
+            }
+        });
+    }
+
+    public void unregisterUser(String eventId, String userId, RegistrationCallback callback) {
+        findRegistrationByEventAndUser(eventId, userId, new RegistrationCallback() {
+            @Override
+            public void onSuccess(Registration registration) {
+                if (registration != null) {
+                    queryRegistrationByEventAndUser(eventId, userId)
+                            .addOnSuccessListener(querySnapshot -> {
+                                if (!querySnapshot.isEmpty()) {
+                                    DocumentSnapshot doc = querySnapshot.getDocuments().get(0);
+                                    db.collection(COLLECTION_REGISTRATIONS)
+                                            .document(doc.getId())
+                                            .delete()
+                                            .addOnSuccessListener(v -> {
+                                                callback.onSuccess(null);
+                                            })
+                                            .addOnFailureListener(callback::onFailure);
+                                } else {
+                                    // Not registered yet so nothing to do
+                                    callback.onSuccess(null);
+                                }
+                            })
+                            .addOnFailureListener(callback::onFailure);
+                } else {
+                    // Not yet registered so nothing to do.
+                    callback.onSuccess(null);
+                }
             }
 
             @Override
