@@ -7,21 +7,29 @@ import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.ualberta.eventlottery.admin.AdminMainActivity;
 import com.ualberta.eventlottery.entrant.EntrantMainActivity;
 import com.ualberta.eventlottery.model.User;
+import com.ualberta.eventlottery.organzier.OrganizerMainActivity;
 import com.ualberta.eventlottery.utils.UserManager;
 import com.ualberta.static2.R;
 
 public class ProfileSetupActivity extends AppCompatActivity {
 
     private EditText etName, etEmail, etPhoneNumber;
+    private RadioGroup radioUserType;
+    private RadioButton radioEntrant, radioOrganizer, radioAdmin;
     private Button btnSaveProfile;
     private FirebaseFirestore db;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +42,11 @@ public class ProfileSetupActivity extends AppCompatActivity {
         etEmail = findViewById(R.id.et_email);
         etPhoneNumber = findViewById(R.id.et_phone_number);
         btnSaveProfile = findViewById(R.id.btn_save_profile);
+
+        radioUserType = findViewById(R.id.radio_user_type);
+        radioEntrant = findViewById(R.id.radio_entrant);
+        radioOrganizer = findViewById(R.id.radio_organizer);
+        radioAdmin = findViewById(R.id.radio_admin);
 
         btnSaveProfile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,8 +89,10 @@ public class ProfileSetupActivity extends AppCompatActivity {
         // Get the current user ID
         String userId = UserManager.getCurrentUserId();
 
+        String userType = getUserType();
+
         // Create user profile
-        User userProfile = new User(userId, name, email, phoneNumber);
+        User userProfile = new User(userId, name, email, phoneNumber, userType, "");
 
         // Save to Firestore
         db.collection("users")
@@ -88,9 +103,10 @@ public class ProfileSetupActivity extends AppCompatActivity {
                             "Profile saved successfully", Toast.LENGTH_SHORT).show();
 
                     // Navigate to EntrantMainActivity
-                    Intent intent = new Intent(ProfileSetupActivity.this, EntrantMainActivity.class);
-                    startActivity(intent);
-                    finish();
+//                    Intent intent = new Intent(ProfileSetupActivity.this, EntrantMainActivity.class);
+//                    startActivity(intent);
+//                    finish();
+                    navigateToUserHome(userType);
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(ProfileSetupActivity.this,
@@ -98,4 +114,37 @@ public class ProfileSetupActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                 });
     }
+
+    private void navigateToUserHome(String userType) {
+        Intent intent;
+
+        switch (userType) {
+            case "organizer":
+                intent = new Intent(ProfileSetupActivity.this, OrganizerMainActivity.class);
+                break;
+            case "admin":
+                intent = new Intent(ProfileSetupActivity.this, AdminMainActivity.class);
+                break;
+            case "entrant":
+            default:
+                intent = new Intent(ProfileSetupActivity.this, EntrantMainActivity.class);
+                break;
+        }
+
+        startActivity(intent);
+        finish();
+    }
+
+    private String getUserType() {
+        int selectedId = radioUserType.getCheckedRadioButtonId();
+
+        if (selectedId == R.id.radio_organizer) {
+            return "organizer";
+        } else if (selectedId == R.id.radio_admin) {
+            return "admin";
+        } else {
+            return "entrant";
+        }
+    }
+
 }

@@ -10,21 +10,17 @@ import androidx.fragment.app.Fragment;
 
 import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.repository.EventRepository;
-import com.ualberta.eventlottery.ui.organizer.organizerEventShowcase.OrganizerEventShowcaseFragment;
+
 import com.ualberta.static2.R;
 import com.ualberta.static2.databinding.FragmentOrganizerEventQrcodeBinding;
-import com.ualberta.static2.databinding.FragmentOrganizerEventShowcaseBinding;
 
-import java.text.SimpleDateFormat;
-import java.util.Locale;
 
 public class OrganizerEventQrcodeFragment extends Fragment {
 
     private static final String ARG_EVENT_ID = "event_id";
     private FragmentOrganizerEventQrcodeBinding binding;
     private String eventId;
-    private Event currentEvent;
-    private EventRepository eventRepo;
+    private EventRepository eventRepository = EventRepository.getInstance();
 
     public static OrganizerEventQrcodeFragment newInstance(String eventId) {
         OrganizerEventQrcodeFragment fragment = new OrganizerEventQrcodeFragment();
@@ -51,7 +47,6 @@ public class OrganizerEventQrcodeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         receiveArguments();
-        initData();
         setUpView();
         setUpListener();
     }
@@ -68,27 +63,34 @@ public class OrganizerEventQrcodeFragment extends Fragment {
             requireActivity().onBackPressed();
         }
     }
-
-    private void initData() {
-        eventRepo = EventRepository.getInstance();
-    }
+    
 
     private void setUpView() {
-        currentEvent = eventRepo.findEventById(eventId);
+       eventRepository.findEventById(eventId, new EventRepository.EventCallback() {
+           @Override
+           public void onSuccess(Event event) {
+               binding.tvEventTitle.setText(event.getTitle());
 
-        binding.tvEventTitle.setText(currentEvent.getTitle());
+               if (event.getPosterUrl() != null && !event.getPosterUrl().isEmpty()) {
+                   // TODO: use the image loading library to load images from web urls
+               } else {
+                   binding.ivEventPosterImg.setImageResource(R.drawable.placeholder_background);
+               }
 
-        if (currentEvent.getPosterUrl() != null && !currentEvent.getPosterUrl().isEmpty()) {
-            // TODO: use the image loading library to load images from web urls
-        } else {
-            binding.ivEventPosterImg.setImageResource(R.drawable.placeholder_background);
-        }
+               if (event.getQrCodeUrl() != null && !event.getQrCodeUrl().isEmpty()) {
+                   // TODO: use the image loading library to load images from web urls
+               } else {
+                   binding.ivEventQrcode.setImageResource(R.drawable.qrcode);
+               }
+           }
 
-        if (currentEvent.getQrCodeUrl() != null && !currentEvent.getQrCodeUrl().isEmpty()) {
-            // TODO: use the image loading library to load images from web urls
-        } else {
-            binding.ivEventQrcode.setImageResource(R.drawable.qrcode);
-        }
+           @Override
+           public void onFailure(Exception e) {
+
+           }
+       });
+
+       
     }
 
     private void setUpListener() {

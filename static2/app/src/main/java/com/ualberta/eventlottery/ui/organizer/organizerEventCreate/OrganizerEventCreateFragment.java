@@ -2,6 +2,7 @@ package com.ualberta.eventlottery.ui.organizer.organizerEventCreate;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -14,16 +15,18 @@ import androidx.fragment.app.Fragment;
 import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.model.EventRegistrationStatus;
 import com.ualberta.eventlottery.repository.EventRepository;
+import com.ualberta.eventlottery.repository.RegistrationRepository;
+import com.ualberta.eventlottery.utils.UserManager;
 import com.ualberta.static2.databinding.FragmentOrganizerEventCreateBinding;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
-import java.util.UUID;
 
 public class OrganizerEventCreateFragment extends Fragment {
     private FragmentOrganizerEventCreateBinding binding;
-    private EventRepository eventRepo;
+    private EventRepository eventRepository;
+    private String organizerId;
 
     private Calendar registrationStartCalendar;
     private Calendar registrationEndCalendar;
@@ -52,7 +55,8 @@ public class OrganizerEventCreateFragment extends Fragment {
     }
 
     private void initData() {
-        eventRepo = EventRepository.getInstance();
+        eventRepository = EventRepository.getInstance();
+        organizerId = UserManager.getCurrentUserId();
 
         // initialize date formats
         dateFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
@@ -226,9 +230,8 @@ public class OrganizerEventCreateFragment extends Fragment {
         try {
             // create new event
             Event newEvent = new Event();
-            // TODO: get ID from database and set
-            newEvent.setId(UUID.randomUUID().toString());
-//            newEvent.setOrganizerId("current_organizer_id");
+
+            newEvent.setOrganizerId(organizerId); // Use current user's organizer ID
             newEvent.setTitle(binding.etCreateEventTitle.getText().toString().trim());
             newEvent.setDescription(binding.etCreateEventDescription.getText().toString().trim());
             newEvent.setLocation(binding.etCreateEventLocation.getText().toString().trim());
@@ -244,23 +247,42 @@ public class OrganizerEventCreateFragment extends Fragment {
             newEvent.setRegistrationEnd(registrationEndCalendar.getTime());
             newEvent.setEventStart(eventStartCalendar.getTime());
             newEvent.setEventEnd(eventEndCalendar.getTime());
-            newEvent.setDailyStartTime(eventFromCalendar.getTime());
-            newEvent.setDailyEndTime(eventToCalendar.getTime());
 
-
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                newEvent.setDailyStartTime(
+                        eventFromCalendar.get(Calendar.HOUR_OF_DAY),
+                        eventFromCalendar.get(Calendar.MINUTE)
+                );
+                newEvent.setDailyEndTime(
+                        eventToCalendar.get(Calendar.HOUR_OF_DAY),
+                        eventToCalendar.get(Calendar.MINUTE)
+                );
+            }
 
             // TODO: Get from tags
             newEvent.setCategory("General");
 
             newEvent.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_OPEN);
+            newEvent.setCurrentAttendees(0); // Initialize with 0 attendees
 
-            // save to repository
-            eventRepo.addEvent(newEvent);
+            // Save to Firestore using EventManger with callback
+            eventRepository.addEvent(newEvent, new EventRepository.OperationCallback() {
+                @Override
+                public void onSuccess() {
+                    requireActivity().runOnUiThread(() -> {
+                        Toast.makeText(requireContext(), "Event created successfully!", Toast.LENGTH_SHORT).show();
+                        // Go back to previous page
+                        requireActivity().onBackPressed();
+                    });
+                }
 
-            Toast.makeText(requireContext(), "Event created successfully!", Toast.LENGTH_SHORT).show();
-
-            // go back to previous page
-            requireActivity().onBackPressed();
+                @Override
+                public void onFailure(Exception e) {
+                    requireActivity().runOnUiThread(() -> {
+                        Toast.makeText(requireContext(), "Failed to create event: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+                }
+            });
 
         } catch (NumberFormatException e) {
             Toast.makeText(requireContext(), "Capacity must be a valid number", Toast.LENGTH_SHORT).show();
@@ -330,3 +352,4 @@ public class OrganizerEventCreateFragment extends Fragment {
         binding = null;
     }
 }
+
