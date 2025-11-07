@@ -75,7 +75,7 @@ public class AdminEventFragment extends Fragment {
 
 
         eventArrayList = new ArrayList<>();
-        eventArrayAdapter = new EventAdapter(eventArrayList);
+        eventArrayAdapter = new EventAdapter(eventArrayList, null);
         recyclerView.setAdapter(eventArrayAdapter);
 
 
@@ -138,7 +138,7 @@ public class AdminEventFragment extends Fragment {
             public void afterTextChanged(Editable editable) {
                 String searchText = editable.toString().toLowerCase();
                 filtered = new ArrayList<>();
-                filteredEventAdapter = new EventAdapter(filtered);
+                filteredEventAdapter = new EventAdapter(filtered, null);
 
                 for (Event event : eventArrayList) {
                     if (event.getTitle().toLowerCase().contains(searchText.toLowerCase())){
