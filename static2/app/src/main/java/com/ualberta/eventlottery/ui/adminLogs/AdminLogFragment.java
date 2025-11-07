@@ -12,6 +12,9 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.ualberta.static2.databinding.FragmentAdminLogsBinding;
 
+/**
+ * This is a class that serves as the logs screen for the admin.
+ */
 public class AdminLogFragment extends Fragment {
 
     private FragmentAdminLogsBinding binding;
@@ -35,3 +38,4 @@ public class AdminLogFragment extends Fragment {
         binding = null;
     }
 }
+//To do

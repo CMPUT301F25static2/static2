@@ -16,20 +16,23 @@ import com.ualberta.static2.R;
 import com.ualberta.static2.databinding.ActivityAdminMainBinding;
 import com.ualberta.static2.databinding.ActivityEventLotteryMainBinding;
 
+/**
+ * This is the main activity for the admin.
+ */
 
 public class AdminMainActivity extends AppCompatActivity{
 
     private ActivityAdminMainBinding binding;
 
+    /**
+     * Called when the activity is starting.
+     *
+     * @param savedInstanceState Contains the data saved in the previous state most
+     * recently supplied in onSaveInstanceState(Bundle).
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-
- //       binding = ActivityAdminMainBinding.inflate(getLayoutInflater());
-//        setContentView(binding.getRoot());
-
- //       NavController navController = Navigation.findNavController(this, R.id.fragment_container);
-//        NavigationUI.setupWithNavController(binding.navAdmin, navController);
 
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_admin_main);
