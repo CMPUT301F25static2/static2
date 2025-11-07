@@ -39,6 +39,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * @author Lumbani
+ * @version 1.0
  * This is a class that serves as the home screen for the admin.
  */
 public class AdminHomeFragment extends Fragment {
