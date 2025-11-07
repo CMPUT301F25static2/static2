@@ -5,7 +5,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -27,6 +26,11 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
+/*
+ * Adapter class for displaying a list of events in a RecyclerView for entrants
+ * Handles the binding of event data to view holders, managers user interactions
+ * for registration and withdrawal, and displays real-time waitlist count
+ */
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
     private static SimpleDateFormat sdfWithoutYear = new SimpleDateFormat("MMM dd", Locale.CANADA);
     private static SimpleDateFormat sdfWithYear = new SimpleDateFormat("MMM dd, yyyy", Locale.CANADA);
@@ -38,15 +42,33 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
     private static String BTN_ACTION_TEXT_WITHDRAW = "Withdraw";
 
     private List<Event> eventList;
+    private OnEventListener onEventListener;
 
-    public EventAdapter(List<Event> eventList){
+    /**
+     * Constructs an EventAdapter with a specified eventList.
+     * @param eventList the list of events to display
+     */
+    public EventAdapter(List<Event> eventList, OnEventListener onEventListener){
         this.eventList = eventList;
+        this.onEventListener = onEventListener;
     }
 
+    /**
+     * Updates the adapter with a new event and notifies the observer of any changes.
+     * @param newEvents the list of new events to display
+     */
     public void updateEvents(List<Event> newEvents){
         this.eventList = newEvents;
         notifyDataSetChanged();
     }
+
+    /**
+     * Creates a new ViewHolder based on the event item layout.
+     * @param parent   The ViewGroup into which the new View will be added after it is bound to
+     *                 an adapter position.
+     * @param viewType The view type of the new View.
+     * @return
+     */
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -55,7 +77,16 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
         return new ViewHolder(view);
     }
 
-
+    /**
+     * Binds event data to a specified position in the ViewHolder
+     * Sets the event details including title, waitlist count, status, dates, and time.
+     * Configures action button based on user registration status and sets up the listeners
+     * for withdrawals and registrations.
+     *
+     * @param holder   The ViewHolder which should be updated to represent the contents of the
+     *                 item at the given position in the data set.
+     * @param position The position of the item within the adapter's data set.
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
@@ -114,6 +145,12 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
             }
         });
         registrationRepository.findRegistrationByEventAndUser(event.getId(), UserManager.getCurrentUserId(), callback);
+
+        holder.itemView.setOnClickListener(v -> {
+            if (onEventListener != null) {
+                onEventListener.onEventClick(event);
+            }
+        });
     }
 
     private String getEntrantsText(int waitListCount, int maxWaitListSize) {
@@ -158,11 +195,18 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
         return sessionStartTime.format(DateTimeFormatter.ofPattern("hh:mm a"));
     }
 
+    /**
+     * Returns the total number of events in the adapter
+     * @return the size of the event list
+     */
     @Override
     public int getItemCount(){
         return eventList.size();
     }
 
+    /**
+     * ViewHolder class for an event item in the containing Recycler View
+     */
     public static class ViewHolder extends RecyclerView.ViewHolder{
         TextView eventTitle, entrantsNumber, eventFromTo, eventStatus, eventSessionStartTime, btnActionText;
         LinearLayout btnAction;
@@ -176,5 +220,9 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
             btnAction = itemView.findViewById(R.id.btn_action);
             btnActionText = itemView.findViewById(R.id.btn_action_text);
         }
+    }
+
+    public interface OnEventListener {
+        void onEventClick(Event event);
     }
 }

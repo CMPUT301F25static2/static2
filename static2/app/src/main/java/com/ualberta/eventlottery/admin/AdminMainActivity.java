@@ -17,19 +17,15 @@ import com.ualberta.static2.databinding.ActivityAdminMainBinding;
 import com.ualberta.static2.databinding.ActivityEventLotteryMainBinding;
 
 /**
- * This is the main activity for the admin.
+ * @author Lumbani
+ * @version 1.0
+ * This is the main activity class for the admin.
  */
 
 public class AdminMainActivity extends AppCompatActivity{
 
     private ActivityAdminMainBinding binding;
 
-    /**
-     * Called when the activity is starting.
-     *
-     * @param savedInstanceState Contains the data saved in the previous state most
-     * recently supplied in onSaveInstanceState(Bundle).
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
