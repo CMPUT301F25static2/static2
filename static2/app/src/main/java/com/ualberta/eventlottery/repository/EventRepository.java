@@ -23,38 +23,107 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Repository class for managing Event data operations with Firebase Firestore.
+ * This class follows the Singleton pattern to provide a single instance
+ * for handling all event-related database operations including CRUD operations
+ *
+ * @author TeamName
+ * @version 1.0
+ */
 public class EventRepository {
     private static EventRepository instance;
     private FirebaseFirestore db;
     private static final String COLLECTION_EVENTS = "events";
 
+    // Callback interfaces
 
-
-    // callback interfaces
+    /**
+     * Callback interface for single Event operations.
+     */
     public interface EventCallback {
+        /**
+         * Called when the event operation is successful.
+         *
+         * @param event the retrieved or processed Event object
+         */
         void onSuccess(Event event);
+
+        /**
+         * Called when the event operation fails.
+         *
+         * @param e the exception that caused the failure
+         */
         void onFailure(Exception e);
     }
 
+    /**
+     * Callback interface for multiple Event operations.
+     */
     public interface EventListCallback {
+        /**
+         * Called when the event list operation is successful.
+         *
+         * @param events the list of retrieved Event objects
+         */
         void onSuccess(List<Event> events);
+
+        /**
+         * Called when the event list operation fails.
+         *
+         * @param e the exception that caused the failure
+         */
         void onFailure(Exception e);
     }
 
+    /**
+     * Callback interface for basic operations without return values.
+     */
     public interface OperationCallback {
+        /**
+         * Called when the operation is successful.
+         */
         void onSuccess();
+
+        /**
+         * Called when the operation fails.
+         *
+         * @param e the exception that caused the failure
+         */
         void onFailure(Exception e);
     }
 
+    /**
+     * Callback interface for operations that return a boolean result.
+     */
     public interface BooleanCallback {
+        /**
+         * Called when the operation is successful.
+         *
+         * @param result the boolean result of the operation
+         */
         void onSuccess(boolean result);
+
+        /**
+         * Called when the operation fails.
+         *
+         * @param e the exception that caused the failure
+         */
         void onFailure(Exception e);
     }
 
+    /**
+     * Initializes Firebase Firestore instance.
+     */
     private EventRepository() {
         db = FirebaseFirestore.getInstance();
     }
 
+    /**
+     * Gets the singleton instance of EventRepository.
+     *
+     * @return the singleton EventRepository instance
+     */
     public static synchronized EventRepository getInstance() {
         if (instance == null) {
             instance = new EventRepository();
@@ -63,7 +132,10 @@ public class EventRepository {
     }
 
     /**
-     * Converts Firestore document to Event object
+     * Converts a Firestore DocumentSnapshot to an Event object.
+     *
+     * @param document the Firestore document snapshot to convert
+     * @return the converted Event object, or null if conversion fails
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     private Event documentToEvent(DocumentSnapshot document) {
@@ -106,7 +178,6 @@ public class EventRepository {
             }
         }
 
-
         // status fields
         String eventStatus = document.getString("eventStatus");
         if (eventStatus != null) {
@@ -127,6 +198,12 @@ public class EventRepository {
         return event;
     }
 
+    /**
+     * Static method to convert a Firestore DocumentSnapshot to an Event object.
+     *
+     * @param document the Firestore document snapshot to convert
+     * @return the converted Event object, or null if conversion fails
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static Event fromDocument(DocumentSnapshot document) {
         if (document == null || !document.exists()) {
@@ -196,7 +273,10 @@ public class EventRepository {
     }
 
     /**
-     * Converts Event object to Firestore data map
+     * Converts an Event object to a Firestore data map.
+     *
+     * @param event the Event object to convert
+     * @return a Map containing the event data for Firestore storage
      */
     private Map<String, Object> eventToMap(Event event) {
         Map<String, Object> eventMap = new HashMap<>();
@@ -217,12 +297,14 @@ public class EventRepository {
         eventMap.put("registrationStatus", event.getRegistrationStatus() != null ? event.getRegistrationStatus().toString() : null);
         eventMap.put("updatedAt", new Date());
 
-
         return eventMap;
     }
 
     /**
-     * Updates event status based on current time and registration period
+     * Updates event status based on current time and registration period.
+     * Automatically determines if an event is UPCOMING, ONGOING, or CLOSED based on the current system time and event timing.
+     *
+     * @param event the Event object to update status for
      */
     private void updateEventStatus(Event event) {
         if (event == null) {
@@ -270,7 +352,10 @@ public class EventRepository {
     }
 
     /**
-     * Finds an event by its ID
+     * Finds an event by its unique identifier.
+     *
+     * @param eventId the unique identifier of the event to find
+     * @param callback the callback to handle the result of the operation
      */
     public void findEventById(String eventId, EventCallback callback) {
         db.collection(COLLECTION_EVENTS)
@@ -292,7 +377,9 @@ public class EventRepository {
     }
 
     /**
-     * Retrieves all events from the database
+     * Retrieves all events from the database.
+     *
+     * @param callback the callback to handle the list of events
      */
     public void getAllEvents(EventListCallback callback) {
         db.collection(COLLECTION_EVENTS)
@@ -332,7 +419,10 @@ public class EventRepository {
     }
 
     /**
-     * Retrieves events by organizer ID
+     * Retrieves events by organizer ID.
+     *
+     * @param organizerId the unique identifier of the organizer
+     * @param callback the callback to handle the list of events
      */
     public void getEventsByOrganizer(String organizerId, EventListCallback callback) {
         db.collection(COLLECTION_EVENTS)
@@ -358,7 +448,10 @@ public class EventRepository {
 
 
     /**
-     * Adds a new event to the database
+     * Adds a new event to the database.
+     *
+     * @param event the Event object to add
+     * @param callback the callback to handle the operation result
      */
     public void addEvent(Event event, OperationCallback callback) {
         updateEventStatus(event);
@@ -377,7 +470,10 @@ public class EventRepository {
     }
 
     /**
-     * Updates an existing event
+     * Updates an existing event in the database.
+     *
+     * @param updatedEvent the Event object with updated information
+     * @param callback the callback to handle the operation result
      */
     public void updateEvent(Event updatedEvent, BooleanCallback callback) {
         updateEventStatus(updatedEvent);
@@ -391,7 +487,10 @@ public class EventRepository {
     }
 
     /**
-     * Deletes an event by ID
+     * Deletes an event from the database by its ID.
+     *
+     * @param eventId the unique identifier of the event to delete
+     * @param callback the callback to handle the operation result
      */
     public void deleteEvent(String eventId, BooleanCallback callback) {
         db.collection(COLLECTION_EVENTS)
@@ -401,6 +500,11 @@ public class EventRepository {
                 .addOnFailureListener(callback::onFailure);
     }
 
+    /**
+     * Gets a LiveData object for events with open registration.
+     *
+     * @return EventListLiveData object for observing available events
+     */
     public EventListLiveData getAvailableEvents() {
         // Create a query for events with open registration
         Query openRegistrationQuery = db.collection(COLLECTION_EVENTS)
@@ -410,7 +514,9 @@ public class EventRepository {
     }
 
     /**
-     * Retrieves events with open registration
+     * Retrieves events with open registration.
+     *
+     * @param callback the callback to handle the list of available events
      */
     public void getEventsWithOpenRegistration(EventListCallback callback) {
         db.collection(COLLECTION_EVENTS)

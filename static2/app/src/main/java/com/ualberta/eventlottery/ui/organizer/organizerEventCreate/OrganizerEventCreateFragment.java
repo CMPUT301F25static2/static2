@@ -23,6 +23,12 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
+/**
+ * Fragment for creating new events by organizers.
+ *
+ * @author static2
+ * @version 1.0
+ */
 public class OrganizerEventCreateFragment extends Fragment {
     private FragmentOrganizerEventCreateBinding binding;
     private EventRepository eventRepository;
@@ -39,12 +45,18 @@ public class OrganizerEventCreateFragment extends Fragment {
     private SimpleDateFormat timeFormat;
     private SimpleDateFormat dateTimeFormat;
 
+    /**
+     * Creates the fragment's view hierarchy.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentOrganizerEventCreateBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
+    /**
+     * Initializes the fragment after view creation.
+     */
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -54,16 +66,19 @@ public class OrganizerEventCreateFragment extends Fragment {
         initDefaultDates();
     }
 
+    /**
+     * Initializes data repositories, formatters, and default calendar values.
+     */
     private void initData() {
         eventRepository = EventRepository.getInstance();
         organizerId = UserManager.getCurrentUserId();
 
-        // initialize date formats
+        // Initialize date formats
         dateFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
         timeFormat = new SimpleDateFormat("h:mm a", Locale.getDefault());
         dateTimeFormat = new SimpleDateFormat("h:mma, MMM dd, yyyy", Locale.getDefault());
 
-        // initialize calendar objects
+        // Initialize calendar objects
         registrationStartCalendar = Calendar.getInstance();
         registrationEndCalendar = Calendar.getInstance();
         eventStartCalendar = Calendar.getInstance();
@@ -71,15 +86,17 @@ public class OrganizerEventCreateFragment extends Fragment {
         eventFromCalendar = Calendar.getInstance();
         eventToCalendar = Calendar.getInstance();
 
-        // set default times (registration ends 7 days from now, event starts 14 days from now)
+        // Set default times
         registrationEndCalendar.add(Calendar.DAY_OF_YEAR, 7);
         eventStartCalendar.add(Calendar.DAY_OF_YEAR, 14);
         eventEndCalendar.add(Calendar.DAY_OF_YEAR, 14);
         eventToCalendar.add(Calendar.HOUR_OF_DAY, 2); // Default event duration: 2 hours
     }
 
+    /**
+     * Sets up default date displays for all time fields.
+     */
     private void initDefaultDates() {
-        // set default date displays
         updateRegistrationStartDisplay();
         updateRegistrationEndDisplay();
         updateEventStartDisplay();
@@ -87,79 +104,74 @@ public class OrganizerEventCreateFragment extends Fragment {
         updateEventTimeDisplay();
     }
 
+    /**
+     * Sets up click listeners for all interactive elements.
+     */
     private void setUpListener() {
-        // back button
+        // Back button
         binding.btnBack.setOnClickListener(v -> {
             requireActivity().onBackPressed();
         });
 
-        // registration start date
+        // Registration start date and time
         binding.tvRegistrationStartDate.setOnClickListener(v -> {
             showDatePickerDialog(registrationStartCalendar, this::updateRegistrationStartDisplay);
         });
-
-        // registration start time
         binding.tvRegistrationStartTime.setOnClickListener(v -> {
             showTimePickerDialog(registrationStartCalendar, this::updateRegistrationStartDisplay);
         });
 
-        // registration end date
+        // Registration end date and time
         binding.tvRegistrationEndDate.setOnClickListener(v -> {
             showDatePickerDialog(registrationEndCalendar, this::updateRegistrationEndDisplay);
         });
-
-        // registration end time
         binding.tvRegistrationEndTime.setOnClickListener(v -> {
             showTimePickerDialog(registrationEndCalendar, this::updateRegistrationEndDisplay);
         });
 
-        // event start date
+        // Event start date and time
         binding.tvEventStartDate.setOnClickListener(v -> {
             showDatePickerDialog(eventStartCalendar, this::updateEventStartDisplay);
         });
-
-        // event start time
         binding.tvEventStartTime.setOnClickListener(v -> {
             showTimePickerDialog(eventStartCalendar, this::updateEventStartDisplay);
         });
 
-        // event end date
+        // Event end date and time
         binding.tvEventEndDate.setOnClickListener(v -> {
             showDatePickerDialog(eventEndCalendar, this::updateEventEndDisplay);
         });
-
-        // event end time
         binding.tvEventEndTime.setOnClickListener(v -> {
             showTimePickerDialog(eventEndCalendar, this::updateEventEndDisplay);
         });
 
-        // event start time (From)
+        // Event daily time range
         binding.tvEventFrom.setOnClickListener(v -> {
             showTimePickerDialog(eventFromCalendar, this::updateEventTimeDisplay);
         });
-
-        // event end time (To)
         binding.tvEventTo.setOnClickListener(v -> {
             showTimePickerDialog(eventToCalendar, this::updateEventTimeDisplay);
         });
 
-        // add tags button
+        // Add tags button
         binding.btnAddTags.setOnClickListener(v -> {
             showAddTagDialog();
         });
 
-        // create event button
+        // Create event button
         binding.btnCreateEvent.setOnClickListener(v -> {
             createEvent();
         });
 
-        // upload image
+        // Upload image
         binding.createEventUploadImg.setOnClickListener(v -> {
-            // TODO: Implement image upload logic
             Toast.makeText(requireContext(), "Image upload feature to be implemented", Toast.LENGTH_SHORT).show();
         });
     }
 
+    /**
+     * Shows date picker dialog for calendar selection.
+     */
     private void showDatePickerDialog(Calendar calendar, Runnable updateCallback) {
         DatePickerDialog datePickerDialog = new DatePickerDialog(
                 requireContext(),
@@ -176,6 +188,9 @@ public class OrganizerEventCreateFragment extends Fragment {
         datePickerDialog.show();
     }
 
+    /**
+     * Shows time picker dialog for time selection.
+     */
     private void showTimePickerDialog(Calendar calendar, Runnable updateCallback) {
         TimePickerDialog timePickerDialog = new TimePickerDialog(
                 requireContext(),
@@ -191,63 +206,81 @@ public class OrganizerEventCreateFragment extends Fragment {
         timePickerDialog.show();
     }
 
+    /**
+     * Updates registration start time display.
+     */
     private void updateRegistrationStartDisplay() {
         binding.tvRegistrationStartDate.setText(dateFormat.format(registrationStartCalendar.getTime()));
         binding.tvRegistrationStartTime.setText(timeFormat.format(registrationStartCalendar.getTime()));
     }
 
+    /**
+     * Updates registration end time display.
+     */
     private void updateRegistrationEndDisplay() {
         binding.tvRegistrationEndDate.setText(dateFormat.format(registrationEndCalendar.getTime()));
         binding.tvRegistrationEndTime.setText(timeFormat.format(registrationEndCalendar.getTime()));
     }
 
+    /**
+     * Updates event start time display.
+     */
     private void updateEventStartDisplay() {
         binding.tvEventStartDate.setText(dateFormat.format(eventStartCalendar.getTime()));
         binding.tvEventStartTime.setText(timeFormat.format(eventStartCalendar.getTime()));
     }
 
+    /**
+     * Updates event end time display.
+     */
     private void updateEventEndDisplay() {
         binding.tvEventEndDate.setText(dateFormat.format(eventEndCalendar.getTime()));
         binding.tvEventEndTime.setText(timeFormat.format(eventEndCalendar.getTime()));
     }
 
+    /**
+     * Updates event daily time range display.
+     */
     private void updateEventTimeDisplay() {
         binding.tvEventFrom.setText(timeFormat.format(eventFromCalendar.getTime()));
         binding.tvEventTo.setText(timeFormat.format(eventToCalendar.getTime()));
     }
 
+    /**
+     * Shows dialog for adding event tags.
+     */
     private void showAddTagDialog() {
-        // TODO: implement add tag dialog
         Toast.makeText(requireContext(), "Add tag feature to be implemented", Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * Creates new event with validated input data.
+     */
     private void createEvent() {
-        // Validate input
         if (!validateInput()) {
             return;
         }
 
         try {
-            // create new event
             Event newEvent = new Event();
-
-            newEvent.setOrganizerId(organizerId); // Use current user's organizer ID
+            newEvent.setOrganizerId(organizerId);
             newEvent.setTitle(binding.etCreateEventTitle.getText().toString().trim());
             newEvent.setDescription(binding.etCreateEventDescription.getText().toString().trim());
             newEvent.setLocation(binding.etCreateEventLocation.getText().toString().trim());
 
-            // set capacity
+            // Set capacity
             String capacityText = binding.etCreateEventCapacity.getText().toString().trim();
             if (!TextUtils.isEmpty(capacityText)) {
                 newEvent.setMaxAttendees(Integer.parseInt(capacityText));
             }
 
-            // set times
+            // Set times
             newEvent.setRegistrationStart(registrationStartCalendar.getTime());
             newEvent.setRegistrationEnd(registrationEndCalendar.getTime());
             newEvent.setStartTime(eventStartCalendar.getTime());
             newEvent.setEndTime(eventEndCalendar.getTime());
 
+            // Set daily time range for API 26+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 newEvent.setDailyStartTime(
                         eventFromCalendar.get(Calendar.HOUR_OF_DAY),
@@ -259,19 +292,16 @@ public class OrganizerEventCreateFragment extends Fragment {
                 );
             }
 
-            // TODO: Get from tags
             newEvent.setCategory("General");
-
             newEvent.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_OPEN);
-            newEvent.setCurrentAttendees(0); // Initialize with 0 attendees
+            newEvent.setCurrentAttendees(0);
 
-            // Save to Firestore using EventManger with callback
+            // Save to Firestore
             eventRepository.addEvent(newEvent, new EventRepository.OperationCallback() {
                 @Override
                 public void onSuccess() {
                     requireActivity().runOnUiThread(() -> {
                         Toast.makeText(requireContext(), "Event created successfully!", Toast.LENGTH_SHORT).show();
-                        // Go back to previous page
                         requireActivity().onBackPressed();
                     });
                 }
@@ -291,22 +321,27 @@ public class OrganizerEventCreateFragment extends Fragment {
         }
     }
 
+    /**
+     * Validates all input fields for event creation.
+     *
+     * @return true if all inputs are valid, false otherwise
+     */
     private boolean validateInput() {
-        // validate title
+        // Validate title
         if (TextUtils.isEmpty(binding.etCreateEventTitle.getText().toString().trim())) {
             Toast.makeText(requireContext(), "Please enter event title", Toast.LENGTH_SHORT).show();
             binding.etCreateEventTitle.requestFocus();
             return false;
         }
 
-        // validate location
+        // Validate location
         if (TextUtils.isEmpty(binding.etCreateEventLocation.getText().toString().trim())) {
             Toast.makeText(requireContext(), "Please enter event location", Toast.LENGTH_SHORT).show();
             binding.etCreateEventLocation.requestFocus();
             return false;
         }
 
-        // validate capacity
+        // Validate capacity
         String capacityText = binding.etCreateEventCapacity.getText().toString().trim();
         if (TextUtils.isEmpty(capacityText)) {
             Toast.makeText(requireContext(), "Please enter capacity limit", Toast.LENGTH_SHORT).show();
@@ -327,7 +362,7 @@ public class OrganizerEventCreateFragment extends Fragment {
             return false;
         }
 
-        // validate time logic
+        // Validate time logic
         if (registrationEndCalendar.before(registrationStartCalendar)) {
             Toast.makeText(requireContext(), "Registration end time cannot be before start time", Toast.LENGTH_SHORT).show();
             return false;
@@ -346,10 +381,12 @@ public class OrganizerEventCreateFragment extends Fragment {
         return true;
     }
 
+    /**
+     * Cleans up resources when view is destroyed.
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
     }
 }
-

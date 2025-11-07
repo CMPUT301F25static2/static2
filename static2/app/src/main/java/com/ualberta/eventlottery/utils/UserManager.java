@@ -24,6 +24,9 @@ public class UserManager {
         void onFailure(Exception exception);
     }
     public static String getCurrentUserId() {
+        if (mCurrentUser == null) {
+            return "user_default_id";
+        }
         return mCurrentUser.getUid();
     }
 

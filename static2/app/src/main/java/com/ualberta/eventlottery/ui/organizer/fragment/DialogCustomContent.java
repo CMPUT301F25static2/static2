@@ -13,6 +13,12 @@ import androidx.fragment.app.DialogFragment;
 
 import com.ualberta.static2.R;
 
+/**
+ * Dialog fragment for editing event fields like title, description, and location.
+ *
+ * @author static2
+ * @version 1.0
+ */
 public class DialogCustomContent extends DialogFragment {
     private static final String ARG_FIELD_TYPE = "field_type";
     private static final String ARG_CURRENT_VALUE = "current_value";
@@ -21,11 +27,26 @@ public class DialogCustomContent extends DialogFragment {
     private String fieldType;
     private String currentValue;
 
+    /**
+     * Callback interface for dialog confirmation events.
+     */
     public interface OnDialogConfirmListener {
+        /**
+         * Called when dialog is confirmed with new input.
+         *
+         * @param fieldType the type of field being edited
+         * @param inputText the new text input by user
+         */
         void onConfirm(String fieldType, String inputText);
     }
 
-    // factory used to create instance
+    /**
+     * Creates a new instance of the dialog.
+     *
+     * @param fieldType the type of field to edit
+     * @param currentValue the current value of the field
+     * @return new DialogCustomContent instance
+     */
     public static DialogCustomContent newInstance(String fieldType, String currentValue) {
         DialogCustomContent fragment = new DialogCustomContent();
         Bundle args = new Bundle();
@@ -35,6 +56,9 @@ public class DialogCustomContent extends DialogFragment {
         return fragment;
     }
 
+    /**
+     * Initializes dialog arguments.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +68,9 @@ public class DialogCustomContent extends DialogFragment {
         }
     }
 
+    /**
+     * Creates the dialog with field-specific configuration.
+     */
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -55,11 +82,12 @@ public class DialogCustomContent extends DialogFragment {
         Button btnCancel = dialogView.findViewById(R.id.btn_cancel);
         Button btnConfirm = dialogView.findViewById(R.id.btn_confirm);
 
-        // set text based on fieldType and fieldValue
+        // Configure dialog based on field type
         setupDialogByFieldType(tvUpdatedTitle, etUpdatedContent);
 
         AlertDialog dialog = builder.setView(dialogView).create();
 
+        // Set up button listeners
         btnCancel.setOnClickListener(v -> dismiss());
         btnConfirm.setOnClickListener(v -> {
             if (listener != null) {
@@ -72,6 +100,9 @@ public class DialogCustomContent extends DialogFragment {
         return dialog;
     }
 
+    /**
+     * Configures dialog title and hint based on field type.
+     */
     private void setupDialogByFieldType(TextView titleView, EditText contentEditText) {
         if ("title".equals(fieldType)) {
             titleView.setText("Title");
@@ -87,13 +118,18 @@ public class DialogCustomContent extends DialogFragment {
             contentEditText.setHint("Enter new End Time");
         }
 
-        // setCurrentValue
+        // Set current value and position cursor
         if (currentValue != null) {
             contentEditText.setText(currentValue);
-            contentEditText.setSelection(currentValue.length()); // move cursor to end
+            contentEditText.setSelection(currentValue.length());
         }
     }
 
+    /**
+     * Sets the confirmation listener for the dialog.
+     *
+     * @param listener the listener to receive confirmation events
+     */
     public void setOnDialogConfirmListener(OnDialogConfirmListener listener) {
         this.listener = listener;
     }

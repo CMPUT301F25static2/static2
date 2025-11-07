@@ -50,8 +50,10 @@ dependencies {
     implementation(libs.navigation.runtime)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.messaging)
+    implementation(libs.fragment.testing)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(libs.espresso.intents)
 
 }
