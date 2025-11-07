@@ -1,5 +1,6 @@
 package com.ualberta.eventlottery.ui.profile;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -89,14 +90,23 @@ public class ProfileFragment extends Fragment {
         });
 
         binding.buttonDelete.setOnClickListener(v -> {
-            deleteUser(userId);
-            deleteOrganizedEvents(userId);
-            deleteUseregistrations(userId);
-            requireActivity().onBackPressed();
-
+            new AlertDialog.Builder(requireContext())
+                    .setTitle("Delete User")
+                    .setMessage("Are you sure you want to delete this user? This action cannot be undone.")
+                    .setPositiveButton("Delete", (dialog, which) -> {
+                        // User confirmed deletion
+                        deleteUser(userId);
+                        deleteOrganizedEvents(userId);
+                        deleteUserRegistrations(userId);
+                        requireActivity().onBackPressed();
+                    })
+                    .setNegativeButton("Cancel", (dialog, which) -> {
+                        // User cancelled, dialog will dismiss automatically
+                        dialog.dismiss();
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert) // Optional: adds an icon
+                    .show();
         });
-
-
         return binding.getRoot();
     }
 
@@ -106,6 +116,10 @@ public class ProfileFragment extends Fragment {
         binding = null;
     }
 
+    /**
+     * Deletes a user from the database.
+     * @param userId
+     */
     public void deleteUser(String userId) {
         db = FirebaseFirestore.getInstance();
 
@@ -114,6 +128,10 @@ public class ProfileFragment extends Fragment {
         Toast.makeText(getContext(), "Profile deleted", Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * Deletes all events organized by a user.
+     * @param userId
+     */
     public void deleteOrganizedEvents(String userId) {
         CollectionReference eventDocRef = db.collection("events");
 
@@ -128,7 +146,11 @@ public class ProfileFragment extends Fragment {
         });
     }
 
-    public void deleteUseregistrations(String userId) {
+    /**
+     * Deletes all registrations made by a user.
+     * @param userId
+     */
+    public void deleteUserRegistrations(String userId) {
         CollectionReference registrationDocRef = db.collection("registrations");
 
         registrationDocRef.get().addOnSuccessListener(querySnapshot -> {
@@ -141,6 +163,10 @@ public class ProfileFragment extends Fragment {
 
     }
 
+    /**
+     * Deletes all registrations made by other users for events organized by the deleted user.
+     * @param eventId
+     */
     public void deleteOtherUserRegistrations(String eventId) {
         CollectionReference registrationDocRef = db.collection("registrations");
 

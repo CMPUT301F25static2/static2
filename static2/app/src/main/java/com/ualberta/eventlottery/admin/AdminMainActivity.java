@@ -26,12 +26,6 @@ public class AdminMainActivity extends AppCompatActivity{
 
     private ActivityAdminMainBinding binding;
 
-    /**
-     * This method is called when the activity is created.
-     * Will replace the initializer fragment with the admin home fragment.
-     * @param savedInstanceState The saved instance state.
-     *
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
