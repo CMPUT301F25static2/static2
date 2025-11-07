@@ -13,7 +13,9 @@ import androidx.navigation.ui.NavigationUI;
 import com.ualberta.static2.R;
 import com.ualberta.static2.databinding.ActivityEventLotteryMainBinding;
 
-
+/**
+ * Responsible for navigating to the event details page if app is opened via QR code
+ */
 public class EntrantMainActivity extends AppCompatActivity {
     private static final String TAG = "EventLottery";
 
