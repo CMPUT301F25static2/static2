@@ -4,7 +4,10 @@ import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -311,6 +314,23 @@ public class EventRepository {
                 .addOnFailureListener(callback::onFailure);
     }
 
+
+    public LiveData<Event> getEventById(String eventId) {
+        if (eventId == null || eventId.trim().isEmpty()) {
+            // CORRECTED: Return a MutableLiveData instance with a null value
+            // to avoid crashes if the ID is invalid.
+            MutableLiveData<Event> nullEventData = new MutableLiveData<>();
+            nullEventData.setValue(null);
+            return nullEventData;
+        }
+        // Create a reference to the specific document in the "events" collection
+        DocumentReference docRef = db.collection(COLLECTION_EVENTS).document(eventId);
+
+        // Return the custom EventLiveData that listens to this document
+        // This part was correct and remains the same.
+        return new EventLiveData(docRef);
+    }
+
     /**
      * Retrieves events by organizer ID
      */
@@ -334,6 +354,8 @@ public class EventRepository {
                 })
                 .addOnFailureListener(callback::onFailure);
     }
+
+
 
     /**
      * Adds a new event to the database
@@ -405,6 +427,39 @@ public class EventRepository {
                             if (event.getRegistrationStatus() == EventRegistrationStatus.REGISTRATION_OPEN) {
                                 events.add(event);
                             }
+                        }
+                    }
+                    callback.onSuccess(events);
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+
+
+    /**
+     * Retrieves all events matching a list of event IDs.
+     * @param eventIds List of event document IDs.
+     * @param callback Callback to handle the list of events or failure.
+     */
+    public void getEventsByIds(List<String> eventIds, EventListCallback callback) {
+        if (eventIds == null || eventIds.isEmpty()) {
+            callback.onSuccess(new ArrayList<>()); // Return empty list if no IDs provided
+            return;
+        }
+
+        db.collection(COLLECTION_EVENTS)
+                .whereIn(com.google.firebase.firestore.FieldPath.documentId(), eventIds)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<Event> events = new ArrayList<>();
+                    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                        Event event = null;
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            event = fromDocument(document); // Using your existing static method
+                        }
+                        if (event != null) {
+                            // You might want to update the status here as well
+                            // updateEventStatus(event);
+                            events.add(event);
                         }
                     }
                     callback.onSuccess(events);
