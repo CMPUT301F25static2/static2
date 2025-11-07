@@ -3,10 +3,7 @@ package com.ualberta.eventlottery.repository;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.Firebase;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.ualberta.eventlottery.model.Registration;
@@ -20,44 +17,126 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Repository class for managing Registration operations with Firebase Firestore
- * Uses callback pattern for asynchronous operations
+ * Repository class for managing Registration data operations with Firebase Firestore.
+ * This class follows the Singleton pattern to provide a single instance
+ * for handling all registrtaion-related database operations including CRUD operations
+ *
+ * @author static2
+ * @version 1.0
  */
 public class RegistrationRepository {
     private static RegistrationRepository instance;
     private FirebaseFirestore db;
     private static final String COLLECTION_REGISTRATIONS = "registrations";
 
+    // Callback interfaces
+
+    /**
+     * Callback interface for single Registration operations.
+     */
     public interface RegistrationCallback {
+        /**
+         * Called when the registration operation is successful.
+         *
+         * @param registration the retrieved or processed Registration object
+         */
         void onSuccess(Registration registration);
+
+        /**
+         * Called when the registration operation fails.
+         *
+         * @param e the exception that caused the failure
+         */
         void onFailure(Exception e);
     }
 
+    /**
+     * Callback interface for multiple Registration operations.
+     */
     public interface RegistrationListCallback {
+        /**
+         * Called when the registration list operation is successful.
+         *
+         * @param registrations the list of retrieved Registration objects
+         */
         void onSuccess(List<Registration> registrations);
+
+        /**
+         * Called when the registration list operation fails.
+         *
+         * @param e the exception that caused the failure
+         */
         void onFailure(Exception e);
     }
 
+    /**
+     * Callback interface for basic operations without return values.
+     */
     public interface OperationCallback {
+        /**
+         * Called when the operation is successful.
+         */
         void onSuccess();
+
+        /**
+         * Called when the operation fails.
+         *
+         * @param e the exception that caused the failure
+         */
         void onFailure(Exception e);
     }
 
+    /**
+     * Callback interface for operations that return a boolean result.
+     */
     public interface BooleanCallback {
+        /**
+         * Called when the operation is successful.
+         *
+         * @param result the boolean result of the operation
+         */
         void onSuccess(boolean result);
+
+        /**
+         * Called when the operation fails.
+         *
+         * @param e the exception that caused the failure
+         */
         void onFailure(Exception e);
     }
 
+    /**
+     * Callback interface for count operations.
+     */
     public interface CountCallback {
+        /**
+         * Called when the count operation is successful.
+         *
+         * @param count the integer count result
+         */
         void onSuccess(int count);
+
+        /**
+         * Called when the count operation fails.
+         *
+         * @param e the exception that caused the failure
+         */
         void onFailure(Exception e);
     }
 
-
+    /**
+     * Private constructor for Singleton pattern.
+     * Initializes Firebase Firestore instance.
+     */
     private RegistrationRepository() {
         db = FirebaseFirestore.getInstance();
     }
 
+    /**
+     * Gets the singleton instance of RegistrationRepository.
+     *
+     * @return the singleton RegistrationRepository instance
+     */
     public static synchronized RegistrationRepository getInstance() {
         if (instance == null) {
             instance = new RegistrationRepository();
@@ -66,7 +145,10 @@ public class RegistrationRepository {
     }
 
     /**
-     * Converts Firestore document to Registration object
+     * Converts a Firestore DocumentSnapshot to a Registration object.
+     *
+     * @param document the Firestore document snapshot to convert
+     * @return the converted Registration object, or null if conversion fails
      */
     private Registration documentToRegistration(DocumentSnapshot document) {
         if (document == null || !document.exists()) {
@@ -93,7 +175,10 @@ public class RegistrationRepository {
     }
 
     /**
-     * Converts Registration object to Firestore data map
+     * Converts a Registration object to a Firestore data map.
+     *
+     * @param registration the Registration object to convert
+     * @return a Map containing the registration data for Firestore
      */
     private Map<String, Object> registrationToMap(Registration registration) {
         Map<String, Object> registrationMap = new HashMap<>();
@@ -110,7 +195,10 @@ public class RegistrationRepository {
     }
 
     /**
-     * Finds a registration by its ID
+     * Finds a registration by its unique identifier.
+     *
+     * @param registrationId the unique identifier of the registration to find
+     * @param callback the callback to handle the result of the operation
      */
     public void findRegistrationById(String registrationId, RegistrationCallback callback) {
         db.collection(COLLECTION_REGISTRATIONS)
@@ -128,7 +216,11 @@ public class RegistrationRepository {
     }
 
     /**
-     * Finds registration by event ID and user ID
+     * Finds a registration by event ID and user ID.
+     *
+     * @param eventId the unique identifier of the event
+     * @param userId the unique identifier of the user
+     * @param callback the callback to handle the result of the operation
      */
     public void findRegistrationByEventAndUser(String eventId, String userId, RegistrationCallback callback) {
         queryRegistrationByEventAndUser(eventId, userId)
@@ -143,9 +235,11 @@ public class RegistrationRepository {
                 .addOnFailureListener(callback::onFailure);
     }
 
-
     /**
-     * Retrieves all registrations for a specific event
+     * Retrieves all registrations for a specific event.
+     *
+     * @param eventId the unique identifier of the event
+     * @param callback the callback to handle the list of registrations
      */
     public void getRegistrationsByEvent(String eventId, RegistrationListCallback callback) {
         db.collection(COLLECTION_REGISTRATIONS)
@@ -165,7 +259,10 @@ public class RegistrationRepository {
     }
 
     /**
-     * Retrieves all registrations for a specific entrant
+     * Retrieves all registrations for a specific entrant.
+     *
+     * @param entrantId the unique identifier of the entrant
+     * @param callback the callback to handle the list of registrations
      */
     public void getRegistrationsByEntrant(String entrantId, RegistrationListCallback callback) {
         db.collection(COLLECTION_REGISTRATIONS)
@@ -185,7 +282,11 @@ public class RegistrationRepository {
     }
 
     /**
-     * Retrieves registrations by status for a specific event
+     * Retrieves registrations by status for a specific event.
+     *
+     * @param eventId the unique identifier of the event
+     * @param status the registration status to filter by
+     * @param callback the callback to handle the list of registrations
      */
     public void getRegistrationsByStatus(String eventId, EntrantRegistrationStatus status, RegistrationListCallback callback) {
         db.collection(COLLECTION_REGISTRATIONS)
@@ -206,7 +307,11 @@ public class RegistrationRepository {
     }
 
     /**
-     * Retrieves registrations by entrant and status
+     * Retrieves registrations by entrant and status.
+     *
+     * @param entrantId the unique identifier of the entrant
+     * @param status the registration status to filter by
+     * @param callback the callback to handle the list of registrations
      */
     public void getRegistrationsByEntrantAndStatus(String entrantId, EntrantRegistrationStatus status, RegistrationListCallback callback) {
         db.collection(COLLECTION_REGISTRATIONS)
@@ -227,7 +332,9 @@ public class RegistrationRepository {
     }
 
     /**
-     * Retrieves all registrations
+     * Retrieves all registrations from the database.
+     *
+     * @param callback the callback to handle the list of registrations
      */
     public void getAllRegistrations(RegistrationListCallback callback) {
         db.collection(COLLECTION_REGISTRATIONS)
@@ -246,7 +353,10 @@ public class RegistrationRepository {
     }
 
     /**
-     * Adds a new registration
+     * Adds a new registration to the database.
+     *
+     * @param registration the Registration object to add
+     * @param callback the callback to handle the operation result
      */
     public void addRegistration(Registration registration, OperationCallback callback) {
         if (registration.getId() == null || registration.getId().isEmpty()) {
@@ -268,7 +378,10 @@ public class RegistrationRepository {
     }
 
     /**
-     * Updates an existing registration
+     * Updates an existing registration in the database.
+     *
+     * @param updatedRegistration the Registration object with updated information
+     * @param callback the callback to handle the operation result
      */
     public void updateRegistration(Registration updatedRegistration, BooleanCallback callback) {
         Map<String, Object> registrationData = registrationToMap(updatedRegistration);
@@ -280,7 +393,10 @@ public class RegistrationRepository {
     }
 
     /**
-     * Deletes a registration by ID
+     * Deletes a registration from the database by its ID.
+     *
+     * @param registrationId the unique identifier of the registration to delete
+     * @param callback the callback to handle the operation result
      */
     public void deleteRegistration(String registrationId, BooleanCallback callback) {
         db.collection(COLLECTION_REGISTRATIONS)
@@ -290,6 +406,13 @@ public class RegistrationRepository {
                 .addOnFailureListener(callback::onFailure);
     }
 
+    /**
+     * Creates a query for registration count by status for an event.
+     *
+     * @param eventId the unique identifier of the event
+     * @param status the registration status to count
+     * @return a Query object for the specified criteria
+     */
     private Query queryRegistrationCountByStatus(String eventId, EntrantRegistrationStatus status) {
         return db.collection(COLLECTION_REGISTRATIONS)
                 .whereEqualTo("eventId", eventId)
@@ -297,7 +420,11 @@ public class RegistrationRepository {
     }
 
     /**
-     * Gets count of registrations by status for an event
+     * Gets count of registrations by status for an event.
+     *
+     * @param eventId the unique identifier of the event
+     * @param status the registration status to count
+     * @param callback the callback to handle the count result
      */
     public void getRegistrationCountByStatus(String eventId, EntrantRegistrationStatus status, CountCallback callback) {
         queryRegistrationCountByStatus(eventId, status)
@@ -306,6 +433,13 @@ public class RegistrationRepository {
                 .addOnFailureListener(callback::onFailure);
     }
 
+    /**
+     * Sets up a real-time listener for registration count by status.
+     *
+     * @param eventId the unique identifier of the event
+     * @param status the registration status to monitor
+     * @param callback the callback to handle count updates
+     */
     public void watchRegistrationCountByStatus(String eventId, EntrantRegistrationStatus status, CountCallback callback) {
         queryRegistrationCountByStatus(eventId, status)
                 .addSnapshotListener((querySnapshot, error) -> {
@@ -318,30 +452,42 @@ public class RegistrationRepository {
                 });
     }
 
-
     /**
-     * Retrieves waiting registrations for an event
+     * Retrieves waiting registrations for an event.
+     *
+     * @param eventId the unique identifier of the event
+     * @param callback the callback to handle the list of waiting registrations
      */
     public void getWaitingRegistrationsByEvent(String eventId, RegistrationListCallback callback) {
         getRegistrationsByStatus(eventId, EntrantRegistrationStatus.WAITING, callback);
     }
 
     /**
-     * Retrieves selected registrations for an event
+     * Retrieves selected registrations for an event.
+     *
+     * @param eventId the unique identifier of the event
+     * @param callback the callback to handle the list of selected registrations
      */
     public void getSelectedRegistrationsByEvent(String eventId, RegistrationListCallback callback) {
         getRegistrationsByStatus(eventId, EntrantRegistrationStatus.SELECTED, callback);
     }
 
     /**
-     * Retrieves confirmed registrations for an event
+     * Retrieves confirmed registrations for an event.
+     *
+     * @param eventId the unique identifier of the event
+     * @param callback the callback to handle the list of confirmed registrations
      */
     public void getConfirmedRegistrationsByEvent(String eventId, RegistrationListCallback callback) {
         getRegistrationsByStatus(eventId, EntrantRegistrationStatus.CONFIRMED, callback);
     }
 
     /**
-     * Checks if user is registered for an event
+     * Checks if a user is registered for an event.
+     *
+     * @param eventId the unique identifier of the event
+     * @param userId the unique identifier of the user
+     * @param callback the callback to handle the boolean result
      */
     public void isUserRegisteredForEvent(String eventId, String userId, BooleanCallback callback) {
         findRegistrationByEventAndUser(eventId, userId, new RegistrationCallback() {
@@ -357,6 +503,13 @@ public class RegistrationRepository {
         });
     }
 
+    /**
+     * Creates a query for registration by event and user.
+     *
+     * @param eventId the unique identifier of the event
+     * @param userId the unique identifier of the user
+     * @return a Task containing the query result
+     */
     private Task<QuerySnapshot> queryRegistrationByEventAndUser(String eventId, String userId) {
         return db.collection(COLLECTION_REGISTRATIONS)
                 .whereEqualTo("eventId", eventId)
@@ -365,6 +518,14 @@ public class RegistrationRepository {
                 .get();
     }
 
+    /**
+     * Registers a user for an event.
+     * Creates a new registration with WAITING status if the user is not already registered.
+     *
+     * @param eventId the unique identifier of the event
+     * @param userId the unique identifier of the user
+     * @param callback the callback to handle the registration result
+     */
     public void registerUser(String eventId, String userId, RegistrationCallback callback) {
         findRegistrationByEventAndUser(eventId, userId, new RegistrationCallback() {
             @Override
@@ -394,6 +555,13 @@ public class RegistrationRepository {
         });
     }
 
+    /**
+     * Removes the user's registration record for the specified event.
+     *
+     * @param eventId the unique identifier of the event
+     * @param userId the unique identifier of the user
+     * @param callback the callback to handle the unregistration result
+     */
     public void unregisterUser(String eventId, String userId, RegistrationCallback callback) {
         findRegistrationByEventAndUser(eventId, userId, new RegistrationCallback() {
             @Override
@@ -428,6 +596,4 @@ public class RegistrationRepository {
             }
         });
     }
-
-
 }
