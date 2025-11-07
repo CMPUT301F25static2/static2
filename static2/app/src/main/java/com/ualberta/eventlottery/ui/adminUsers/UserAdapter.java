@@ -15,18 +15,29 @@ import com.ualberta.static2.R;
 
 import java.util.ArrayList;
 
+/**
+ * @author Lumbani
+ * @version 1.0
+ * This is a class that serves as the adapter for the users screen for the admin.
+ */
 public class UserAdapter extends BaseAdapter {
     private ArrayList<User> users;
     private Context context;
     private LayoutInflater inflater;
     private String searchText;
 
-
+    /**
+     * This is a constructor for the user adapter.
+     *
+     * @param context
+     * @param users
+     */
     public UserAdapter(Context context, ArrayList<User> users) {
         this.users = users;
         this.context = context;
         this.inflater = LayoutInflater.from(context);
     }
+
 
     @Override
     public int getCount() {
@@ -50,11 +61,9 @@ public class UserAdapter extends BaseAdapter {
 
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.admin_user_item, parent, false);
-
             holder = new ViewHolder();
             holder.userName = convertView.findViewById(R.id.text_admin_user_name);
             holder.userID = convertView.findViewById(R.id.text_admin_user_id);
-
             convertView.setTag(holder); // cache holder in the view
         } else {
             holder = (ViewHolder) convertView.getTag(); // reuse cached holder
@@ -66,6 +75,7 @@ public class UserAdapter extends BaseAdapter {
 
         return convertView;
     }
+
 
 
     static class ViewHolder {
