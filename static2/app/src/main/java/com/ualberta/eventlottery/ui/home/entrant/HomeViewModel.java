@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * ViewModel for the home screen, which displays lists of events.
+ * ViewModel for the Home Fragment that manages event lists.
  */
 public class HomeViewModel extends ViewModel {
 
@@ -29,7 +29,7 @@ public class HomeViewModel extends ViewModel {
     private final MutableLiveData<List<Event>> myEvents = new MutableLiveData<>();
 
     /**
-     * Constructs a new HomeViewModel.
+     * Constructs a HomeViewModel and initializes events from EventRepository
      */
     public HomeViewModel() {
         eventRepository = EventRepository.getInstance();
@@ -40,9 +40,9 @@ public class HomeViewModel extends ViewModel {
     }
 
     /**
-     * Returns the LiveData for the list of available events.
-     *
-     * @return The LiveData for the list of available events.
+     * Returns LiveData containing the list of available events.
+     * An available event is an event that is open for registration.
+     * @return LiveData object containing a list of available {@code Event} objects.
      */
     public LiveData<List<Event>> getAvailableEvents() {
         return availableEventListLiveData;
@@ -67,7 +67,7 @@ public class HomeViewModel extends ViewModel {
             return;
         }
 
-        // 1. Get all registrations for the current user
+
         registrationRepository.getRegistrationsByEntrant(currentUserId, new RegistrationRepository.RegistrationListCallback() {
             @Override
             public void onSuccess(List<Registration> registrations) {

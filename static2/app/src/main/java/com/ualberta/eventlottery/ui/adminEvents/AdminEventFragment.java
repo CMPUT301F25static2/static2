@@ -39,7 +39,10 @@ import com.ualberta.static2.databinding.FragmentAdminUsersBinding;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AdminEventFragment extends Fragment {
+/**
+ * This is a class that serves as the events screen for the admin.
+ */
+public class AdminEventFragment extends Fragment implements EventAdapter.OnEventListener {
 
     private ArrayList<Event> eventArrayList;
 
@@ -51,21 +54,15 @@ public class AdminEventFragment extends Fragment {
     private FirebaseFirestore db;
 
     private RecyclerView recyclerView;
-    private EventAdapter myEventsAdapter, availableEventsAdapter;
 
     private CollectionReference eventsRef;
     private com.ualberta.static2.databinding.FragmentAdminEventsBinding binding;
 
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        //AdminUserViewModel adminUserViewModel =
-        //       new ViewModelProvider(this).get(AdminUserViewModel.class);
-
         binding = FragmentAdminEventsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-
-        //final TextView textView = binding.textUsers;
-        //adminUserViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
         binding.adminBackButton.setOnClickListener(v -> {
             requireActivity().onBackPressed();
@@ -103,9 +100,9 @@ public class AdminEventFragment extends Fragment {
                 eventArrayAdapter.notifyDataSetChanged();
             }
         });
-/*
-        binding.adminEventsRecyclerView.setOnItemClickListener((parent, view, position, id) -> {
-            User event = userArrayList.get(position);
+/* Fix: Event browse onClickListener
+        binding.adminEventsRecyclerView.onEventClick((parent, view, position, id) -> {
+                User event = userArrayList.get(position);
             Toast.makeText(requireContext(), "Clicked: " + user.getName(), Toast.LENGTH_SHORT).show();
             Bundle bundle = new Bundle();
             bundle.putString("isAdmin", "true");
@@ -122,16 +119,23 @@ public class AdminEventFragment extends Fragment {
 
  */
 
+
+
         binding.adminSearchEvents.addTextChangedListener(new android.text.TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
-
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
             }
 
+            /**
+             * This method is called after the text has been changed.
+             * Filters the events based on the search text.
+             *
+             * @param editable The text.
+             */
             @Override
             public void afterTextChanged(Editable editable) {
                 String searchText = editable.toString().toLowerCase();
@@ -153,11 +157,23 @@ public class AdminEventFragment extends Fragment {
         return root;
     }
 
+    /**
+     * Called when the fragment is no longer in use.
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
     }
 
+    @Override
+    public void onEventClick(Event event) {
+
+    }
+
+    interface onClickListener {
+        void onClick(Event event, int position);
+
+    }
 
 }

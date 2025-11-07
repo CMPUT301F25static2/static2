@@ -20,14 +20,18 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ualberta.eventlottery.model.Event;
+import com.ualberta.eventlottery.model.EventRegistrationStatus;
 import com.ualberta.static2.R;
 import com.ualberta.static2.databinding.FragmentHomeBinding;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
- * A simple {@link Fragment} subclass that displays lists of events.
+ * Fragment that displays home screen for the entrants.
+ * Provides functionality to switch between My Events and Available Events
+ *Options provided for filter, sort and search
  */
 public class HomeFragment extends Fragment implements EventAdapter.OnEventListener {
     // History button has been removed
@@ -36,6 +40,7 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
     private RecyclerView recyclerView;
     // History adapter has been removed
     private EventAdapter myEventsAdapter, availableEventsAdapter;
+    private List<Event> myEventsList;
     private FragmentHomeBinding binding;
     private HomeViewModel homeViewModel;
     private Observer<List<Event>> availableEventsObserver;
@@ -43,17 +48,19 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
     private Observer<List<Event>> myEventsObserver;
 
     /**
-     * Called to have the fragment instantiate its user interface view. [11]
+     * Creates initializes the view for the home fragment.
+     * Sets up the RecyclerView with event adapter, initializing different ui components,
+     * and configures event listeners for search, filter, sort, and navigation button.
      *
-     * @param inflater           The LayoutInflater object that can be used to inflate
-     *                           any views in the fragment,
-     * @param container          If non-null, this is the parent view that the fragment's
-     *                           UI should be attached to. The fragment should not add the view
-     *                           itself, but this can be used to generate the LayoutParams of
-     *                           the view.
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
      * @param savedInstanceState If non-null, this fragment is being re-constructed
-     *                           from a previous saved state as given here.
-     * @return Return the View for the fragment's UI, or null.
+     * from a previous saved state as given here.
+     *
+     * @return the root view of the fragment's layout
      */
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -121,8 +128,7 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
     }
 
     /**
-     * Called when the view previously created by {@link #onCreateView} has
-     * been detached from the fragment.
+     * Cleans up UI resources to prevent memory leaks
      */
     @Override
     public void onDestroyView() {

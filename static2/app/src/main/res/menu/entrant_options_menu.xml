@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_show_profile"
+        android:title="show profile" />
+
+    <item
+        android:id="@+id/menu_delete_from_waiting_list"
+        android:title="delete form waiting list" />
+</menu>

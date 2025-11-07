@@ -14,8 +14,7 @@ import com.ualberta.static2.R;
 import com.ualberta.static2.databinding.ActivityEventLotteryMainBinding;
 
 /**
- * The main activity for the entrant user type. This activity hosts the navigation controller
- * that manages the different fragments for the entrant's user interface.
+ * Responsible for navigating to the event details page if app is opened via QR code
  */
 public class EntrantMainActivity extends AppCompatActivity {
     private static final String TAG = "EventLottery";
