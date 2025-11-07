@@ -29,12 +29,12 @@ import java.util.Locale;
 public class OrganizerEventInfoFragment extends Fragment {
     private static final String ARG_EVENT_ID = "event_id";
 
-    private FragmentOrganizerEventInfoBinding binding;
-    private String eventId;
-    private Event currentEvent;
+    public FragmentOrganizerEventInfoBinding binding;
+    public String eventId;
+    public Event currentEvent;
 
-    private EventRepository eventRepository;
-    private SimpleDateFormat dateFormat;
+    public EventRepository eventRepository;
+    public SimpleDateFormat dateFormat;
 
     public static OrganizerEventInfoFragment newInstance(String eventId) {
         OrganizerEventInfoFragment fragment = new OrganizerEventInfoFragment();
@@ -92,8 +92,10 @@ public class OrganizerEventInfoFragment extends Fragment {
 
             @Override
             public void onFailure(Exception e) {
-                Toast.makeText(requireContext(), "Failed to load event: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                requireActivity().onBackPressed();
+//                requireActivity().onBackPressed();
+                if (!isAdded() || getContext() == null) {
+                    return;
+                }
             }
         });
     }
