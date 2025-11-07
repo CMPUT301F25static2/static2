@@ -10,7 +10,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.espresso.idling.CountingIdlingResource;
 
 import com.ualberta.eventlottery.model.EntrantRegistrationStatus;
 import com.ualberta.eventlottery.model.Event;
@@ -32,6 +34,8 @@ import java.util.Locale;
  * for registration and withdrawal, and displays real-time waitlist count
  */
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
+    @VisibleForTesting
+    public static CountingIdlingResource idlingResource = new CountingIdlingResource("EventAdapter-RegistrationAction");
     private static SimpleDateFormat sdfWithoutYear = new SimpleDateFormat("MMM dd", Locale.CANADA);
     private static SimpleDateFormat sdfWithYear = new SimpleDateFormat("MMM dd, yyyy", Locale.CANADA);
 
@@ -124,16 +128,19 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
                 } else {
                     holder.btnActionText.setText(BTN_ACTION_TEXT_REGISTER);
                 }
+                idlingResource.decrement();
             }
 
             @Override
             public void onFailure(Exception e) {
                 Log.e("EventLottery", "failed to find registration", e);
                 holder.btnActionText.setText(NOT_ALLOWED_SYMBOL);
+                idlingResource.decrement();
             }
         };
 
         holder.btnAction.setOnClickListener(v -> {
+            idlingResource.increment();
             String btnActionText = holder.btnActionText.getText().toString();
             String userId = UserManager.getCurrentUserId();
             if (btnActionText.compareTo(BTN_ACTION_TEXT_REGISTER) == 0) {
@@ -144,6 +151,8 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
                 registrationRepository.unregisterUser(event.getId(), userId, callback);
             }
         });
+        idlingResource.increment();
+
         registrationRepository.findRegistrationByEventAndUser(event.getId(), UserManager.getCurrentUserId(), callback);
 
         holder.itemView.setOnClickListener(v -> {
