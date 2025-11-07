@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CopilotDiffPersistence">
+    <option name="pendingDiffs">
+      <map>
+        <entry key="$PROJECT_DIR$/local.properties">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/local.properties" />
+              <option name="originalContent" value="## This file must *NOT* be checked into Version Control Systems,&#10;# as it contains information specific to your local configuration.&#10;#&#10;# Location of the SDK. This is only used by Gradle.&#10;# For customization when using a Version Control System, please read the&#10;# header note.&#10;#Wed Sep 24 17:52:27 MDT 2025&#10;sdk.dir=/Users/kuznimyk/Library/Android/sdk" />
+              <option name="updatedContent" value="## This file must *NOT* be checked into Version Control Systems,&#10;# as it contains information specific to your local configuration.&#10;#&#10;# Location of the SDK. This is only used by Gradle.&#10;# For customization when using a Version Control System, please read the&#10;# header note.&#10;#Wed Sep 24 17:52:27 MDT 2025&#10;sdk.dir=/Users/kuznimyk/Library/Android/sdk" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
