@@ -16,13 +16,8 @@ import java.util.Map;
  * This class follows the Singleton pattern to provide a single instance
  * for handling all entrant-related database operations.
  *
- * Responsibilities:
- * - CRUD operations for Entrant entities
- * - Data conversion between Entrant objects and Firestore documents
- * - Sample data initialization for testing and demonstration
- *
  * @author static2
- *
+ * @version 1.0
  */
 public class EntrantRepository {
     private static EntrantRepository instance;
