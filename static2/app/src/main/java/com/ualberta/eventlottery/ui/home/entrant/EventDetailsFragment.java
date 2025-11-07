@@ -24,6 +24,11 @@ import com.ualberta.static2.databinding.FragmentEventDetailsBinding;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+/**
+ * A simple {@link Fragment} subclass.
+ * Use the {@link EventDetailsFragment#newInstance} factory method to
+ * create an instance of this fragment.
+ */
 public class EventDetailsFragment extends Fragment {
     private static final String ARG_EVENT_ID = "eventId";
     private FragmentEventDetailsBinding binding;
@@ -35,10 +40,19 @@ public class EventDetailsFragment extends Fragment {
 
     private Registration currentUserRegistration = null;
 
+    /**
+     * Required empty public constructor
+     */
     public EventDetailsFragment() {
 
     }
 
+    /**
+     * Called to do initial creation of a fragment. [6]
+     *
+     * @param savedInstanceState If the fragment is being re-created from
+     *                           a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +62,19 @@ public class EventDetailsFragment extends Fragment {
         registrationRepository = RegistrationRepository.getInstance();
     }
 
+    /**
+     * Called to have the fragment instantiate its user interface view. [11]
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate
+     *                           any views in the fragment,
+     * @param container          If non-null, this is the parent view that the fragment's
+     *                           UI should be attached to. The fragment should not add the view
+     *                           itself, but this can be used to generate the LayoutParams of
+     *                           the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     *                           from a previous saved state as given here.
+     * @return Return the View for the fragment's UI, or null.
+     */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -55,6 +82,14 @@ public class EventDetailsFragment extends Fragment {
         return binding.getRoot();
     }
 
+    /**
+     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
+     * has returned, but before any saved state has been restored in to the view. [2]
+     *
+     * @param view               The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}. [2]
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     *                           from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -91,6 +126,9 @@ public class EventDetailsFragment extends Fragment {
         });
     }
 
+    /**
+     * Checks the registration status of the current user for the event.
+     */
     private void checkUserRegistrationStatus() {
         String currentUserId = UserManager.getCurrentUserId();
         if (currentUserId == null || mEventId == null) {
@@ -116,6 +154,9 @@ public class EventDetailsFragment extends Fragment {
         });
     }
 
+    /**
+     * Updates the UI of the register/withdraw button based on the user's registration status.
+     */
     private void updateButtonUi() {
 
         if (currentUserRegistration != null) {
@@ -127,6 +168,9 @@ public class EventDetailsFragment extends Fragment {
         }
     }
 
+    /**
+     * Registers the current user for the event.
+     */
     private void registerForEvent() {
         String currentUserId = UserManager.getCurrentUserId();
         if (currentUserId == null || currentUserId.isEmpty()) {
@@ -158,6 +202,9 @@ public class EventDetailsFragment extends Fragment {
         });
     }
 
+    /**
+     * Withdraws the current user from the event.
+     */
     private void withdrawFromEvent() {
 
         if (currentUserRegistration == null || currentUserRegistration.getId() == null) {
@@ -189,6 +236,11 @@ public class EventDetailsFragment extends Fragment {
         });
     }
 
+    /**
+     * Populates the UI with the details of the given event.
+     *
+     * @param event The event whose details are to be displayed.
+     */
     private void populateUi(Event event) {
         // ... (this method is unchanged)
         binding.eventDetailsTitle.setText(event.getTitle());
@@ -214,6 +266,10 @@ public class EventDetailsFragment extends Fragment {
         }
     }
 
+    /**
+     * Called when the view previously created by {@link #onCreateView} has
+     * been detached from the fragment.
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();

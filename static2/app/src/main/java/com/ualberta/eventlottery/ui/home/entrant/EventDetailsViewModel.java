@@ -6,16 +6,27 @@ import androidx.lifecycle.ViewModel;
 import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.repository.EventRepository;
 
+/**
+ * ViewModel for the Event Details screen.
+ */
 public class EventDetailsViewModel extends ViewModel {
 
     private final LiveData<Event> eventLiveData;
 
+    /**
+     * Constructs a new EventDetailsViewModel.
+     *
+     * @param eventId The ID of the event to be displayed.
+     */
     public EventDetailsViewModel(String eventId) {
-        // You will need to implement getEventById in your repository
-        // This assumes EventRepository is a Singleton
         eventLiveData = EventRepository.getInstance().getEventById(eventId);
     }
 
+    /**
+     * Returns the LiveData for the event.
+     *
+     * @return The LiveData for the event.
+     */
     public LiveData<Event> getEventLiveData() {
         return eventLiveData;
     }

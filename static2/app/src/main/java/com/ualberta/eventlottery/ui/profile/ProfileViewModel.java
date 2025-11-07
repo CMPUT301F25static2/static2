@@ -24,6 +24,9 @@ import com.ualberta.static2.R;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * ViewModel for the Profile screen.
+ */
 public class ProfileViewModel extends ViewModel {
 
     private static final String TAG = "ProfileViewModel";
@@ -37,23 +40,77 @@ public class ProfileViewModel extends ViewModel {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     // LiveData getters
+    /**
+     * Returns the LiveData for the user's name.
+     *
+     * @return The LiveData for the user's name.
+     */
     public LiveData<String> getName() { return name; }
+    /**
+     * Returns the LiveData for the user's email.
+     *
+     * @return The LiveData for the user's email.
+     */
     public LiveData<String> getEmail() { return email; }
+    /**
+     * Returns the LiveData for the user's phone number.
+     *
+     * @return The LiveData for the user's phone number.
+     */
     public LiveData<String> getPhone() { return phone; }
+    /**
+     * Returns the LiveData for the loading state.
+     *
+     * @return The LiveData for the loading state.
+     */
     public LiveData<Boolean> getIsLoading() { return isLoading; }
+    /**
+     * Returns the LiveData for the error message.
+     *
+     * @return The LiveData for the error message.
+     */
     public LiveData<String> getErrorMessage() { return errorMessage; }
+    /**
+     * Returns the LiveData for the user's favorite rec center.
+     *
+     * @return The LiveData for the user's favorite rec center.
+     */
     public LiveData<String> getFavoriteRecCenter() { return favoriteRecCenter; }
 
 
+    /**
+     * Sets the user's name.
+     *
+     * @param value The new name.
+     */
     public void setName(String value) { name.setValue(value); }
+    /**
+     * Sets the user's email.
+     *
+     * @param value The new email.
+     */
     public void setEmail(String value) { email.setValue(value); }
+    /**
+     * Sets the user's phone number.
+     *
+     * @param value The new phone number.
+     */
     public void setPhone(String value) { phone.setValue(value); }
 
+    /**
+     * Sets the user's favorite rec center.
+     *
+     * @param value The new favorite rec center.
+     */
     public void setFavoriteRecCenter(String value) {
         favoriteRecCenter.setValue(value);
     }
 
-    // Load data from Firebase
+    /**
+     * Loads the user's profile from Firebase.
+     *
+     * @param userId The ID of the user whose profile is to be loaded.
+     */
     public void loadProfileFromFirebase(String userId) {
         isLoading.setValue(true);
 
@@ -82,8 +139,12 @@ public class ProfileViewModel extends ViewModel {
                 });
     }
 
-    // Save data to Firebase
-    //Changed to prevent overwriting of FCM Tokens
+    /**
+     * Saves the user's profile to Firebase.
+     * Changed to prevent overwriting of FCM Tokens
+     *
+     * @param userId The ID of the user whose profile is to be saved.
+     */
     public void saveProfileToFirebase(String userId) {
         isLoading.setValue(true);
         Map<String, Object> updates = new HashMap<>();

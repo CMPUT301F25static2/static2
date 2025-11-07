@@ -26,6 +26,9 @@ import com.ualberta.static2.databinding.FragmentHomeBinding;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A simple {@link Fragment} subclass that displays lists of events.
+ */
 public class HomeFragment extends Fragment implements EventAdapter.OnEventListener {
     // History button has been removed
     private Button filterButton, sortButton, myEventsButton, availableEventsButton;
@@ -39,6 +42,19 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
     // This observer will now be for the "My Events" data
     private Observer<List<Event>> myEventsObserver;
 
+    /**
+     * Called to have the fragment instantiate its user interface view. [11]
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate
+     *                           any views in the fragment,
+     * @param container          If non-null, this is the parent view that the fragment's
+     *                           UI should be attached to. The fragment should not add the view
+     *                           itself, but this can be used to generate the LayoutParams of
+     *                           the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     *                           from a previous saved state as given here.
+     * @return Return the View for the fragment's UI, or null.
+     */
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
@@ -71,10 +87,8 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
             }
         };
 
-        // Set initial view to "My Events"
         showMyEvents();
 
-        // --- Listeners ---
         filterButton.setOnClickListener(v -> Toast.makeText(getContext(), "Filter options coming soon!", Toast.LENGTH_SHORT).show());
         sortButton.setOnClickListener(v -> Toast.makeText(getContext(), "Sort options coming soon!", Toast.LENGTH_SHORT).show());
 
@@ -93,6 +107,11 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
         return view;
     }
 
+    /**
+     * Called when an event is clicked.
+     *
+     * @param event The clicked event.
+     */
     @Override
     public void onEventClick(Event event) {
         Bundle bundle = new Bundle();
@@ -101,14 +120,20 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
                 .navigate(R.id.action_home_to_details, bundle);
     }
 
+    /**
+     * Called when the view previously created by {@link #onCreateView} has
+     * been detached from the fragment.
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
     }
 
+    /**
+     * Resets the style of all buttons.
+     */
     private void resetAllButtonStyles() {
-        // Now only handles two buttons
         Button[] buttons = {myEventsButton, availableEventsButton};
         for (Button btn : buttons) {
             btn.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.black));
@@ -116,11 +141,19 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
         }
     }
 
+    /**
+     * Sets the style of the active button.
+     *
+     * @param activeButton The button to be styled as active.
+     */
     private void setActiveButtonStyle(Button activeButton) {
         activeButton.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.white));
         activeButton.setTextColor(ContextCompat.getColorStateList(requireContext(), R.color.black));
     }
 
+    /**
+     * Shows the list of events the user has registered for.
+     */
     private void showMyEvents() {
 
         // Stop observing the other LiveData to prevent getting unwanted updates.
@@ -137,6 +170,9 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
         setActiveButtonStyle(myEventsButton);
     }
 
+    /**
+     * Shows the list of available events.
+     */
     private void showAvailableEvents() {
 
         // Stop observing the other LiveData.
