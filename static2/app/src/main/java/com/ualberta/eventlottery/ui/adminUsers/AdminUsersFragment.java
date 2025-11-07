@@ -53,6 +53,22 @@ public class AdminUsersFragment extends Fragment {
     private CollectionReference usersRef;
     private com.ualberta.static2.databinding.FragmentAdminUsersBinding binding;
 
+    /**
+     * Called to have the fragment initiate the search users fragment
+     * Sets up the user list for the admin
+     * Sets up the search bar for the admin
+     * Sets up the sort buttons for the admin
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return
+     */
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
@@ -93,6 +109,7 @@ public class AdminUsersFragment extends Fragment {
                 });
 
         // Sort by type of user
+        // Updates the list of users when a sort button is clicked
         binding.sortButtonUsersEntrants.setOnClickListener(v -> {
             selectedTypeFilter = "entrant";
             applyFilter();
@@ -159,7 +176,13 @@ public class AdminUsersFragment extends Fragment {
 
             }
 
-            // Updates the list of users when the search text changes
+            /**
+             * This method is called after the text has been changed.
+             * Filters the users based on the search text.
+             *
+
+             * @param editable the text query
+             */
             @Override
             public void afterTextChanged(Editable editable) {
                 searchText = editable.toString().toLowerCase();
@@ -169,6 +192,13 @@ public class AdminUsersFragment extends Fragment {
         return root;
     }
 
+    /**
+     * Called when the fragment is no longer in use.
+     * When the fragment is reopened after going to a new fragment, the adapter is updated.
+     * Accounts for any changes in the list of users.
+
+     * @param hidden True if the fragment is now hidden, false otherwise.
+     */
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
@@ -176,6 +206,10 @@ public class AdminUsersFragment extends Fragment {
             adapter.notifyDataSetChanged(); // Update the adapter when the fragment is shown again
         }
     }
+
+    /**
+     * Called when the fragment is no longer in use.
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();

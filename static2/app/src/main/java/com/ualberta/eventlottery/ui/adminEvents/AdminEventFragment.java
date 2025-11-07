@@ -42,7 +42,7 @@ import java.util.List;
 /**
  * This is a class that serves as the events screen for the admin.
  */
-public class AdminEventFragment extends Fragment {
+public class AdminEventFragment extends Fragment implements EventAdapter.OnEventListener {
 
     private ArrayList<Event> eventArrayList;
 
@@ -100,9 +100,9 @@ public class AdminEventFragment extends Fragment {
                 eventArrayAdapter.notifyDataSetChanged();
             }
         });
-/*
-        binding.adminEventsRecyclerView.setOnItemClickListener((parent, view, position, id) -> {
-            User event = userArrayList.get(position);
+/* Fix: Event browse onClickListener
+        binding.adminEventsRecyclerView.onEventClick((parent, view, position, id) -> {
+                User event = userArrayList.get(position);
             Toast.makeText(requireContext(), "Clicked: " + user.getName(), Toast.LENGTH_SHORT).show();
             Bundle bundle = new Bundle();
             bundle.putString("isAdmin", "true");
@@ -118,6 +118,8 @@ public class AdminEventFragment extends Fragment {
         });
 
  */
+
+
 
         binding.adminSearchEvents.addTextChangedListener(new android.text.TextWatcher() {
             @Override
@@ -164,5 +166,14 @@ public class AdminEventFragment extends Fragment {
         binding = null;
     }
 
+    @Override
+    public void onEventClick(Event event) {
+
+    }
+
+    interface onClickListener {
+        void onClick(Event event, int position);
+
+    }
 
 }
