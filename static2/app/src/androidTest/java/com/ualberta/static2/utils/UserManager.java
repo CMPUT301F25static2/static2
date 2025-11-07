@@ -1,5 +1,4 @@
-package com.ualberta.eventlottery.utils;
-
+package com.ualberta.static2.utils;
 import android.app.Activity;
 import android.util.Log;
 
@@ -25,13 +24,13 @@ public class UserManager {
     }
     public static String getCurrentUserId() {
         if (mCurrentUser == null) {
-            return "user_default_id";
+            return "test_user_default_id";
         }
         return mCurrentUser.getUid();
     }
 
     // https://firebase.google.com/docs/auth/android/anonymous-auth
-    public static void initializeUser(Activity activity, InitCallback callback) {
+    public static void initializeUser(Activity activity, com.ualberta.eventlottery.utils.UserManager.InitCallback callback) {
         mAuth = FirebaseAuth.getInstance();
         mCurrentUser = mAuth.getCurrentUser();
         if (mCurrentUser == null) {
@@ -55,5 +54,6 @@ public class UserManager {
 
     }
 }
+
 
 

@@ -21,7 +21,7 @@ import com.ualberta.static2.databinding.FragmentOrganizerHomeBinding;
 import java.util.List;
 
 public class OrganizerHomeFragment extends Fragment {
-    private FragmentOrganizerHomeBinding binding;
+    public FragmentOrganizerHomeBinding binding;
     private OrganizerEventAdapter adapter;
     private EventRepository eventRepository;
     private String organizerId;
