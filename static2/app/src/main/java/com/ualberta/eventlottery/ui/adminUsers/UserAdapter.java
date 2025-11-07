@@ -62,7 +62,7 @@ public class UserAdapter extends BaseAdapter {
 
         User user = users.get(position);
         holder.userName.setText(user.getName());
-        holder.userID.setText(user.getUserId());
+        holder.userID.setText("ID: "+user.getUserId());
 
         return convertView;
     }
