@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -27,16 +28,40 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class HomeFragment extends Fragment {
+/**
+ * Fragment that displays home screen for the entrants.
+ * Provides functionality to switch between My Events and Available Events
+ *Options provided for filter, sort and search
+ */
+public class HomeFragment extends Fragment implements EventAdapter.OnEventListener {
+    // History button has been removed
     private Button filterButton, sortButton, myEventsButton, availableEventsButton;
     private EditText searchInputHome;
     private RecyclerView recyclerView;
+    // History adapter has been removed
     private EventAdapter myEventsAdapter, availableEventsAdapter;
     private List<Event> myEventsList;
     private FragmentHomeBinding binding;
     private HomeViewModel homeViewModel;
     private Observer<List<Event>> availableEventsObserver;
+    // This observer will now be for the "My Events" data
+    private Observer<List<Event>> myEventsObserver;
 
+    /**
+     * Creates initializes the view for the home fragment.
+     * Sets up the RecyclerView with event adapter, initializing different ui components,
+     * and configures event listeners for search, filter, sort, and navigation button.
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return the root view of the fragment's layout
+     */
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
@@ -52,45 +77,39 @@ public class HomeFragment extends Fragment {
         recyclerView = view.findViewById(R.id.eventsRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        // Initialize adapters and observers
+        myEventsAdapter = new EventAdapter(new ArrayList<>(), this); // Now starts empty
+        availableEventsAdapter = new EventAdapter(new ArrayList<>(), this);
 
-        //Test List
-        myEventsList = getmyMockEvents("My Event");
-
-        myEventsAdapter = new EventAdapter(myEventsList);
-        availableEventsAdapter = new EventAdapter(new ArrayList<>());
         availableEventsObserver = newData -> {
-            availableEventsAdapter.updateEvents(newData);
-            availableEventsAdapter.notifyDataSetChanged();
+            if (newData != null) {
+                availableEventsAdapter.updateEvents(newData);
+            }
         };
 
-        recyclerView.setAdapter(myEventsAdapter);
-        myEventsButton.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.white));
-        myEventsButton.setTextColor(ContextCompat.getColorStateList(requireContext(), R.color.black));
+        // Observer for the dynamic "My Events" list
+        myEventsObserver = newData -> {
+            if (newData != null) {
+                myEventsAdapter.updateEvents(newData);
+            }
+        };
 
+        // Set initial view to "My Events"
+        showMyEvents();
 
-        //Filter and sort placeholders
-        filterButton.setOnClickListener(v ->
-                Toast.makeText(getContext(), "Filter options coming soon!", Toast.LENGTH_SHORT).show());
+        // --- Listeners ---
+        filterButton.setOnClickListener(v -> Toast.makeText(getContext(), "Filter options coming soon!", Toast.LENGTH_SHORT).show());
+        sortButton.setOnClickListener(v -> Toast.makeText(getContext(), "Sort options coming soon!", Toast.LENGTH_SHORT).show());
 
-        sortButton.setOnClickListener(v ->
-                Toast.makeText(getContext(), "Sort options coming soon!", Toast.LENGTH_SHORT).show());
-
-        //Search Bar implementation
         searchInputHome.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_SEARCH ||
-                    (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-                String query = searchInputHome.getText().toString().trim();
-                if (!query.isEmpty()) {
-                    Toast.makeText(getContext(), "Searching for: " + query, Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(getContext(), "Please enter a search term", Toast.LENGTH_SHORT).show();
-                }
+            if (actionId == EditorInfo.IME_ACTION_SEARCH || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                // Search logic here
                 return true;
             }
             return false;
         });
 
-        //Navigate to different event views
+        // Navigation listeners
         myEventsButton.setOnClickListener(v -> showMyEvents());
         availableEventsButton.setOnClickListener(v -> showAvailableEvents());
 
@@ -98,60 +117,62 @@ public class HomeFragment extends Fragment {
     }
 
     @Override
+    public void onEventClick(Event event) {
+        Bundle bundle = new Bundle();
+        bundle.putString("eventId", event.getId());
+        NavHostFragment.findNavController(HomeFragment.this)
+                .navigate(R.id.action_home_to_details, bundle);
+    }
+
+    /**
+     * Cleans up UI resources to prevent memory leaks
+     */
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
     }
 
+    private void resetAllButtonStyles() {
+        // Now only handles two buttons
+        Button[] buttons = {myEventsButton, availableEventsButton};
+        for (Button btn : buttons) {
+            btn.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.black));
+            btn.setTextColor(ContextCompat.getColorStateList(requireContext(), R.color.white));
+        }
+    }
+
+    private void setActiveButtonStyle(Button activeButton) {
+        activeButton.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.white));
+        activeButton.setTextColor(ContextCompat.getColorStateList(requireContext(), R.color.black));
+    }
+
     private void showMyEvents() {
-        //Stop observing available events when we're showing my events
-        homeViewModel.getAvailableEvents().removeObserver(availableEventsObserver);
-        myEventsAdapter.updateEvents(myEventsList);
+
+        // Stop observing the other LiveData to prevent getting unwanted updates.
+        homeViewModel.getAvailableEvents().removeObservers(getViewLifecycleOwner());
+
+        // Start observing the LiveData for "My Events"
+        homeViewModel.getMyEvents().observe(getViewLifecycleOwner(), myEventsObserver);
+
+        // Tell the ViewModel to fetch the data for "My Events"
+        homeViewModel.loadMyRegisteredEvents();
+
         recyclerView.setAdapter(myEventsAdapter);
-        myEventsButton.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.white));
-        myEventsButton.setTextColor(ContextCompat.getColorStateList(requireContext(), R.color.black));
-        availableEventsButton.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.black));
-        availableEventsButton.setTextColor(ContextCompat.getColorStateList(requireContext(),R.color.white));
-
+        resetAllButtonStyles();
+        setActiveButtonStyle(myEventsButton);
     }
-    private void showAvailableEvents(){
-        homeViewModel.getAvailableEvents().observe(getViewLifecycleOwner(),availableEventsObserver);
+
+    private void showAvailableEvents() {
+
+        // Stop observing the other LiveData.
+        homeViewModel.getMyEvents().removeObservers(getViewLifecycleOwner());
+
+        // Start observing the LiveData for "Available Events"
+        homeViewModel.getAvailableEvents().observe(getViewLifecycleOwner(), availableEventsObserver);
+
         recyclerView.setAdapter(availableEventsAdapter);
-
-        availableEventsButton.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.white));
-        availableEventsButton.setTextColor(ContextCompat.getColorStateList(requireContext(),R.color.black));
-        myEventsButton.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.black));
-        myEventsButton.setTextColor(ContextCompat.getColorStateList(requireContext(), R.color.white));
-    }
-
-    //Test
-    private List<Event> getmyMockEvents(String prefix) {
-        List<Event> list = new ArrayList<>();
-        Event modelEvent = new Event("789", "EzKYezj7iLXKlRqCIgFbp8CH1Hh2", "PickleBall Tournament", "Tournament for all skill levels!");
-        modelEvent.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_OPEN);
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DAY_OF_MONTH,-1);
-        modelEvent.setRegistrationStart(cal.getTime());
-        cal.add(Calendar.DAY_OF_MONTH,+10);
-        modelEvent.setRegistrationEnd(cal.getTime());
-        modelEvent.addToWaitingList("EzKYezj7iLXKlRqCIgFbp8CH1Hh2");
-        modelEvent.addToWaitingList("AzKYezj7iLXKlRqCIgFbp8CH1Hh3");
-        modelEvent.addToWaitingList("BzKYezj7iLXKlRqCIgFbp8CH1Hh4");
-        modelEvent.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_CLOSED);
-        list.add(modelEvent);
-
-        modelEvent = new Event("012", "EzKYezj7iLXKlRqCIgFbp8CH1Hh2","Piano Lessons", "Play like Mozart");
-        modelEvent.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_OPEN);
-        cal = Calendar.getInstance();
-        cal.add(Calendar.DAY_OF_MONTH,-1);
-        modelEvent.setRegistrationStart(cal.getTime());
-        cal.add(Calendar.DAY_OF_MONTH,+10);
-        modelEvent.setRegistrationEnd(cal.getTime());
-        modelEvent.addToWaitingList("EzKYezj7iLXKlRqCIgFbp8CH1Hh2");
-        modelEvent.addToWaitingList("AzKYezj7iLXKlRqCIgFbp8CH1Hh3");
-        modelEvent.addToWaitingList("BzKYezj7iLXKlRqCIgFbp8CH1Hh4");
-        modelEvent.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_CLOSED);
-        list.add(modelEvent);
-        return list;
+        resetAllButtonStyles();
+        setActiveButtonStyle(availableEventsButton);
     }
 }

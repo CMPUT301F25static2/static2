@@ -39,6 +39,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * @author Lumbani
+ * @version 1.0
  * This is a class that serves as the home screen for the admin.
  */
 public class AdminHomeFragment extends Fragment {
@@ -50,13 +52,18 @@ public class AdminHomeFragment extends Fragment {
     private FragmentAdminHomeBinding binding;
 
     /**
-     * Called to have the fragment instantiate its user interface view.
-     * @param inflater
-     * @param container
-     * @param savedInstanceState
+     * Called to have the fragment initiate the admin portal / home fragment
+     * Sets up the browse menu for the admin
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
      *
      * @return
-     * Return the View for the admin home fragment's UI, or null.
      */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -75,8 +82,9 @@ public class AdminHomeFragment extends Fragment {
         browseOptions.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             /**
-             * This method is invoked when an item in this AdapterView has
-             * been clicked. Sends the user to the selected fragment.
+             * This method is invoked when an item in this browse menu is clicked.
+             * Sends the user to the selected fragment.
+             * Possible locations: Events, Users, Images, Logs
              *
              * @param adapterView The AdapterView where the click happened.
              * @param view The view within the AdapterView that was clicked
