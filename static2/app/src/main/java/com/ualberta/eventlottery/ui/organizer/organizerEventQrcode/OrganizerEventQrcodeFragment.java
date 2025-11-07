@@ -10,11 +10,15 @@ import androidx.fragment.app.Fragment;
 
 import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.repository.EventRepository;
-
 import com.ualberta.static2.R;
 import com.ualberta.static2.databinding.FragmentOrganizerEventQrcodeBinding;
 
-
+/**
+ * Fragment for displaying event QR code and event details.
+ *
+ * @author static2
+ * @version 1.0
+ */
 public class OrganizerEventQrcodeFragment extends Fragment {
 
     private static final String ARG_EVENT_ID = "event_id";
@@ -22,6 +26,12 @@ public class OrganizerEventQrcodeFragment extends Fragment {
     private String eventId;
     private EventRepository eventRepository = EventRepository.getInstance();
 
+    /**
+     * Creates a new instance with the specified event ID.
+     *
+     * @param eventId the ID of the event to display QR code for
+     * @return new OrganizerEventQrcodeFragment instance
+     */
     public static OrganizerEventQrcodeFragment newInstance(String eventId) {
         OrganizerEventQrcodeFragment fragment = new OrganizerEventQrcodeFragment();
         Bundle args = new Bundle();
@@ -30,18 +40,27 @@ public class OrganizerEventQrcodeFragment extends Fragment {
         return fragment;
     }
 
+    /**
+     * Creates the fragment's view hierarchy.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentOrganizerEventQrcodeBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
+    /**
+     * Cleans up resources when view is destroyed.
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
     }
 
+    /**
+     * Initializes the fragment after view creation.
+     */
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -51,8 +70,9 @@ public class OrganizerEventQrcodeFragment extends Fragment {
         setUpListener();
     }
 
-
-
+    /**
+     * Retrieves event ID from fragment arguments.
+     */
     private void receiveArguments() {
         Bundle args = getArguments();
         if (args != null && args.containsKey(ARG_EVENT_ID)) {
@@ -63,41 +83,45 @@ public class OrganizerEventQrcodeFragment extends Fragment {
             requireActivity().onBackPressed();
         }
     }
-    
 
+    /**
+     * Sets up the view with event data and QR code.
+     */
     private void setUpView() {
-       eventRepository.findEventById(eventId, new EventRepository.EventCallback() {
-           @Override
-           public void onSuccess(Event event) {
-               binding.tvEventTitle.setText(event.getTitle());
+        eventRepository.findEventById(eventId, new EventRepository.EventCallback() {
+            @Override
+            public void onSuccess(Event event) {
+                // Set event title
+                binding.tvEventTitle.setText(event.getTitle());
 
-               if (event.getPosterUrl() != null && !event.getPosterUrl().isEmpty()) {
-                   // TODO: use the image loading library to load images from web urls
-               } else {
-                   binding.ivEventPosterImg.setImageResource(R.drawable.placeholder_background);
-               }
+                // Set event poster image
+                if (event.getPosterUrl() != null && !event.getPosterUrl().isEmpty()) {
+                    // TODO: use the image loading library to load images from web urls
+                } else {
+                    binding.ivEventPosterImg.setImageResource(R.drawable.placeholder_background);
+                }
 
-               if (event.getQrCodeUrl() != null && !event.getQrCodeUrl().isEmpty()) {
-                   // TODO: use the image loading library to load images from web urls
-               } else {
-                   binding.ivEventQrcode.setImageResource(R.drawable.qrcode);
-               }
-           }
+                // Set QR code image
+                if (event.getQrCodeUrl() != null && !event.getQrCodeUrl().isEmpty()) {
+                    // TODO: use the image loading library to load images from web urls
+                } else {
+                    binding.ivEventQrcode.setImageResource(R.drawable.qrcode);
+                }
+            }
 
-           @Override
-           public void onFailure(Exception e) {
-
-           }
-       });
-
-       
+            @Override
+            public void onFailure(Exception e) {
+                // Error handling is optional here as the view will remain in loading state
+            }
+        });
     }
 
+    /**
+     * Sets up click listeners for navigation.
+     */
     private void setUpListener() {
         binding.btnBack.setOnClickListener(v -> {
             requireActivity().onBackPressed();
         });
     }
-
-
 }
