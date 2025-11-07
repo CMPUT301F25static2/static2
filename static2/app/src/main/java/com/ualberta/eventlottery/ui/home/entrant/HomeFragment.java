@@ -27,6 +27,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+/**
+ * Fragment that displays home screen for the entrants.
+ * Provides functionality to switch between My Events and Available Events
+ *Options provided for filter, sort and search
+ */
 public class HomeFragment extends Fragment {
     private Button filterButton, sortButton, myEventsButton, availableEventsButton;
     private EditText searchInputHome;
@@ -37,6 +42,21 @@ public class HomeFragment extends Fragment {
     private HomeViewModel homeViewModel;
     private Observer<List<Event>> availableEventsObserver;
 
+    /**
+     * Creates initializes the view for the home fragment.
+     * Sets up the RecyclerView with event adapter, initializing different ui components,
+     * and configures event listeners for search, filter, sort, and navigation button.
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return the root view of the fragment's layout
+     */
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
@@ -97,6 +117,9 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Cleans up UI resources to prevent memory leaks
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();
