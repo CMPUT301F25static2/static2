@@ -1,5 +1,6 @@
 package com.ualberta.eventlottery.ui.home.entrant;
 
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
