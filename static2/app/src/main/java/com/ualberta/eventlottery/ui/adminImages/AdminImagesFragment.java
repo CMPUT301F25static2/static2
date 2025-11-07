@@ -12,6 +12,9 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.ualberta.static2.databinding.FragmentAdminImagesBinding;
 
+/**
+ * This is a class that serves as the images screen for the admin.
+ */
 public class AdminImagesFragment extends Fragment {
     private com.ualberta.static2.databinding.FragmentAdminImagesBinding binding;
 
@@ -34,3 +37,4 @@ public class AdminImagesFragment extends Fragment {
         binding = null;
     }
 }
+//To do
