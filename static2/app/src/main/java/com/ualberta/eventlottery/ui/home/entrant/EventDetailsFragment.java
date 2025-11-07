@@ -26,7 +26,7 @@ import java.util.Locale;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link EventDetailsFragment#newInstance} factory method to
+ * Use the {@link EventDetailsFragment} factory method to
  * create an instance of this fragment.
  */
 public class EventDetailsFragment extends Fragment {
