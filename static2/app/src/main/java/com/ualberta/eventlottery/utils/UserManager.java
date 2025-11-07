@@ -24,7 +24,10 @@ public class UserManager {
         void onFailure(Exception exception);
     }
     public static String getCurrentUserId() {
-        return mCurrentUser != null ? mCurrentUser.getUid() : "0";
+        if (mCurrentUser == null) {
+            return "user_default_id";
+        }
+        return mCurrentUser.getUid();
     }
 
     // https://firebase.google.com/docs/auth/android/anonymous-auth
