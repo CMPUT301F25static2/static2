@@ -153,6 +153,13 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
         });
     }
 
+    /**
+     * Returns the text for the number of entrants.
+     *
+     * @param waitListCount   The number of users on the waitlist.
+     * @param maxWaitListSize The maximum size of the waitlist.
+     * @return The formatted string for the number of entrants.
+     */
     private String getEntrantsText(int waitListCount, int maxWaitListSize) {
         StringBuffer buffer = new StringBuffer();
         if (waitListCount >= 0) {
@@ -169,6 +176,12 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
         return buffer.toString();
     }
 
+    /**
+     * Returns the formatted date range for the event.
+     *
+     * @param event The event.
+     * @return The formatted date range.
+     */
     private String getFromToText(Event event) {
         if (event.getStartTime() == null || event.getEndTime() == null) {
             return "Dates TBD";
@@ -186,6 +199,12 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
         return sdf.format(startTime.getTime()) + " - " + sdf.format(endTime.getTime());
     }
 
+    /**
+     * Returns the formatted session start time for the event.
+     *
+     * @param event The event.
+     * @return The formatted session start time.
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     private String getSessionStartTimeText(Event event){
         if (event.getDailyStartTime() == null) {
@@ -210,6 +229,12 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
     public static class ViewHolder extends RecyclerView.ViewHolder{
         TextView eventTitle, entrantsNumber, eventFromTo, eventStatus, eventSessionStartTime, btnActionText;
         LinearLayout btnAction;
+        /**
+         * Constructs a new ViewHolder.
+         *
+         * @param itemView The view that you inflated in
+         *                 {@link EventAdapter#onCreateViewHolder(ViewGroup, int)}
+         */
         public ViewHolder(@NonNull View itemView){
             super(itemView);
             eventTitle = itemView.findViewById(R.id.tv_event_title);
@@ -222,7 +247,15 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
         }
     }
 
+    /**
+     * Interface for listening to event clicks.
+     */
     public interface OnEventListener {
+        /**
+         * Called when an event is clicked.
+         *
+         * @param event The clicked event.
+         */
         void onEventClick(Event event);
     }
 }
