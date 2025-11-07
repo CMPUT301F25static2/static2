@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * ViewModel for the Home Fragment that manages event lists.
+ */
 public class HomeViewModel extends ViewModel {
 
     private final EventRepository eventRepository;
@@ -25,6 +28,9 @@ public class HomeViewModel extends ViewModel {
     // This LiveData will now be used for the "My Events" tab.
     private final MutableLiveData<List<Event>> myEvents = new MutableLiveData<>();
 
+    /**
+     * Constructs a HomeViewModel and initializes events from EventRepository
+     */
     public HomeViewModel() {
         eventRepository = EventRepository.getInstance();
         registrationRepository = RegistrationRepository.getInstance();
@@ -33,6 +39,11 @@ public class HomeViewModel extends ViewModel {
         availableEventListLiveData = eventRepository.getAvailableEvents();
     }
 
+    /**
+     * Returns LiveData containing the list of available events.
+     * An available event is an event that is open for registration.
+     * @return LiveData object containing a list of available {@code Event} objects.
+     */
     public LiveData<List<Event>> getAvailableEvents() {
         return availableEventListLiveData;
     }
