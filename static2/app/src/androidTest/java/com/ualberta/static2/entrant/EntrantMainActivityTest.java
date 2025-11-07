@@ -61,6 +61,7 @@ public class EntrantMainActivityTest {
                 .check(matches(isDisplayed()));
     }
 
+    // US 01.01.03 As an entrant, I want to be able to see a list of events that I can join the waiting list for.
     @Test
     public void testEntrantIsAbleToSeeEventsTheyCanRegisterFor() {
         // test if the activity launches successfully
@@ -70,6 +71,7 @@ public class EntrantMainActivityTest {
                 .check(matches(isDisplayed()));
     }
 
+    //US 01.01.01 As an entrant, I want to join the waiting list for a specific event
     @Test
     public void testJoinWaitlist() {
         // test if the activity launches successfully
@@ -98,6 +100,7 @@ public class EntrantMainActivityTest {
         }
     }
 
+    // US 01.01.02 As an entrant, I want to leave the waiting list for a specific event
     @Test
     public void testLeaveWaitlist() {
         // test if the activity launches successfully
