@@ -11,37 +11,113 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Repository class for managing Entrant data operations with Firebase Firestore.
+ * This class follows the Singleton pattern to provide a single instance
+ * for handling all entrant-related database operations.
+ *
+ * Responsibilities:
+ * - CRUD operations for Entrant entities
+ * - Data conversion between Entrant objects and Firestore documents
+ * - Sample data initialization for testing and demonstration
+ *
+ * @author static2
+ *
+ */
 public class EntrantRepository {
     private static EntrantRepository instance;
     private FirebaseFirestore db;
     private static final String COLLECTION_ENTRANTS = "users";
 
     // Callback interfaces
+
+    /**
+     * Callback interface for single Entrant operations.
+     */
     public interface EntrantCallback {
+        /**
+         * Called when the entrant operation is successful.
+         *
+         * @param entrant the retrieved or processed Entrant object
+         */
         void onSuccess(Entrant entrant);
+
+        /**
+         * Called when the entrant operation fails.
+         *
+         * @param e the exception that caused the failure
+         */
         void onFailure(Exception e);
     }
 
+    /**
+     * Callback interface for multiple Entrant operations.
+     */
     public interface EntrantListCallback {
+        /**
+         * Called when the entrant list operation is successful.
+         *
+         * @param entrants the list of retrieved Entrant objects
+         */
         void onSuccess(List<Entrant> entrants);
+
+        /**
+         * Called when the entrant list operation fails.
+         *
+         * @param e the exception that caused the failure
+         */
         void onFailure(Exception e);
     }
 
+    /**
+     * Callback interface for basic operations without return values.
+     */
     public interface OperationCallback {
+        /**
+         * Called when the operation is successful.
+         */
         void onSuccess();
+
+        /**
+         * Called when the operation fails.
+         *
+         * @param e the exception that caused the failure
+         */
         void onFailure(Exception e);
     }
 
+    /**
+     * Callback interface for operations that return a boolean result.
+     */
     public interface BooleanCallback {
+        /**
+         * Called when the operation is successful.
+         *
+         * @param result the boolean result of the operation
+         */
         void onSuccess(boolean result);
+
+        /**
+         * Called when the operation fails.
+         *
+         * @param e the exception that caused the failure
+         */
         void onFailure(Exception e);
     }
 
+    /**
+     * Private constructor for Singleton pattern.
+     * Initializes Firebase Firestore instance .
+     */
     private EntrantRepository() {
         db = FirebaseFirestore.getInstance();
-        initializeSampleData();
     }
 
+    /**
+     * Gets the singleton instance of EntrantRepository.
+     *
+     * @return the singleton EntrantRepository instance
+     */
     public static synchronized EntrantRepository getInstance() {
         if (instance == null) {
             instance = new EntrantRepository();
@@ -50,7 +126,10 @@ public class EntrantRepository {
     }
 
     /**
-     * Converts Firestore document to Entrant object
+     * Converts a Firestore DocumentSnapshot to an Entrant object.
+     *
+     * @param document the Firestore document snapshot to convert
+     * @return the converted Entrant object, or null if conversion fails
      */
     private Entrant documentToEntrant(DocumentSnapshot document) {
         if (document == null || !document.exists()) {
@@ -72,7 +151,9 @@ public class EntrantRepository {
     }
 
     /**
-     * Converts Entrant object to Firestore data map
+     * Converts an Entrant object to a Firestore data map.
+     * @param entrant the Entrant object to convert
+     * @return a Map containing the entrant data for Firestore
      */
     private Map<String, Object> entrantToMap(Entrant entrant) {
         Map<String, Object> entrantMap = new HashMap<>();
@@ -85,7 +166,9 @@ public class EntrantRepository {
     }
 
     /**
-     * Finds an entrant by ID
+     * Finds an entrant by their unique identifier.
+     * @param entrantId the unique identifier of the entrant to find
+     * @param callback the callback to handle the result of the operation
      */
     public void findEntrantById(String entrantId, EntrantCallback callback) {
         db.collection(COLLECTION_ENTRANTS)
@@ -103,7 +186,8 @@ public class EntrantRepository {
     }
 
     /**
-     * Retrieves all entrants
+     * Retrieves all entrants from the database.
+     * @param callback the callback to handle the list of entrants
      */
     public void getAllEntrants(EntrantListCallback callback) {
         db.collection(COLLECTION_ENTRANTS)
@@ -122,7 +206,9 @@ public class EntrantRepository {
     }
 
     /**
-     * Adds a new entrant
+     * Adds a new entrant to the database.
+     * @param entrant the Entrant object to add
+     * @param callback the callback to handle the operation result
      */
     public void addEntrant(Entrant entrant, OperationCallback callback) {
         if (entrant.getUserId() == null || entrant.getUserId().isEmpty()) {
@@ -139,7 +225,10 @@ public class EntrantRepository {
     }
 
     /**
-     * Updates an existing entrant
+     * Updates an existing entrant in the database.
+     *
+     * @param updatedEntrant the Entrant object with updated information
+     * @param callback the callback to handle the operation result
      */
     public void updateEntrant(Entrant updatedEntrant, BooleanCallback callback) {
         Map<String, Object> entrantData = entrantToMap(updatedEntrant);
@@ -151,7 +240,10 @@ public class EntrantRepository {
     }
 
     /**
-     * Deletes an entrant by ID
+     * Deletes an entrant from the database by their ID.
+     *
+     * @param entrantId the unique identifier of the entrant to delete
+     * @param callback the callback to handle the operation result
      */
     public void deleteEntrant(String entrantId, BooleanCallback callback) {
         db.collection(COLLECTION_ENTRANTS)
@@ -159,46 +251,6 @@ public class EntrantRepository {
                 .delete()
                 .addOnSuccessListener(aVoid -> callback.onSuccess(true))
                 .addOnFailureListener(callback::onFailure);
-    }
-
-    /**
-     * Initialize sample data (for testing/demo purposes)
-     */
-    private void initializeSampleData() {
-        // Check if collection is empty, then add sample data
-        db.collection(COLLECTION_ENTRANTS).get().addOnSuccessListener(querySnapshot -> {
-            if (querySnapshot.isEmpty()) {
-                addSampleEntrants();
-            }
-        });
-    }
-
-    private void addSampleEntrants() {
-        List<Entrant> sampleEntrants = new ArrayList<>();
-        sampleEntrants.add(new Entrant("entrant1", "John Doe", "john.doe@ualberta.ca", "780-111-1111", "test"));
-        sampleEntrants.add(new Entrant("entrant2", "Jane Smith", "jane.smith@ualberta.ca", "780-111-1112", "test"));
-        sampleEntrants.add(new Entrant("entrant3", "Bob Johnson", "bob.johnson@ualberta.ca", "780-111-1113", "test"));
-        sampleEntrants.add(new Entrant("entrant4", "Alice Brown", "alice.brown@ualberta.ca", "780-111-1114", "test"));
-        sampleEntrants.add(new Entrant("entrant5", "Charlie Wilson", "charlie.wilson@ualberta.ca", "780-111-1115", "test"));
-        sampleEntrants.add(new Entrant("entrant6", "Diana Lee", "diana.lee@ualberta.ca", "780-111-1116", "test"));
-        sampleEntrants.add(new Entrant("entrant7", "Edward Zhang", "edward.zhang@ualberta.ca", "780-111-1117", "test"));
-        sampleEntrants.add(new Entrant("entrant8", "Fiona Chen", "fiona.chen@ualberta.ca", "780-111-1118", "test"));
-        sampleEntrants.add(new Entrant("entrant9", "George Kumar", "george.kumar@ualberta.ca", "780-111-1119", "test"));
-        sampleEntrants.add(new Entrant("entrant10", "Helen Park", "helen.park@ualberta.ca", "780-111-1120", "test"));
-
-        for (Entrant entrant : sampleEntrants) {
-            addEntrant(entrant, new OperationCallback() {
-                @Override
-                public void onSuccess() {
-                    Log.d("EntrantRepository", "Sample entrant added: " + entrant.getName());
-                }
-
-                @Override
-                public void onFailure(Exception e) {
-                    Log.e("EntrantRepository", "Failed to add sample entrant: " + entrant.getName(), e);
-                }
-            });
-        }
     }
 
 

@@ -92,8 +92,10 @@ public class OrganizerEventInfoFragment extends Fragment {
 
             @Override
             public void onFailure(Exception e) {
-                Toast.makeText(requireContext(), "Failed to load event: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                requireActivity().onBackPressed();
+//                requireActivity().onBackPressed();
+                if (!isAdded() || getContext() == null) {
+                    return;
+                }
             }
         });
     }
