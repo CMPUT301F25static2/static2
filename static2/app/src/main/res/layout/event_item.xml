@@ -79,7 +79,7 @@
                             android:textColor="@color/green_deep"
                             android:background="@drawable/rounded_md"
                             android:backgroundTint="@color/green_light"
-                            android:textSize="12sp"/>
+                            android:textSize="10sp"/>
                     </LinearLayout>
 
                     <ImageView

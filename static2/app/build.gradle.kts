@@ -39,7 +39,6 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-functions:20.2.0")
     implementation("com.google.firebase:firebase-firestore")
-
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
@@ -52,12 +51,12 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.messaging)
     implementation(libs.fragment.testing)
+    implementation(libs.rules)
+    implementation(libs.espresso.idling.resource)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.espresso.intents)
-
-
 
     testImplementation(libs.junit)
     androidTestImplementation("androidx.arch.core:core-testing:2.2.0")
