@@ -1,5 +1,6 @@
 package com.ualberta.eventlottery.ui.profile;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,13 +13,12 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.utils.UserManager;
 import com.ualberta.static2.databinding.FragmentProfileBinding;
 
-/**
- * A simple {@link Fragment} subclass that displays and allows editing of a user's profile.
- */
 public class ProfileFragment extends Fragment {
 
     private FragmentProfileBinding binding;
@@ -26,7 +26,7 @@ public class ProfileFragment extends Fragment {
     private String userId;
     private String isAdmin;
     private FirebaseFirestore db;
-    private CollectionReference userRef;
+    private CollectionReference docRef;
 
 
     /**
@@ -66,8 +66,7 @@ public class ProfileFragment extends Fragment {
                 userId = getArguments().getString("userId");
                 Toast.makeText(getContext(), "Admin access granted", Toast.LENGTH_SHORT).show();
             }
-        }
-        else{
+        } else {
             userId = UserManager.getCurrentUserId();
         }
 
@@ -115,17 +114,23 @@ public class ProfileFragment extends Fragment {
         });
 
         binding.buttonDelete.setOnClickListener(v -> {
-            db = FirebaseFirestore.getInstance();
-            userRef = db.collection("users");
-            DocumentReference userDocRef = userRef.document(userId);
-
-            userDocRef.delete();
-            Toast.makeText(getContext(), "Profile deleted", Toast.LENGTH_SHORT).show();
-            requireActivity().onBackPressed();
-
+            new AlertDialog.Builder(requireContext())
+                    .setTitle("Delete User")
+                    .setMessage("Are you sure you want to delete this user? This action cannot be undone.")
+                    .setPositiveButton("Delete", (dialog, which) -> {
+                        // User confirmed deletion
+                        deleteUser(userId);
+                        deleteOrganizedEvents(userId);
+                        deleteUserRegistrations(userId);
+                        requireActivity().onBackPressed();
+                    })
+                    .setNegativeButton("Cancel", (dialog, which) -> {
+                        // User cancelled, dialog will dismiss automatically
+                        dialog.dismiss();
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert) // Optional: adds an icon
+                    .show();
         });
-
-
         return binding.getRoot();
     }
 
@@ -137,5 +142,68 @@ public class ProfileFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    /**
+     * Deletes a user from the database.
+     * @param userId
+     */
+    public void deleteUser(String userId) {
+        db = FirebaseFirestore.getInstance();
+
+        DocumentReference userDocRef = db.collection("users").document(userId);
+        userDocRef.delete();
+        Toast.makeText(getContext(), "Profile deleted", Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Deletes all events organized by a user.
+     * @param userId
+     */
+    public void deleteOrganizedEvents(String userId) {
+        CollectionReference eventDocRef = db.collection("events");
+
+        eventDocRef.get().addOnSuccessListener(querySnapshot -> {
+            for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                if (doc != null && doc.getString("organizerId") != null && doc.getString("organizerId").trim().equals(userId)) {
+                    String eventId = doc.getId();
+                    deleteOtherUserRegistrations(eventId);
+                    eventDocRef.document(doc.getId()).delete();
+                }
+            }
+        });
+    }
+
+    /**
+     * Deletes all registrations made by a user.
+     * @param userId
+     */
+    public void deleteUserRegistrations(String userId) {
+        CollectionReference registrationDocRef = db.collection("registrations");
+
+        registrationDocRef.get().addOnSuccessListener(querySnapshot -> {
+            for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                if (doc != null && doc.getString("entrantId") != null && doc.getString("entrantId").trim().equals(userId)) {
+                    registrationDocRef.document(doc.getId()).delete();
+                }
+            }
+        });
+
+    }
+
+    /**
+     * Deletes all registrations made by other users for events organized by the deleted user.
+     * @param eventId
+     */
+    public void deleteOtherUserRegistrations(String eventId) {
+        CollectionReference registrationDocRef = db.collection("registrations");
+
+        registrationDocRef.get().addOnSuccessListener(querySnapshot -> {
+            for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                if (doc != null && doc.getString("eventId") != null && doc.getString("eventId").trim().equals(eventId)) {
+                    registrationDocRef.document(doc.getId()).delete();
+                }
+            }
+        });
     }
 }

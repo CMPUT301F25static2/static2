@@ -37,6 +37,12 @@ import com.ualberta.static2.databinding.FragmentHomeBinding;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+/**
+ * @author Lumbani
+ * @version 1.0
+ * This is a class that serves as the home screen for the admin.
+ */
 public class AdminHomeFragment extends Fragment {
 
     private ListView browseOptions;
@@ -45,7 +51,20 @@ public class AdminHomeFragment extends Fragment {
 
     private FragmentAdminHomeBinding binding;
 
-
+    /**
+     * Called to have the fragment initiate the admin portal / home fragment
+     * Sets up the browse menu for the admin
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return
+     */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -53,18 +72,26 @@ public class AdminHomeFragment extends Fragment {
         // Inflate the fragment layout
         View view = inflater.inflate(R.layout.fragment_admin_home, container, false);
 
-        // Reference the ListView from the layout
         browseOptions = view.findViewById(R.id.admin_browse);
 
-        // Sample data
         options = new ArrayList<>(Arrays.asList("Browse Events", "Browse Users", "Browse Images", "Browse Logs"));
-        optionAdapter = new ArrayAdapter<>(getContext(), R.layout.admin_menu_item, options)
-        ;
+        optionAdapter = new ArrayAdapter<>(getContext(), R.layout.admin_menu_item, options);
 
-        // Set the adapter on the ListView
         browseOptions.setAdapter(optionAdapter);
 
         browseOptions.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            /**
+             * This method is invoked when an item in this browse menu is clicked.
+             * Sends the user to the selected fragment.
+             * Possible locations: Events, Users, Images, Logs
+             *
+             * @param adapterView The AdapterView where the click happened.
+             * @param view The view within the AdapterView that was clicked
+             * @param i The position of the view in the adapter.
+             * @param l The row id of the item that was clicked.
+             *
+             */
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Fragment selectedFragment = null;
@@ -98,10 +125,12 @@ public class AdminHomeFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Called when the fragment is no longer in use.
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
     }
-
 }

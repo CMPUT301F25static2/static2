@@ -15,34 +15,72 @@ import com.ualberta.static2.R;
 
 import java.util.ArrayList;
 
+/**
+ * @author Lumbani
+ * @version 1.0
+ * This is a class that serves as the adapter for the users screen for the admin.
+ */
 public class UserAdapter extends BaseAdapter {
     private ArrayList<User> users;
     private Context context;
     private LayoutInflater inflater;
     private String searchText;
 
-
+    /**
+     * This is a constructor for the user adapter.
+     *
+     * @param context
+     * @param users
+     */
     public UserAdapter(Context context, ArrayList<User> users) {
         this.users = users;
         this.context = context;
         this.inflater = LayoutInflater.from(context);
     }
 
+    /**
+     * This is a method that returns the number of users in the list.
+     *
+     * @return
+     * The number of users in the list.
+     */
     @Override
     public int getCount() {
         return users.size();
     }
 
+    /**
+     * This is a method that returns the user at the given position.
+     *
+     * @param position
+     * @return
+     * The user at the given position.
+     */
     @Override
     public Object getItem(int position) {
         return users.get(position);
     }
 
+    /**
+     * This is a method that returns the item ID at the given position.
+     *
+     * @param position
+     * @return
+     */
     @Override
     public long getItemId(int position) {
         return position;
     }
 
+    /**
+     * This is a method that returns the view for the given position.
+     * Gets the user at the given position and sets the text views to the user's name and ID.
+     *
+     * @param position
+     * @param convertView
+     * @param parent
+     * @return
+     */
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -50,11 +88,9 @@ public class UserAdapter extends BaseAdapter {
 
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.admin_user_item, parent, false);
-
             holder = new ViewHolder();
             holder.userName = convertView.findViewById(R.id.text_admin_user_name);
             holder.userID = convertView.findViewById(R.id.text_admin_user_id);
-
             convertView.setTag(holder); // cache holder in the view
         } else {
             holder = (ViewHolder) convertView.getTag(); // reuse cached holder
@@ -62,12 +98,15 @@ public class UserAdapter extends BaseAdapter {
 
         User user = users.get(position);
         holder.userName.setText(user.getName());
-        holder.userID.setText(user.getUserId());
+        holder.userID.setText("ID: "+user.getUserId());
 
         return convertView;
     }
 
 
+    /**
+     * This is a class that holds the text views for the user adapter.
+     */
     static class ViewHolder {
         TextView userName;
         TextView userID;
