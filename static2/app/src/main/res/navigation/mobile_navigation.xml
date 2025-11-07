@@ -9,12 +9,24 @@
         android:id="@+id/navigation_home"
         android:name="com.ualberta.eventlottery.ui.home.entrant.HomeFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <!-- This action defines the navigation path from home to details -->
+        <action
+            android:id="@+id/action_home_to_details"
+            app:destination="@id/navigation_event_details" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_event_details"
         android:name="com.ualberta.eventlottery.ui.home.entrant.EventDetailsFragment"
-        tools:layout="@layout/fragment_event_details" />
+        android:label="Event Details"
+        tools:layout="@layout/fragment_event_details" >
+        <!-- This argument declares that the fragment will receive a string named "eventId" -->
+        <argument
+            android:name="eventId"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_notifications"
