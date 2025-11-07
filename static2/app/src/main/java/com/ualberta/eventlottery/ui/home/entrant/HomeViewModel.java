@@ -2,12 +2,12 @@ package com.ualberta.eventlottery.ui.home.entrant;
 
 import android.util.Log;
 
-import androidx.lifecycle.LiveData;import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.model.Registration;
-import com.ualberta.eventlottery.repository.EventListLiveData;
 import com.ualberta.eventlottery.repository.EventRepository;
 import com.ualberta.eventlottery.repository.RegistrationRepository;
 import com.ualberta.eventlottery.utils.UserManager;
@@ -21,13 +21,15 @@ public class HomeViewModel extends ViewModel {
     private final EventRepository eventRepository;
     private final RegistrationRepository registrationRepository;
 
-    private final LiveData<List<Event>> availableEventListLiveData; // Changed from EventListLiveData
-    private final MutableLiveData<List<Event>> historyEvents = new MutableLiveData<>();
+    private final LiveData<List<Event>> availableEventListLiveData;
+    // This LiveData will now be used for the "My Events" tab.
+    private final MutableLiveData<List<Event>> myEvents = new MutableLiveData<>();
 
     public HomeViewModel() {
         eventRepository = EventRepository.getInstance();
         registrationRepository = RegistrationRepository.getInstance();
 
+        // This correctly gets the live data for "Available" events from the repository
         availableEventListLiveData = eventRepository.getAvailableEvents();
     }
 
@@ -35,16 +37,16 @@ public class HomeViewModel extends ViewModel {
         return availableEventListLiveData;
     }
 
-    // Getter for the new history events LiveData
-    public LiveData<List<Event>> getHistoryEvents() {
-        return historyEvents;
+    // Getter for the new "My Events" LiveData
+    public LiveData<List<Event>> getMyEvents() {
+        return myEvents;
     }
 
-    // Method to trigger loading the registration history
-    public void loadHistoryEvents() {
+    // Method to trigger loading the user's registered events
+    public void loadMyRegisteredEvents() {
         String currentUserId = UserManager.getCurrentUserId();
         if (currentUserId == null || currentUserId.isEmpty()) {
-            historyEvents.setValue(new ArrayList<>()); // Post empty list if not logged in
+            myEvents.setValue(new ArrayList<>()); // Post empty list if not logged in
             return;
         }
 
@@ -53,39 +55,41 @@ public class HomeViewModel extends ViewModel {
             @Override
             public void onSuccess(List<Registration> registrations) {
                 if (registrations == null || registrations.isEmpty()) {
-                    historyEvents.setValue(new ArrayList<>()); // Post empty list if no registrations
+                    myEvents.setValue(new ArrayList<>()); // Post empty list if no registrations
                     return;
                 }
 
-
+                // 2. Extract event IDs from the registrations
                 List<String> eventIds = registrations.stream()
                         .map(Registration::getEventId)
                         .filter(id -> id != null && !id.isEmpty())
                         .collect(Collectors.toList());
 
                 if (eventIds.isEmpty()) {
-                    historyEvents.setValue(new ArrayList<>());
+                    myEvents.setValue(new ArrayList<>());
                     return;
                 }
 
+                // 3. Fetch event details for those IDs
                 eventRepository.getEventsByIds(eventIds, new EventRepository.EventListCallback() {
                     @Override
                     public void onSuccess(List<Event> events) {
-                        historyEvents.setValue(events);
+                        // Here you could add filtering for upcoming events if needed
+                        myEvents.setValue(events);
                     }
 
                     @Override
                     public void onFailure(Exception e) {
-                        Log.e("HomeViewModel", "Failed to fetch event details for history", e);
-                        historyEvents.setValue(null); // Or an empty list to avoid crashes
+                        Log.e("HomeViewModel", "Failed to fetch event details for My Events", e);
+                        myEvents.setValue(null); // Or an empty list
                     }
                 });
             }
 
             @Override
             public void onFailure(Exception e) {
-                Log.e("HomeViewModel", "Failed to load registration history", e);
-                historyEvents.setValue(null); // Or an empty list
+                Log.e("HomeViewModel", "Failed to load registrations for My Events", e);
+                myEvents.setValue(null); // Or an empty list
             }
         });
     }
