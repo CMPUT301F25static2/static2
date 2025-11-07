@@ -5,7 +5,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -43,13 +42,15 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
     private static String BTN_ACTION_TEXT_WITHDRAW = "Withdraw";
 
     private List<Event> eventList;
+    private OnEventListener onEventListener;
 
     /**
      * Constructs an EventAdapter with a specified eventList.
      * @param eventList the list of events to display
      */
-    public EventAdapter(List<Event> eventList){
+    public EventAdapter(List<Event> eventList, OnEventListener onEventListener){
         this.eventList = eventList;
+        this.onEventListener = onEventListener;
     }
 
     /**
@@ -144,6 +145,12 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
             }
         });
         registrationRepository.findRegistrationByEventAndUser(event.getId(), UserManager.getCurrentUserId(), callback);
+
+        holder.itemView.setOnClickListener(v -> {
+            if (onEventListener != null) {
+                onEventListener.onEventClick(event);
+            }
+        });
     }
 
     private String getEntrantsText(int waitListCount, int maxWaitListSize) {
@@ -213,5 +220,9 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
             btnAction = itemView.findViewById(R.id.btn_action);
             btnActionText = itemView.findViewById(R.id.btn_action_text);
         }
+    }
+
+    public interface OnEventListener {
+        void onEventClick(Event event);
     }
 }

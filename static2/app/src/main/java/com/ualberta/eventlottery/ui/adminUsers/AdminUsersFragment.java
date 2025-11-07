@@ -3,6 +3,7 @@ package com.ualberta.eventlottery.ui.adminUsers;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,14 +36,15 @@ import com.ualberta.static2.databinding.FragmentAdminUsersBinding;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This is a class that serves as the users screen for the admin.
+ */
 public class AdminUsersFragment extends Fragment {
-
-    private ArrayList<User> userArrayList;
-
-    private ArrayList<User> filtered;
-    private UserAdapter userArrayAdapter;
-
-    private UserAdapter filteredUserAdapter;
+    private final ArrayList<User> masterList = new ArrayList<>();
+    private final ArrayList<User> displayList = new ArrayList<>();
+    private UserAdapter adapter;
+    private String selectedTypeFilter = null;
+    private String searchText = "";
 
     private FirebaseFirestore db;
 
@@ -51,14 +53,9 @@ public class AdminUsersFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        //AdminUserViewModel adminUserViewModel =
-         //       new ViewModelProvider(this).get(AdminUserViewModel.class);
 
         binding = FragmentAdminUsersBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-
-        //final TextView textView = binding.textUsers;
-        //adminUserViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
         binding.adminBackButton.setOnClickListener(v -> {
             requireActivity().onBackPressed();
@@ -66,9 +63,8 @@ public class AdminUsersFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
         usersRef = db.collection("users");
 
-        userArrayList = new ArrayList<>();
-        userArrayAdapter = new UserAdapter(requireContext(), userArrayList);
-        binding.userListView.setAdapter(userArrayAdapter);
+        adapter = new UserAdapter(requireContext(), displayList);
+        binding.userListView.setAdapter(adapter);
 
 
         usersRef.addSnapshotListener((value, error) -> {
@@ -76,43 +72,62 @@ public class AdminUsersFragment extends Fragment {
                         Log.e("Firestore", error.toString());
                     }
                     if (value != null && !value.isEmpty()) {
-                        userArrayList.clear();
+                        masterList.clear();
                         for (QueryDocumentSnapshot snapshot : value) {
                             String userId = snapshot.getId();
                             String name = snapshot.getString("name");
                             String email = snapshot.getString("email");
                             String phone = snapshot.getString("phone");
                             String favRecCenter = snapshot.getString("favRecCenter");
+                            String userType = snapshot.getString("userType");
 
-                            userArrayList.add(new User(userId, name, email, phone, favRecCenter));
+                            masterList.add(new User(userId, name, email, phone, "fcmToken", userType, favRecCenter));
                         }
-
-                        // dummy data
-                        userArrayList.add(new User("ID: " + "1", "giannis antetokounmpo", "c", "d", "e"));
-                        userArrayList.add(new User("ID: " + "12", "michael johnson", "c", "d", "e"));
-                        userArrayList.add(new User("ID: " + "123", "max verstappen", "c", "d", "e"));
-                        userArrayList.add(new User("ID: " + "1234", "novak djokovic", "c", "d", "e"));
-                        userArrayList.add(new User("12345", "jerome iginla", "c", "d", "e"));
-                        userArrayList.add(new User("123456", "lebron james", "c", "d", "e"));
-                        userArrayList.add(new User("1234567", "Shohei ohtani", "c", "d", "e"));
-                        userArrayList.add(new User("12345678", "Mesut ozil", "c", "d", "e"));
-                        userArrayList.add(new User("1a234567a", "Mesut ozil", "c", "d", "e"));
-                        userArrayList.add(new User("ASDFSADF1a2b34567", "CAPS", "c", "d", "e"));
-                        userArrayList.add(new User("1aCZXC2bERAGAERv3c45678", "ALL CAPS", "c", "d", "e"));
-                        userArrayList.add(new User("NVCNG1a2ascsb3c4d5678", "C", "c", "d", "e"));
-                        userArrayList.add(new User("LKNK1a2b3bdfbazd45678", "CAPS2", "c", "d", "e"));
-                        userArrayList.add(new User("1a2345ARSDIVND678", "michael jordan", "c", "d", "e"));
-                        userArrayList.add(new User("1a2345DVSDV678", "Shaun White", "c", "d", "e"));
-                        userArrayList.add(new User("1a23456AWREG9P4G78", "1234234", "c", "d", "e"));
-                        // dummy data
-
-                        userArrayAdapter.notifyDataSetChanged();
+                        selectedTypeFilter = null;
+                        searchText = "";
+                        applyFilter();
                     }
                 });
 
+        binding.sortButtonUsersEntrants.setOnClickListener(v -> {
+            selectedTypeFilter = "entrant";
+            applyFilter();
+            binding.sortButtonUsersEntrants.setTextColor(getResources().getColorStateList(R.color.black, null));
+            binding.sortButtonUsersOrganizers.setTextColor(getResources().getColorStateList(R.color.white, null));
+            binding.sortButtonUsersAdmins.setTextColor(getResources().getColorStateList(R.color.white, null));
+            binding.sortButtonUsersEntrants.setBackgroundTintList(getResources().getColorStateList(R.color.white, null));
+            binding.sortButtonUsersOrganizers.setBackgroundTintList(getResources().getColorStateList(R.color.black, null));
+            binding.sortButtonUsersAdmins.setBackgroundTintList(getResources().getColorStateList(R.color.black, null));
+
+        });
+
+        binding.sortButtonUsersOrganizers.setOnClickListener(v -> {
+            selectedTypeFilter = "organizer";
+            applyFilter();
+            binding.sortButtonUsersEntrants.setTextColor(getResources().getColorStateList(R.color.white, null));
+            binding.sortButtonUsersOrganizers.setTextColor(getResources().getColorStateList(R.color.black, null));
+            binding.sortButtonUsersAdmins.setTextColor(getResources().getColorStateList(R.color.white, null));
+            binding.sortButtonUsersEntrants.setBackgroundTintList(getResources().getColorStateList(R.color.black, null));
+            binding.sortButtonUsersOrganizers.setBackgroundTintList(getResources().getColorStateList(R.color.white, null));
+            binding.sortButtonUsersAdmins.setBackgroundTintList(getResources().getColorStateList(R.color.black, null));
+        });
+
+        binding.sortButtonUsersAdmins.setOnClickListener(v -> {
+            selectedTypeFilter = "admin";
+            applyFilter();
+            binding.sortButtonUsersEntrants.setTextColor(getResources().getColorStateList(R.color.white, null));
+            binding.sortButtonUsersOrganizers.setTextColor(getResources().getColorStateList(R.color.white, null));
+            binding.sortButtonUsersAdmins.setTextColor(getResources().getColorStateList(R.color.black, null));
+            binding.sortButtonUsersEntrants.setBackgroundTintList(getResources().getColorStateList(R.color.black, null));
+            binding.sortButtonUsersOrganizers.setBackgroundTintList(getResources().getColorStateList(R.color.black, null));
+            binding.sortButtonUsersAdmins.setBackgroundTintList(getResources().getColorStateList(R.color.white, null));
+
+        });
+
         binding.userListView.setOnItemClickListener((parent, view, position, id) -> {
-            User user = userArrayList.get(position);
-            Toast.makeText(requireContext(), "Clicked: " + user.getName(), Toast.LENGTH_SHORT).show();
+
+            User user = displayList.get(position);
+            Toast.makeText(requireContext(), "Clicked: " + user.getUserType(), Toast.LENGTH_SHORT).show();
             Bundle bundle = new Bundle();
             bundle.putString("isAdmin", "true");
             bundle.putString("userId", user.getUserId());
@@ -120,13 +135,14 @@ public class AdminUsersFragment extends Fragment {
             userProfile.setArguments(bundle);
             getParentFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.fragment_container, userProfile)
+                    .hide(this)
+                    .add(R.id.fragment_container, userProfile)
                     .addToBackStack(null)
                     .commit();
-
                 });
 
-        binding.searchUsers.addTextChangedListener(new android.text.TextWatcher() {
+
+        binding.searchUsers.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
@@ -138,17 +154,8 @@ public class AdminUsersFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                String searchText = editable.toString().toLowerCase();
-                filtered = new ArrayList<>();
-                filteredUserAdapter = new UserAdapter(requireContext(), filtered);
-
-                for (User user : userArrayList) {
-                    if (user.getName().toLowerCase().contains(searchText.toLowerCase())){
-                        filtered.add(user);
-                    }
-                }
-                binding.userListView.setAdapter(filteredUserAdapter);
-                userArrayAdapter.notifyDataSetChanged();
+                searchText = editable.toString().toLowerCase();
+                applyFilter();
             }
         });
 
@@ -157,10 +164,38 @@ public class AdminUsersFragment extends Fragment {
     }
 
     @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            adapter.notifyDataSetChanged();
+        }
+    }
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
     }
+
+    /**
+     * Applies a filter to the list of users.
+     * Filters by user type and search text.
+     */
+    public void applyFilter() {
+        displayList.clear();
+        for (User u : masterList) {
+            if (selectedTypeFilter != null && ! selectedTypeFilter.equals(u.getUserType())) {
+                continue;
+            }
+            if (! searchText.isEmpty() && ! u.getName().toLowerCase().contains(searchText)) {
+                continue;
+            }
+            displayList.add(u);
+        }
+        adapter.notifyDataSetChanged();
+    }
+
+
+
 
 
 }

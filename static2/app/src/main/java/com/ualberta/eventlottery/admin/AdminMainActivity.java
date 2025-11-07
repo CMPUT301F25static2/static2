@@ -16,20 +16,25 @@ import com.ualberta.static2.R;
 import com.ualberta.static2.databinding.ActivityAdminMainBinding;
 import com.ualberta.static2.databinding.ActivityEventLotteryMainBinding;
 
+/**
+ * @author Lumbani
+ * @version 1.0
+ * This is the main activity class for the admin.
+ */
 
 public class AdminMainActivity extends AppCompatActivity{
 
     private ActivityAdminMainBinding binding;
 
+    /**
+     * This method is called when the activity is created.
+     * Will replace the initializer fragment with the admin home fragment.
+     * @param savedInstanceState The saved instance state.
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-
- //       binding = ActivityAdminMainBinding.inflate(getLayoutInflater());
-//        setContentView(binding.getRoot());
-
- //       NavController navController = Navigation.findNavController(this, R.id.fragment_container);
-//        NavigationUI.setupWithNavController(binding.navAdmin, navController);
 
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_admin_main);

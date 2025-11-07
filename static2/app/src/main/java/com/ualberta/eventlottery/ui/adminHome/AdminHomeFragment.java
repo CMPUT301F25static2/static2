@@ -37,6 +37,12 @@ import com.ualberta.static2.databinding.FragmentHomeBinding;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+/**
+ * @author Lumbani
+ * @version 1.0
+ * This is a class that serves as the home screen for the admin.
+ */
 public class AdminHomeFragment extends Fragment {
 
     private ListView browseOptions;
@@ -45,7 +51,15 @@ public class AdminHomeFragment extends Fragment {
 
     private FragmentAdminHomeBinding binding;
 
-
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     *
+     * @return
+     * Return the View for the admin home fragment's UI, or null.
+     */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -53,18 +67,25 @@ public class AdminHomeFragment extends Fragment {
         // Inflate the fragment layout
         View view = inflater.inflate(R.layout.fragment_admin_home, container, false);
 
-        // Reference the ListView from the layout
         browseOptions = view.findViewById(R.id.admin_browse);
 
-        // Sample data
         options = new ArrayList<>(Arrays.asList("Browse Events", "Browse Users", "Browse Images", "Browse Logs"));
-        optionAdapter = new ArrayAdapter<>(getContext(), R.layout.admin_menu_item, options)
-        ;
+        optionAdapter = new ArrayAdapter<>(getContext(), R.layout.admin_menu_item, options);
 
-        // Set the adapter on the ListView
         browseOptions.setAdapter(optionAdapter);
 
         browseOptions.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            /**
+             * This method is invoked when an item in this AdapterView has
+             * been clicked. Sends the user to the selected fragment.
+             *
+             * @param adapterView The AdapterView where the click happened.
+             * @param view The view within the AdapterView that was clicked
+             * @param i The position of the view in the adapter.
+             * @param l The row id of the item that was clicked.
+             *
+             */
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Fragment selectedFragment = null;
@@ -98,10 +119,12 @@ public class AdminHomeFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Called when the fragment is no longer in use.
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
     }
-
 }

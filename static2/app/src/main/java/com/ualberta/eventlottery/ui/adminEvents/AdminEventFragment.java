@@ -39,6 +39,9 @@ import com.ualberta.static2.databinding.FragmentAdminUsersBinding;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This is a class that serves as the events screen for the admin.
+ */
 public class AdminEventFragment extends Fragment {
 
     private ArrayList<Event> eventArrayList;
@@ -51,21 +54,15 @@ public class AdminEventFragment extends Fragment {
     private FirebaseFirestore db;
 
     private RecyclerView recyclerView;
-    private EventAdapter myEventsAdapter, availableEventsAdapter;
 
     private CollectionReference eventsRef;
     private com.ualberta.static2.databinding.FragmentAdminEventsBinding binding;
 
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        //AdminUserViewModel adminUserViewModel =
-        //       new ViewModelProvider(this).get(AdminUserViewModel.class);
-
         binding = FragmentAdminEventsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-
-        //final TextView textView = binding.textUsers;
-        //adminUserViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
         binding.adminBackButton.setOnClickListener(v -> {
             requireActivity().onBackPressed();
@@ -78,7 +75,7 @@ public class AdminEventFragment extends Fragment {
 
 
         eventArrayList = new ArrayList<>();
-        eventArrayAdapter = new EventAdapter(eventArrayList);
+        eventArrayAdapter = new EventAdapter(eventArrayList, null);
         recyclerView.setAdapter(eventArrayAdapter);
 
 
@@ -126,17 +123,22 @@ public class AdminEventFragment extends Fragment {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
-
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
             }
 
+            /**
+             * This method is called after the text has been changed.
+             * Filters the events based on the search text.
+             *
+             * @param editable The text.
+             */
             @Override
             public void afterTextChanged(Editable editable) {
                 String searchText = editable.toString().toLowerCase();
                 filtered = new ArrayList<>();
-                filteredEventAdapter = new EventAdapter(filtered);
+                filteredEventAdapter = new EventAdapter(filtered, null);
 
                 for (Event event : eventArrayList) {
                     if (event.getTitle().toLowerCase().contains(searchText.toLowerCase())){
@@ -153,6 +155,9 @@ public class AdminEventFragment extends Fragment {
         return root;
     }
 
+    /**
+     * Called when the fragment is no longer in use.
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();

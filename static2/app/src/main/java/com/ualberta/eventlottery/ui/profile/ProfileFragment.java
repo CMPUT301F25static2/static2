@@ -12,7 +12,9 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.utils.UserManager;
 import com.ualberta.static2.databinding.FragmentProfileBinding;
 
@@ -23,7 +25,7 @@ public class ProfileFragment extends Fragment {
     private String userId;
     private String isAdmin;
     private FirebaseFirestore db;
-    private CollectionReference userRef;
+    private CollectionReference docRef;
 
 
     @Override
@@ -39,8 +41,7 @@ public class ProfileFragment extends Fragment {
                 userId = getArguments().getString("userId");
                 Toast.makeText(getContext(), "Admin access granted", Toast.LENGTH_SHORT).show();
             }
-        }
-        else{
+        } else {
             userId = UserManager.getCurrentUserId();
         }
 
@@ -88,12 +89,9 @@ public class ProfileFragment extends Fragment {
         });
 
         binding.buttonDelete.setOnClickListener(v -> {
-            db = FirebaseFirestore.getInstance();
-            userRef = db.collection("users");
-            DocumentReference userDocRef = userRef.document(userId);
-
-            userDocRef.delete();
-            Toast.makeText(getContext(), "Profile deleted", Toast.LENGTH_SHORT).show();
+            deleteUser(userId);
+            deleteOrganizedEvents(userId);
+            deleteUseregistrations(userId);
             requireActivity().onBackPressed();
 
         });
@@ -106,5 +104,52 @@ public class ProfileFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    public void deleteUser(String userId) {
+        db = FirebaseFirestore.getInstance();
+
+        DocumentReference userDocRef = db.collection("users").document(userId);
+        userDocRef.delete();
+        Toast.makeText(getContext(), "Profile deleted", Toast.LENGTH_SHORT).show();
+    }
+
+    public void deleteOrganizedEvents(String userId) {
+        CollectionReference eventDocRef = db.collection("events");
+
+        eventDocRef.get().addOnSuccessListener(querySnapshot -> {
+            for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                if (doc != null && doc.getString("organizerId") != null && doc.getString("organizerId").trim().equals(userId)) {
+                    String eventId = doc.getId();
+                    deleteOtherUserRegistrations(eventId);
+                    eventDocRef.document(doc.getId()).delete();
+                }
+            }
+        });
+    }
+
+    public void deleteUseregistrations(String userId) {
+        CollectionReference registrationDocRef = db.collection("registrations");
+
+        registrationDocRef.get().addOnSuccessListener(querySnapshot -> {
+            for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                if (doc != null && doc.getString("entrantId") != null && doc.getString("entrantId").trim().equals(userId)) {
+                    registrationDocRef.document(doc.getId()).delete();
+                }
+            }
+        });
+
+    }
+
+    public void deleteOtherUserRegistrations(String eventId) {
+        CollectionReference registrationDocRef = db.collection("registrations");
+
+        registrationDocRef.get().addOnSuccessListener(querySnapshot -> {
+            for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                if (doc != null && doc.getString("eventId") != null && doc.getString("eventId").trim().equals(eventId)) {
+                    registrationDocRef.document(doc.getId()).delete();
+                }
+            }
+        });
     }
 }
