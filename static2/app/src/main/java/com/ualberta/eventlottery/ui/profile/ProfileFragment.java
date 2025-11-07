@@ -16,6 +16,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.ualberta.eventlottery.utils.UserManager;
 import com.ualberta.static2.databinding.FragmentProfileBinding;
 
+/**
+ * A simple {@link Fragment} subclass that displays and allows editing of a user's profile.
+ */
 public class ProfileFragment extends Fragment {
 
     private FragmentProfileBinding binding;
@@ -26,6 +29,30 @@ public class ProfileFragment extends Fragment {
     private CollectionReference userRef;
 
 
+    /**
+     * Called to have the fragment instantiate its user interface view. [11]
+     * This is optional, and non-graphical fragments can return null. This will be called between
+     * {@link #onCreate(Bundle)} and {@link #onViewCreated(View, Bundle)}. [19]
+     * <p>A default View can be returned by calling {@link #Fragment(int)} in your
+     * constructor. Otherwise, this method returns null.
+     *
+     * <p>It is recommended to <strong>only</strong> inflate the layout in this method and move
+     * logic that operates on the returned View to {@link #onViewCreated(View, Bundle)}.
+     *
+     * <p>If you return a View from here, you will later be called in
+     * {@link #onDestroyView} when the view is being released.
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to. The fragment should not add the view
+     * itself, but this can be used to generate the LayoutParams of
+     * the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return Return the View for the fragment's UI, or null.
+     */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -102,6 +129,10 @@ public class ProfileFragment extends Fragment {
         return binding.getRoot();
     }
 
+    /**
+     * Called when the view previously created by {@link #onCreateView} has
+     * been detached from the fragment.
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();

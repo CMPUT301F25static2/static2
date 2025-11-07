@@ -25,6 +25,9 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * {@link RecyclerView.Adapter} that can display a {@link Event}.
+ */
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
     private static SimpleDateFormat sdfWithoutYear = new SimpleDateFormat("MMM dd", Locale.CANADA);
     private static SimpleDateFormat sdfWithYear = new SimpleDateFormat("MMM dd, yyyy", Locale.CANADA);
@@ -39,15 +42,35 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
     private OnEventListener onEventListener;
 
 
+    /**
+     * Constructs a new EventAdapter.
+     *
+     * @param eventList       The list of events to display.
+     * @param onEventListener The listener for event clicks.
+     */
     public EventAdapter(List<Event> eventList, OnEventListener onEventListener){
         this.eventList = eventList;
         this.onEventListener = onEventListener;
     }
 
+    /**
+     * Updates the list of events and notifies the adapter of the data change.
+     *
+     * @param newEvents The new list of events.
+     */
     public void updateEvents(List<Event> newEvents){
         this.eventList = newEvents;
         notifyDataSetChanged();
     }
+    /**
+     * Called when RecyclerView needs a new {@link ViewHolder} of the given type to represent
+     * an item.
+     *
+     * @param parent   The ViewGroup into which the new View will be added after it is bound to
+     *                 an adapter position.
+     * @param viewType The view type of the new View.
+     * @return A new ViewHolder that holds a View of the given view type.
+     */
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -57,6 +80,13 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
     }
 
 
+    /**
+     * Called by RecyclerView to display the data at the specified position.
+     *
+     * @param holder   The ViewHolder which should be updated to represent the contents of the
+     *                 item at the given position in the data set.
+     * @param position The position of the item within the adapter's data set.
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
@@ -123,6 +153,13 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
         });
     }
 
+    /**
+     * Returns the text for the number of entrants.
+     *
+     * @param waitListCount   The number of users on the waitlist.
+     * @param maxWaitListSize The maximum size of the waitlist.
+     * @return The formatted string for the number of entrants.
+     */
     private String getEntrantsText(int waitListCount, int maxWaitListSize) {
         StringBuffer buffer = new StringBuffer();
         if (waitListCount >= 0) {
@@ -139,6 +176,12 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
         return buffer.toString();
     }
 
+    /**
+     * Returns the formatted date range for the event.
+     *
+     * @param event The event.
+     * @return The formatted date range.
+     */
     private String getFromToText(Event event) {
         if (event.getStartTime() == null || event.getEndTime() == null) {
             return "Dates TBD";
@@ -156,6 +199,12 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
         return sdf.format(startTime.getTime()) + " - " + sdf.format(endTime.getTime());
     }
 
+    /**
+     * Returns the formatted session start time for the event.
+     *
+     * @param event The event.
+     * @return The formatted session start time.
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     private String getSessionStartTimeText(Event event){
         if (event.getDailyStartTime() == null) {
@@ -165,14 +214,28 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
         return sessionStartTime.format(DateTimeFormatter.ofPattern("hh:mm a"));
     }
 
+    /**
+     * Returns the total number of items in the data set held by the adapter.
+     *
+     * @return The total number of items in this adapter.
+     */
     @Override
     public int getItemCount(){
         return eventList.size();
     }
 
+    /**
+     * Describes an item view and metadata about its place within the RecyclerView.
+     */
     public static class ViewHolder extends RecyclerView.ViewHolder{
         TextView eventTitle, entrantsNumber, eventFromTo, eventStatus, eventSessionStartTime, btnActionText;
         LinearLayout btnAction;
+        /**
+         * Constructs a new ViewHolder.
+         *
+         * @param itemView The view that you inflated in
+         *                 {@link EventAdapter#onCreateViewHolder(ViewGroup, int)}
+         */
         public ViewHolder(@NonNull View itemView){
             super(itemView);
             eventTitle = itemView.findViewById(R.id.tv_event_title);
@@ -185,7 +248,15 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
         }
     }
 
+    /**
+     * Interface for listening to event clicks.
+     */
     public interface OnEventListener {
+        /**
+         * Called when an event is clicked.
+         *
+         * @param event The clicked event.
+         */
         void onEventClick(Event event);
     }
 }

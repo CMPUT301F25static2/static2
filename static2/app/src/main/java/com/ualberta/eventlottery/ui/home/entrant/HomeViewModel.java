@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * ViewModel for the home screen, which displays lists of events.
+ */
 public class HomeViewModel extends ViewModel {
 
     private final EventRepository eventRepository;
@@ -25,6 +28,9 @@ public class HomeViewModel extends ViewModel {
     // This LiveData will now be used for the "My Events" tab.
     private final MutableLiveData<List<Event>> myEvents = new MutableLiveData<>();
 
+    /**
+     * Constructs a new HomeViewModel.
+     */
     public HomeViewModel() {
         eventRepository = EventRepository.getInstance();
         registrationRepository = RegistrationRepository.getInstance();
@@ -33,16 +39,27 @@ public class HomeViewModel extends ViewModel {
         availableEventListLiveData = eventRepository.getAvailableEvents();
     }
 
+    /**
+     * Returns the LiveData for the list of available events.
+     *
+     * @return The LiveData for the list of available events.
+     */
     public LiveData<List<Event>> getAvailableEvents() {
         return availableEventListLiveData;
     }
 
-    // Getter for the new "My Events" LiveData
+    /**
+     * Getter for the new "My Events" LiveData
+     *
+     * @return The LiveData for the list of events the user has registered for.
+     */
     public LiveData<List<Event>> getMyEvents() {
         return myEvents;
     }
 
-    // Method to trigger loading the user's registered events
+    /**
+     * Method to trigger loading the user's registered events
+     */
     public void loadMyRegisteredEvents() {
         String currentUserId = UserManager.getCurrentUserId();
         if (currentUserId == null || currentUserId.isEmpty()) {
