@@ -37,6 +37,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * @author Lumbani
+ * @version 1.0
  * This is a class that serves as the users screen for the admin.
  */
 public class AdminUsersFragment extends Fragment {
@@ -66,7 +68,8 @@ public class AdminUsersFragment extends Fragment {
         adapter = new UserAdapter(requireContext(), displayList);
         binding.userListView.setAdapter(adapter);
 
-
+        // Listen for changes to the users collection
+        // If a change is detected, update the list of users
         usersRef.addSnapshotListener((value, error) -> {
                     if (error != null) {
                         Log.e("Firestore", error.toString());
@@ -89,6 +92,7 @@ public class AdminUsersFragment extends Fragment {
                     }
                 });
 
+        // Sort by type of user
         binding.sortButtonUsersEntrants.setOnClickListener(v -> {
             selectedTypeFilter = "entrant";
             applyFilter();
@@ -124,6 +128,9 @@ public class AdminUsersFragment extends Fragment {
 
         });
 
+        // Setup click listener for each user in the list
+        // Passes admin status and userID to the profile fragment
+        // Sends the user to the profile fragment
         binding.userListView.setOnItemClickListener((parent, view, position, id) -> {
 
             User user = displayList.get(position);
@@ -152,14 +159,13 @@ public class AdminUsersFragment extends Fragment {
 
             }
 
+            // Updates the list of users when the search text changes
             @Override
             public void afterTextChanged(Editable editable) {
                 searchText = editable.toString().toLowerCase();
                 applyFilter();
             }
         });
-
-
         return root;
     }
 
@@ -167,7 +173,7 @@ public class AdminUsersFragment extends Fragment {
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden) {
-            adapter.notifyDataSetChanged();
+            adapter.notifyDataSetChanged(); // Update the adapter when the fragment is shown again
         }
     }
     @Override

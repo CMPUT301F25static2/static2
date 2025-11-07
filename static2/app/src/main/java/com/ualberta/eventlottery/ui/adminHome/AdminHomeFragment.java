@@ -51,15 +51,7 @@ public class AdminHomeFragment extends Fragment {
 
     private FragmentAdminHomeBinding binding;
 
-    /**
-     * Called to have the fragment instantiate its user interface view.
-     * @param inflater
-     * @param container
-     * @param savedInstanceState
-     *
-     * @return
-     * Return the View for the admin home fragment's UI, or null.
-     */
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -119,9 +111,6 @@ public class AdminHomeFragment extends Fragment {
         return view;
     }
 
-    /**
-     * Called when the fragment is no longer in use.
-     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();
