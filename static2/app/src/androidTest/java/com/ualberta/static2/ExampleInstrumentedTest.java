@@ -23,6 +23,5 @@ public class ExampleInstrumentedTest {
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         assertEquals("com.ualberta.static2", appContext.getPackageName());
     }
-
-
+    
 }
