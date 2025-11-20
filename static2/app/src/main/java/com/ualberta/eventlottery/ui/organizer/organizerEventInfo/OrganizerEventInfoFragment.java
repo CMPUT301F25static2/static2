@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.model.EventStatus;
 import com.ualberta.eventlottery.repository.EventRepository;
@@ -139,6 +140,20 @@ public class OrganizerEventInfoFragment extends Fragment {
         binding.tvEventUpdateDescription.setText(currentEvent.getDescription());
         binding.tvEventLocation.setText(currentEvent.getLocation());
 
+        // set up image
+        if (currentEvent.getPosterUrl() != null && !currentEvent.getPosterUrl().isEmpty()) {
+            // use glide to load image
+            Glide.with(requireContext())
+                    .load(currentEvent.getPosterUrl())
+                    .placeholder(R.drawable.placeholder_background)
+                    .error(R.drawable.placeholder_background)
+                    .into(binding.ivEventPosterImg);
+
+        } else {
+            // if no imge, using placeholder
+            binding.ivEventPosterImg.setImageResource(R.drawable.placeholder_background);
+        }
+
         // Set event status with color coding
         if (currentEvent.getEventStatus() != null) {
             String status = currentEvent.getEventStatus().toString();
@@ -178,19 +193,7 @@ public class OrganizerEventInfoFragment extends Fragment {
             binding.tvEventUpdateRegistryEndTime.setText("TBD");
         }
 
-        // Set event poster image
-        if (currentEvent.getPosterUrl() != null && !currentEvent.getPosterUrl().isEmpty()) {
-            // TODO: use the image loading library to load images from web urls
-        } else {
-            binding.ivEventPosterImg.setImageResource(R.drawable.placeholder_background);
-        }
 
-        // Set location image
-        if (currentEvent.getLocationUrl() != null && !currentEvent.getLocationUrl().isEmpty()) {
-            // TODO: use the image loading library to load images from web urls
-        } else {
-            binding.ivEventLocationImg.setImageResource(R.drawable.placeholder_background);
-        }
     }
 
     /**

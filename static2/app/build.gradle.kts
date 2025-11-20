@@ -39,6 +39,9 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-functions:20.2.0")
     implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-storage")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
@@ -53,6 +56,7 @@ dependencies {
     implementation(libs.fragment.testing)
     implementation(libs.rules)
     implementation(libs.espresso.idling.resource)
+    implementation(libs.firebase.crashlytics.buildtools)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -68,7 +72,6 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation("androidx.test:runner:1.6.1")
     androidTestImplementation("androidx.test:rules:1.6.1")
-    androidTestImplementation("androidx.fragment:fragment-testing:1.8.1")
     androidTestImplementation("org.mockito:mockito-android:5.12.0")
 
 
