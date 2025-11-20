@@ -69,17 +69,17 @@ public class OrganzierEventInfoFragmentTest {
 
         final CountDownLatch latch = new CountDownLatch(1);
 
-        eventRepository.addEvent(testEvent, new EventRepository.OperationCallback() {
-            @Override
-            public void onSuccess() {
-                latch.countDown();
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-                latch.countDown();
-            }
-        });
+//        eventRepository.addEvent(testEvent, new EventRepository.OperationCallback() {
+//            @Override
+//            public void onSuccess() {
+//                latch.countDown();
+//            }
+//
+//            @Override
+//            public void onFailure(Exception e) {
+//                latch.countDown();
+//            }
+//        });
 
         try {
             latch.await(5, TimeUnit.SECONDS);

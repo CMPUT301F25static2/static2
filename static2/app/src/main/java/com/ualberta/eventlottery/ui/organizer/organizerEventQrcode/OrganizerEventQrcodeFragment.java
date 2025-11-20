@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.repository.EventRepository;
 import com.ualberta.static2.R;
@@ -96,22 +97,30 @@ public class OrganizerEventQrcodeFragment extends Fragment {
 
                 // Set event poster image
                 if (event.getPosterUrl() != null && !event.getPosterUrl().isEmpty()) {
-                    // TODO: use the image loading library to load images from web urls
+                    Glide.with(requireContext())
+                            .load(event.getPosterUrl())
+                            .placeholder(R.drawable.placeholder_background)
+                            .error(R.drawable.placeholder_background)
+                            .into(binding.ivEventPosterImg);
                 } else {
                     binding.ivEventPosterImg.setImageResource(R.drawable.placeholder_background);
                 }
 
                 // Set QR code image
                 if (event.getQrCodeUrl() != null && !event.getQrCodeUrl().isEmpty()) {
-                    // TODO: use the image loading library to load images from web urls
+                    Glide.with(requireContext())
+                            .load(event.getQrCodeUrl())
+                            .placeholder(R.drawable.qrcode)
+                            .error(R.drawable.qrcode)
+                            .into(binding.ivEventQrcode);
                 } else {
-                    binding.ivEventQrcode.setImageResource(R.drawable.qrcode);
+                    binding.ivEventQrcode.setImageResource(R.drawable.qrcode); // Default QR image if URL is missing
                 }
             }
 
             @Override
             public void onFailure(Exception e) {
-                // Error handling is optional here as the view will remain in loading state
+
             }
         });
     }

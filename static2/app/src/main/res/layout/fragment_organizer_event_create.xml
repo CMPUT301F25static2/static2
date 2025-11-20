@@ -608,39 +608,60 @@
             </LinearLayout>
 
 <!--            Upload image-->
-            <LinearLayout
-                android:id="@+id/create_event_upload_img"
-                android:layout_width="match_parent"
+<!--            <LinearLayout-->
+<!--                android:id="@+id/create_event_upload_img"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:paddingVertical="20dp"-->
+<!--                android:orientation="vertical"-->
+<!--                android:layout_marginTop="20dp"-->
+<!--                android:gravity="center_horizontal"-->
+<!--                android:background="@drawable/border_dashed_radius">-->
+
+<!--                <LinearLayout-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:orientation="vertical"-->
+<!--                    android:gravity="center_horizontal">-->
+
+<!--                    <ImageView-->
+<!--                        android:id="@+id/iv_event_poster"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:src="@drawable/ic_upload_24dp_000000_fill0_wght400_grad0_opsz24"-->
+<!--                        app:tint="@color/text_secondary" />-->
+
+<!--                    <TextView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:text="Upload the Event Image"-->
+<!--                        android:textSize="@dimen/text_size_body_small"-->
+<!--                        android:textColor="@color/text_secondary"/>-->
+
+<!--                </LinearLayout>-->
+
+<!--            </LinearLayout>-->
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingVertical="20dp"
-                android:orientation="vertical"
                 android:layout_marginTop="20dp"
-                android:gravity="center_horizontal"
-                android:background="@drawable/border_dashed_radius">
+                android:text="Event Poster"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/text_size_subtitle"
+                android:textStyle="bold" />
 
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center_horizontal">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/ic_upload_24dp_000000_fill0_wght400_grad0_opsz24"
-                        app:tint="@color/text_secondary" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Upload the Event Image"
-                        android:textSize="@dimen/text_size_body_small"
-                        android:textColor="@color/text_secondary"/>
-                </LinearLayout>
-
-
-            </LinearLayout>
+            <ImageView
+                android:id="@+id/iv_event_poster"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/border_dashed_radius"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="60dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_upload_24dp_000000_fill0_wght400_grad0_opsz24"
+                app:tint="@color/text_secondary" />
 
 
             <TextView
