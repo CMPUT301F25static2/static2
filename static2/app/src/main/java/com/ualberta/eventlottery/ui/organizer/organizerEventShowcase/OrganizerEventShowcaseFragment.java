@@ -7,10 +7,11 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
-
+import com.bumptech.glide.Glide;
 import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.repository.EventRepository;
 import com.ualberta.eventlottery.ui.organizer.fragment.EntrantsFragment;
+import com.ualberta.eventlottery.ui.organizer.fragment.ImageViewerFragment;
 import com.ualberta.eventlottery.ui.organizer.organizerEventQrcode.OrganizerEventQrcodeFragment;
 import com.ualberta.static2.R;
 import com.ualberta.static2.databinding.FragmentOrganizerEventShowcaseBinding;
@@ -30,6 +31,7 @@ public class OrganizerEventShowcaseFragment extends Fragment {
     private String eventId;
     private EventRepository eventRepository;
     private SimpleDateFormat dateFormat;
+    private String posterUrl;
 
     /**
      * Creates a new instance with the specified event ID.
@@ -73,8 +75,6 @@ public class OrganizerEventShowcaseFragment extends Fragment {
         receiveArguments();
         initData();
         setUpView();
-        setUpListener();
-        addEntrantsFragment();
     }
 
     /**
@@ -103,9 +103,14 @@ public class OrganizerEventShowcaseFragment extends Fragment {
      * Sets up the view with event data and statistics.
      */
     private void setUpView() {
+
         eventRepository.findEventById(eventId, new EventRepository.EventCallback() {
             @Override
             public void onSuccess(Event event) {
+                if (binding == null || getContext() == null) {
+                    return;
+                }
+
                 // Set basic event information
                 binding.tvEventTitle.setText(event.getTitle());
                 binding.tvEventDescription.setText(event.getDescription());
@@ -119,10 +124,23 @@ public class OrganizerEventShowcaseFragment extends Fragment {
 
                 // Set event images
                 if (event.getPosterUrl() != null && !event.getPosterUrl().isEmpty()) {
-                    // TODO: use the image loading library to load images from web urls
+                    // use glide to load image
+                    Glide.with(requireContext())
+                            .load(event.getPosterUrl())
+                            .placeholder(R.drawable.placeholder_background)
+                            .error(R.drawable.placeholder_background)
+                            .into(binding.ivEventGallery);
+
+                    Glide.with(requireContext())
+                            .load(event.getPosterUrl())
+                            .placeholder(R.drawable.placeholder_background)
+                            .error(R.drawable.placeholder_background)
+                            .into(binding.ivEventPosterImg);
+
                 } else {
-                    binding.ivEventPosterImg.setImageResource(R.drawable.placeholder_background);
+                    // If no imge, using placeholder
                     binding.ivEventGallery.setImageResource(R.drawable.placeholder_background);
+                    binding.ivEventPosterImg.setImageResource(R.drawable.placeholder_background);
                 }
 
                 // Set event time range
@@ -134,6 +152,13 @@ public class OrganizerEventShowcaseFragment extends Fragment {
                 } else {
                     binding.tvStartToEnd.setText("TBD");
                 }
+
+                posterUrl = event.getPosterUrl();
+
+
+                setUpListener();
+                addEntrantsFragment();
+
             }
 
             @Override
@@ -157,6 +182,18 @@ public class OrganizerEventShowcaseFragment extends Fragment {
                     .replace(R.id.fragment_container_organizer, fragment)
                     .addToBackStack(null)
                     .commit();
+        });
+
+        binding.ivEventGallery.setOnClickListener(v -> {
+            if (posterUrl != null && !posterUrl.isEmpty()) {
+                ImageViewerFragment viewerFragment = ImageViewerFragment.newInstance(posterUrl);
+                requireActivity().getSupportFragmentManager().beginTransaction()
+                        .add(R.id.fragment_container_organizer, viewerFragment)
+                        .addToBackStack(null)
+                        .commit();
+            } else {
+                Toast.makeText(requireContext(), "Image not available", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 

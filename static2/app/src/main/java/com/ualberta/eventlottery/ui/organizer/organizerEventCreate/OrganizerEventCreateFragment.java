@@ -1,19 +1,29 @@
 package com.ualberta.eventlottery.ui.organizer.organizerEventCreate;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.model.EventRegistrationStatus;
+import com.ualberta.eventlottery.model.EventStatus;
 import com.ualberta.eventlottery.repository.EventRepository;
 import com.ualberta.eventlottery.repository.RegistrationRepository;
 import com.ualberta.eventlottery.utils.UserManager;
@@ -45,12 +55,32 @@ public class OrganizerEventCreateFragment extends Fragment {
     private SimpleDateFormat timeFormat;
     private SimpleDateFormat dateTimeFormat;
 
+    private Uri selectedImageUri;
+    private ActivityResultLauncher<Intent> imagePickerLauncher;
+
     /**
      * Creates the fragment's view hierarchy.
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentOrganizerEventCreateBinding.inflate(inflater, container, false);
+
+        //initialize image picker launcher
+        imagePickerLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                    selectedImageUri = result.getData().getData();
+                    if (selectedImageUri != null) {
+                        // view image on imageView
+                        binding.ivEventPoster.setImageURI(selectedImageUri);
+                        binding.ivEventPoster.clearColorFilter();
+                        binding.ivEventPoster.setImageTintList(null);
+                        binding.ivEventPoster.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                        binding.ivEventPoster.setPadding(0, 0, 0, 0);
+                        binding.ivEventPoster.setBackground(null);
+                    }
+                }
+                });
         return binding.getRoot();
     }
 
@@ -108,6 +138,11 @@ public class OrganizerEventCreateFragment extends Fragment {
      * Sets up click listeners for all interactive elements.
      */
     private void setUpListener() {
+
+        binding.btnCreateEvent.setOnClickListener(v -> {
+            createEvent();
+        });
+
         // Back button
         binding.btnBack.setOnClickListener(v -> {
             requireActivity().onBackPressed();
@@ -164,9 +199,18 @@ public class OrganizerEventCreateFragment extends Fragment {
         });
 
         // Upload image
-        binding.createEventUploadImg.setOnClickListener(v -> {
-            Toast.makeText(requireContext(), "Image upload feature to be implemented", Toast.LENGTH_SHORT).show();
+//        binding.createEventUploadImg.setOnClickListener(v -> {
+//            Toast.makeText(requireContext(), "Image upload feature to be implemented", Toast.LENGTH_SHORT).show();
+//        });
+
+        binding.ivEventPoster.setOnClickListener(v -> {
+            openImageChooser();
         });
+    }
+
+    private void openImageChooser() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        imagePickerLauncher.launch(intent);
     }
 
     /**
@@ -257,7 +301,14 @@ public class OrganizerEventCreateFragment extends Fragment {
      * Creates new event with validated input data.
      */
     private void createEvent() {
+        Log.d("Auth", "Current UID: " + FirebaseAuth.getInstance().getCurrentUser().getUid());
         if (!validateInput()) {
+            return;
+        }
+
+        // check if image is selected
+        if (selectedImageUri == null) {
+            Toast.makeText(requireContext(), "Please select an event poster", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -294,10 +345,10 @@ public class OrganizerEventCreateFragment extends Fragment {
 
             newEvent.setCategory("General");
             newEvent.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_OPEN);
+            newEvent.setEventStatus(EventStatus.UPCOMING);
             newEvent.setCurrentAttendees(0);
 
-            // Save to Firestore
-            eventRepository.addEvent(newEvent, new EventRepository.OperationCallback() {
+            eventRepository.addEventWithPoster(newEvent, selectedImageUri, new EventRepository.OperationCallback() {
                 @Override
                 public void onSuccess() {
                     requireActivity().runOnUiThread(() -> {
@@ -313,6 +364,7 @@ public class OrganizerEventCreateFragment extends Fragment {
                     });
                 }
             });
+
 
         } catch (NumberFormatException e) {
             Toast.makeText(requireContext(), "Capacity must be a valid number", Toast.LENGTH_SHORT).show();
@@ -375,6 +427,15 @@ public class OrganizerEventCreateFragment extends Fragment {
 
         if (eventStartCalendar.before(registrationEndCalendar)) {
             Toast.makeText(requireContext(), "Event start time should be after registration end time", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (TextUtils.isEmpty(binding.etCreateEventTitle.getText().toString().trim())) {
+            Toast.makeText(getContext(), "Event title cannot be empty.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (selectedImageUri == null) {
+            Toast.makeText(requireContext(), "Please select an event poster.", Toast.LENGTH_SHORT).show();
             return false;
         }
 
