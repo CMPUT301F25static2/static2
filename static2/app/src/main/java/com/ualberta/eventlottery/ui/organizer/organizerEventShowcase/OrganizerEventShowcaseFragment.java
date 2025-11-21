@@ -121,6 +121,7 @@ public class OrganizerEventShowcaseFragment extends Fragment {
                 int fillRate = (event.getConfirmedCount() * 100) / event.getMaxAttendees();
                 binding.tvEventFillRate.setText(fillRate + "%");
                 binding.tvEventFillRatio.setText(event.getConfirmedCount() + "/" + event.getMaxAttendees());
+                binding.pbEventProgeress.setProgress(fillRate);
 
                 // Set event images
                 if (event.getPosterUrl() != null && !event.getPosterUrl().isEmpty()) {
@@ -153,9 +154,17 @@ public class OrganizerEventShowcaseFragment extends Fragment {
                     binding.tvStartToEnd.setText("TBD");
                 }
 
+                // Set event time range
+                if (event.getDailyStartTime() != null && event.getDailyEndTime() != null) {
+                    String startTime = event.getDailyStartTime().toString();
+                    String endTime = event.getDailyEndTime().toString();
+                    String formattedTime = startTime + "  -  " + endTime;
+                    binding.tvEventFromTo.setText(formattedTime);
+                } else {
+                    binding.tvEventFromTo.setText("TBD");
+                }
+
                 posterUrl = event.getPosterUrl();
-
-
                 setUpListener();
                 addEntrantsFragment();
 
@@ -163,7 +172,7 @@ public class OrganizerEventShowcaseFragment extends Fragment {
 
             @Override
             public void onFailure(Exception e) {
-                // Error handling is optional here as the view will remain in loading state
+                Toast.makeText(requireContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

@@ -14,11 +14,13 @@ import androidx.fragment.app.Fragment;
 import com.ualberta.eventlottery.model.EntrantRegistrationStatus;
 import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.model.Registration;
+import com.ualberta.eventlottery.notification.NotificationController;
 import com.ualberta.eventlottery.repository.EventRepository;
 import com.ualberta.eventlottery.repository.RegistrationRepository;
 import com.ualberta.static2.databinding.FragmentOrganizerDrawBinding;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -39,6 +41,7 @@ public class OrganizerEventDrawFragment extends Fragment {
 
     private EventRepository eventRepository;
     private RegistrationRepository registrationRepository;
+    private NotificationController notificationController;
     private SimpleDateFormat dateFormat;
 
     /**
@@ -96,6 +99,7 @@ public class OrganizerEventDrawFragment extends Fragment {
     private void initData() {
         eventRepository = EventRepository.getInstance();
         registrationRepository = RegistrationRepository.getInstance();
+        notificationController = new NotificationController(requireContext());
         dateFormat = new SimpleDateFormat("h:mma, MMM dd, yyyy", Locale.getDefault());
     }
 
@@ -377,9 +381,16 @@ public class OrganizerEventDrawFragment extends Fragment {
     }
 
     /**
-     * Updates selected registrations to SELECTED status.
+     * Updates selected registrations to SELECTED status and sends notifications.
      */
     private void updateSelectedRegistrations(List<Registration> selectedRegistrations, int actualDrawCount) {
+        // Prepare user IDs for notifications
+        List<String> selectedUserIds = new ArrayList<>();
+        for (Registration registration : selectedRegistrations) {
+            selectedUserIds.add(registration.getEntrantId());
+        }
+
+        // Update each registration status
         for (Registration registration : selectedRegistrations) {
             registration.setStatus(EntrantRegistrationStatus.SELECTED);
             registrationRepository.updateRegistration(registration, new RegistrationRepository.BooleanCallback() {
@@ -388,7 +399,8 @@ public class OrganizerEventDrawFragment extends Fragment {
                     showDrawResult(actualDrawCount, selectedRegistrations);
                     loadEventData(); // Refresh the view
 
-                    // TODO: Send notifications to all selected entrants
+                    // Send notifications to all selected entrants
+                    sendNotificationsToSelectedUsers(selectedUserIds);
                 }
 
                 @Override
@@ -396,6 +408,19 @@ public class OrganizerEventDrawFragment extends Fragment {
                     // Individual update failures are handled silently
                 }
             });
+        }
+    }
+
+    /**
+     * Sends notifications to users who were selected in the lottery draw.
+     */
+    private void sendNotificationsToSelectedUsers(List<String> selectedUserIds) {
+        if (currentEvent != null && !selectedUserIds.isEmpty()) {
+            String notificationTitle = "Congratulations! You've been selected!";
+            String notificationBody = "You have been selected from the waiting list for the event: " +
+                    currentEvent.getTitle() + ". Please confirm your attendance within 48 hours.";
+
+            notificationController.sendNotification(notificationTitle, notificationBody, currentEvent.getId(), selectedUserIds);
         }
     }
 
