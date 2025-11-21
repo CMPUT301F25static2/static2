@@ -210,6 +210,10 @@ public class EventRepository {
             event.setCurrentAttendees(currentAttendees.intValue());
         }
 
+        // location required
+        Boolean locationRequired = document.getBoolean("locationRequired");
+        event.setLocationRequired(locationRequired != null ? locationRequired : true);
+
         return event;
     }
 
@@ -241,6 +245,7 @@ public class EventRepository {
                 event.setSessionDuration(sessionDuration.intValue());
             }
             event.setLocation(document.getString("location"));
+            event.setLocationRequired(document.getBoolean("locationRequired") != null ? document.getBoolean("locationRequired") : true);
             event.setLocationUrl(document.getString("locationUrl"));
             event.setPosterUrl(document.getString("posterUrl"));
             event.setQrCodeUrl(document.getString("qrCodeUrl"));
@@ -312,6 +317,9 @@ public class EventRepository {
         eventMap.put("registrationStatus", event.getRegistrationStatus() != null ? event.getRegistrationStatus().toString() : null);
         eventMap.put("posterUrl", event.getPosterUrl());
         eventMap.put("qrCodeUrl", event.getQrCodeUrl());
+        eventMap.put("location", event.getLocation());
+        eventMap.put("locationRequired", event.isLocationRequired());
+        eventMap.put("locationUrl", event.getLocationUrl());
         eventMap.put("createdAt", new Date());
         eventMap.put("updatedAt", new Date());
 
