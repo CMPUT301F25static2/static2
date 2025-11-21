@@ -350,17 +350,14 @@ public class EventRepository {
             Date regStart = event.getRegistrationStart();
             Date regEnd = event.getRegistrationEnd();
 
-            if (now.before(regStart)) {
+            if (now.after(regEnd)) {
+                // Case 1: Registration period has ended.
                 event.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_CLOSED);
             } else if (now.after(regStart) && now.before(regEnd)) {
-                if (!event.isEventFull()) {
-                    event.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_OPEN);
-                } else {
-                    event.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_CLOSED);
-                }
-            } else if (now.after(regEnd)) {
-                event.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_CLOSED);
+                // Case 2: We are within the registration period.
+                event.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_OPEN);
             }
+
         }
 
         // If event is full, set registration to closed

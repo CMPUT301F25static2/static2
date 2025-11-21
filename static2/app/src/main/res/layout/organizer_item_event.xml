@@ -106,22 +106,57 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="REGISTRATION OPEN"
-                    android:translationY="-6dp"
                     android:layout_gravity="right"
                     android:textSize="14dp"
                     android:textColor="@color/green_deep"
                     android:textStyle="bold"
                     android:rotation="-8"/>
 
+              <LinearLayout
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:orientation="vertical"
+                  android:layout_marginTop="-16dp">
+                  <TextView
+                      android:id="@+id/tv_event_start_time"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:text="Start: 12:00AM, Oct 16, 2025"
+                      android:textSize="14dp"
+                      android:textColor="@color/text_secondary" />
 
-                <TextView
-                    android:id="@+id/tv_event_end_time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="-16dp"
-                    android:text="End: 12:00AM, Oct 16, 2025"
-                    android:textSize="14dp"
-                    android:textColor="@color/text_secondary" />
+                  <TextView
+                      android:id="@+id/tv_event_end_time"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:text="End:   12:00AM, Oct 16, 2025"
+                      android:textSize="14dp"
+                      android:textColor="@color/text_secondary" />
+
+              </LinearLayout>
+
+
+<!--                <TextView-->
+<!--                    android:id="@+id/tv_event_registry_status"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="REGISTRATION OPEN"-->
+<!--                    android:translationY="-6dp"-->
+<!--                    android:layout_gravity="right"-->
+<!--                    android:textSize="14dp"-->
+<!--                    android:textColor="@color/green_deep"-->
+<!--                    android:textStyle="bold"-->
+<!--                    android:rotation="-8"/>-->
+
+
+<!--                <TextView-->
+<!--                    android:id="@+id/tv_event_end_time"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="-16dp"-->
+<!--                    android:text="End: 12:00AM, Oct 16, 2025"-->
+<!--                    android:textSize="14dp"-->
+<!--                    android:textColor="@color/text_secondary" />-->
 
 
 <!--                bottom options-->
