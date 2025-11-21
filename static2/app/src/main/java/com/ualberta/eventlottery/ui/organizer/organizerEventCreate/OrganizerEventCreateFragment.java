@@ -332,6 +332,7 @@ public class OrganizerEventCreateFragment extends Fragment {
             newEvent.setTitle(binding.etCreateEventTitle.getText().toString().trim());
             newEvent.setDescription(binding.etCreateEventDescription.getText().toString().trim());
             newEvent.setLocation(binding.etCreateEventLocation.getText().toString().trim());
+            newEvent.setLocationRequired(binding.switchGeolocationRequired.isChecked());
 
             // Set capacity
             String capacityText = binding.etCreateEventCapacity.getText().toString().trim();

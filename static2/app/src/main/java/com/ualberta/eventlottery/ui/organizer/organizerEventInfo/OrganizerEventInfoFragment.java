@@ -152,6 +152,9 @@ public class OrganizerEventInfoFragment extends Fragment {
         binding.tvEventUpdateDescription.setText(currentEvent.getDescription());
         binding.tvEventLocation.setText(currentEvent.getLocation());
 
+        // Set geolocation requirement toggle
+        binding.switchEventGeolocationRequired.setChecked(currentEvent.isLocationRequired());
+
         // set up image
         if (currentEvent.getPosterUrl() != null && !currentEvent.getPosterUrl().isEmpty()) {
             // use glide to load image
@@ -281,6 +284,13 @@ public class OrganizerEventInfoFragment extends Fragment {
             showEditDialog("location", currentEvent.getLocation());
         });
 
+        binding.btnEventUpdateGeolocation.setOnClickListener(v -> {
+            // Toggle the geolocation requirement
+            boolean newValue = !binding.switchEventGeolocationRequired.isChecked();
+            binding.switchEventGeolocationRequired.setChecked(newValue);
+            handleFieldUpdate("locationRequired", newValue);
+        });
+
         binding.btnEventUpdateStatus.setOnClickListener(v -> {
             String currentStatus = currentEvent.getEventStatus().toString();
             showStatusDialog(currentStatus);
@@ -375,6 +385,9 @@ public class OrganizerEventInfoFragment extends Fragment {
                 break;
             case "location":
                 currentEvent.setLocation((String) newValue);
+                break;
+            case "locationRequired":
+                currentEvent.setLocationRequired((Boolean) newValue);
                 break;
             case "eventEndTime":
                 if (newValue instanceof Date) {
