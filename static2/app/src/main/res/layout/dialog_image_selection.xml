@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Choose how to select a new poster image"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="24dp" />
+
+    <Button
+        android:id="@+id/btn_select_from_gallery"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select from Gallery"
+        android:textSize="16sp"
+        android:backgroundTint="@color/text_primary"
+        android:textColor="@color/white"
+        android:layout_marginBottom="12dp"
+        android:padding="12dp" />
+
+    <Button
+        android:id="@+id/btn_take_photo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Take Photo"
+        android:textSize="16sp"
+        android:backgroundTint="@color/text_primary"
+        android:textColor="@color/white"
+        android:layout_marginBottom="12dp"
+        android:padding="12dp" />
+
+    <Button
+        android:id="@+id/btn_cancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Cancel"
+        android:textSize="16sp"
+        android:backgroundTint="@color/gray_light"
+        android:textColor="@color/black"
+        android:padding="12dp" />
+
+</LinearLayout>

@@ -106,6 +106,25 @@ public class EventRepository {
     }
 
     /**
+     * Callback interface for poster update operations that return the new poster URL.
+     */
+    public interface PosterUpdateCallback {
+        /**
+         * Called when the poster update is successful.
+         *
+         * @param posterUrl the new poster URL
+         */
+        void onSuccess(String posterUrl);
+
+        /**
+         * Called when the poster update fails.
+         *
+         * @param e the exception that caused the failure
+         */
+        void onFailure(Exception e);
+    }
+
+    /**
      * Callback interface for operations that return a boolean result.
      */
     public interface BooleanCallback {
@@ -448,6 +467,7 @@ public class EventRepository {
     public void getEventsByOrganizer(String organizerId, EventListCallback callback) {
         db.collection(COLLECTION_EVENTS)
                 .whereEqualTo("organizerId", organizerId)
+                .orderBy("createdAt", Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     List<Event> events = new ArrayList<>();
@@ -558,6 +578,9 @@ public class EventRepository {
 
 
 
+
+
+
     /**
      * Updates an existing event in the database.
      *
@@ -573,6 +596,79 @@ public class EventRepository {
                 .update(eventData)
                 .addOnSuccessListener(aVoid -> callback.onSuccess(true))
                 .addOnFailureListener(callback::onFailure);
+    }
+
+    /**
+     * Updates the poster URL for a specific event.
+     * This method uploads the new image to Firebase Storage and updates the event's posterUrl field.
+     *
+     * @param eventId the unique identifier of the event to update
+     * @param imageUri the URI of the new image to upload
+     * @param callback the callback to handle the operation result
+     */
+    public void updateEventPoster(String eventId, Uri imageUri, OperationCallback callback) {
+        // Generate a unique filename for the image
+        String imageName = "event_poster_" + eventId + "_" + UUID.randomUUID().toString();
+        StorageReference posterFileRef = storage.getReference().child(STORAGE_PATH_POSTERS + imageName);
+
+        // Upload the image to Firebase Storage and get its download URL
+        posterFileRef.putFile(imageUri).continueWithTask(task -> {
+            if (!task.isSuccessful()) {
+                throw task.getException();
+            }
+            return posterFileRef.getDownloadUrl();
+        }).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Uri downloadUri = task.getResult();
+                String posterUrl = downloadUri.toString();
+
+                // Update the event document with the new poster URL
+                db.collection(COLLECTION_EVENTS)
+                        .document(eventId)
+                        .update("posterUrl", posterUrl)
+                        .addOnSuccessListener(aVoid -> callback.onSuccess())
+                        .addOnFailureListener(callback::onFailure);
+            } else {
+                // Handle upload failure
+                callback.onFailure(task.getException());
+            }
+        });
+    }
+
+    /**
+     * Updates an event's poster image and returns the new poster URL via callback.
+     *
+     * @param eventId the ID of the event to update
+     * @param imageUri the URI of the new image to upload
+     * @param callback callback to handle success/failure with the new poster URL
+     */
+    public void updateEventPoster(String eventId, Uri imageUri, PosterUpdateCallback callback) {
+        // Generate a unique filename for the image
+        String imageName = "event_poster_" + eventId + "_" + UUID.randomUUID().toString();
+        StorageReference posterFileRef = storage.getReference().child(STORAGE_PATH_POSTERS + imageName);
+
+        // Upload the image to Firebase Storage and get its download URL
+        posterFileRef.putFile(imageUri).continueWithTask(task -> {
+            if (!task.isSuccessful()) {
+                throw task.getException();
+            }
+            return posterFileRef.getDownloadUrl();
+        }).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Uri downloadUri = task.getResult();
+                String posterUrl = downloadUri.toString();
+
+                // Update the event document with the new poster URL
+                db.collection(COLLECTION_EVENTS)
+                        .document(eventId)
+                        .update("posterUrl", posterUrl)
+                        .addOnSuccessListener(aVoid -> callback.onSuccess(posterUrl))
+                        .addOnFailureListener(e -> callback.onFailure(e));
+            } else {
+                // Handle upload failure
+                callback.onFailure(task.getException());
+            }
+        });
     }
 
     /**

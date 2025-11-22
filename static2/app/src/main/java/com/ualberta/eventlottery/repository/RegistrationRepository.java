@@ -171,6 +171,15 @@ public class RegistrationRepository {
         registration.setRespondedAt(document.getDate("respondedAt"));
         registration.setCancelledAt(document.getDate("cancelledAt"));
 
+        // Location fields
+        Double latitude = document.getDouble("latitude");
+        Double longitude = document.getDouble("longitude");
+        String locationAddress = document.getString("locationAddress");
+
+        registration.setLatitude(latitude);
+        registration.setLongitude(longitude);
+        registration.setLocationAddress(locationAddress);
+
         return registration;
     }
 
@@ -189,6 +198,9 @@ public class RegistrationRepository {
         registrationMap.put("registeredAt", registration.getRegisteredAt());
         registrationMap.put("respondedAt", registration.getRespondedAt());
         registrationMap.put("cancelledAt", registration.getCancelledAt());
+        registrationMap.put("latitude", registration.getLatitude());
+        registrationMap.put("longitude", registration.getLongitude());
+        registrationMap.put("locationAddress", registration.getLocationAddress());
         registrationMap.put("updatedAt", new Date());
 
         return registrationMap;
