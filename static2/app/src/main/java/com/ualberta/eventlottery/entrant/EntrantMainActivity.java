@@ -21,6 +21,16 @@ public class EntrantMainActivity extends AppCompatActivity {
 
     private ActivityEventLotteryMainBinding binding;
 
+    /**
+     * Called when the activity is first created. This is where you should do all of your normal
+     * static set up: create views, bind data to lists, etc. This method also provides you with
+     * a Bundle containing the activity's previously frozen state, if there was one.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being
+     *                           shut down then this Bundle contains the data it most recently
+     *                           supplied in onSaveInstanceState(Bundle). Note: Otherwise it is
+     *                           null.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

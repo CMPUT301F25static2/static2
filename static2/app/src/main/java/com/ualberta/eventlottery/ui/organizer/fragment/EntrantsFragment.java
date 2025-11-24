@@ -22,19 +22,30 @@ import com.ualberta.static2.databinding.FragmentOrganzerEntrantListBinding;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
+/**
+ * Fragment for displaying and managing event entrants by registration status.
+ * Shows filtered lists of confirmed, waiting, selected, and cancelled entrants.
+ *
+ * @author static2
+ * @version 1.0
+ */
 public class EntrantsFragment extends Fragment {
 
     private FragmentOrganzerEntrantListBinding binding;
-
     private List<LinearLayout> statusButtons = new ArrayList<>();
     private RegistrationRepository registrationRepository = RegistrationRepository.getInstance();
     private EntrantRepository entrantRepository = EntrantRepository.getInstance();
 
     private static final String ARG_EVENT_ID = "event_id";
     private String eventId;
+
+    /**
+     * Creates a new instance with the specified event ID.
+     *
+     * @param eventId the ID of the event to display entrants for
+     * @return new EntrantsFragment instance
+     */
     public static EntrantsFragment newInstance(String eventId) {
         EntrantsFragment fragment = new EntrantsFragment();
         Bundle args = new Bundle();
@@ -44,15 +55,21 @@ public class EntrantsFragment extends Fragment {
     }
 
     public EntrantsFragment() {
-
+        // Required empty constructor
     }
 
+    /**
+     * Creates the fragment's view hierarchy.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentOrganzerEntrantListBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
+    /**
+     * Initializes the fragment after view creation.
+     */
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -63,6 +80,9 @@ public class EntrantsFragment extends Fragment {
         loadEntrantsData();
     }
 
+    /**
+     * Retrieves event ID from fragment arguments.
+     */
     private void receiveArguments() {
         Bundle args = getArguments();
         if (args != null && args.containsKey(ARG_EVENT_ID)) {
@@ -73,8 +93,10 @@ public class EntrantsFragment extends Fragment {
         }
     }
 
+    /**
+     * Initializes view components and loads registration counts.
+     */
     private void initViews() {
-        statusButtons.add(binding.btnEntrantsConfirmed);
         statusButtons.add(binding.btnEntrantsConfirmed);
         statusButtons.add(binding.btnEntrantsWaiting);
         statusButtons.add(binding.btnEntrantsSelected);
@@ -83,6 +105,9 @@ public class EntrantsFragment extends Fragment {
         loadRegistrationCounts();
     }
 
+    /**
+     * Loads and displays registration counts for each status.
+     */
     private void loadRegistrationCounts() {
         registrationRepository.getRegistrationsByEvent(eventId, new RegistrationRepository.RegistrationListCallback() {
             @Override
@@ -97,63 +122,60 @@ public class EntrantsFragment extends Fragment {
             @Override
             public void onFailure(Exception e) {
                 Toast.makeText(requireContext(), "Failed to load registration counts", Toast.LENGTH_SHORT).show();
-                // Set default counts
                 updateEntrantsCount(0, 0, 0, 0);
             }
         });
     }
 
+    /**
+     * Sets up click listeners for status filter buttons.
+     */
     private void setupClickListeners() {
-        binding.btnEntrantsConfirmed.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                updateButtonSelection(binding.btnEntrantsConfirmed);
-                loadConfirmedEntrants();
-            }
+        binding.btnEntrantsConfirmed.setOnClickListener(v -> {
+            updateButtonSelection(binding.btnEntrantsConfirmed);
+            loadConfirmedEntrants();
         });
 
-        binding.btnEntrantsWaiting.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                updateButtonSelection(binding.btnEntrantsWaiting);
-                loadWaitingEntrants();
-            }
+        binding.btnEntrantsWaiting.setOnClickListener(v -> {
+            updateButtonSelection(binding.btnEntrantsWaiting);
+            loadWaitingEntrants();
         });
 
-        binding.btnEntrantsSelected.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                updateButtonSelection(binding.btnEntrantsSelected);
-                loadSelectedEntrants();
-            }
+        binding.btnEntrantsSelected.setOnClickListener(v -> {
+            updateButtonSelection(binding.btnEntrantsSelected);
+            loadSelectedEntrants();
         });
 
-        binding.btnEntrantsCancelled.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                updateButtonSelection(binding.btnEntrantsCancelled);
-                loadCancelledEntrants();
-            }
+        binding.btnEntrantsCancelled.setOnClickListener(v -> {
+            updateButtonSelection(binding.btnEntrantsCancelled);
+            loadCancelledEntrants();
         });
 
+        // Set initial selection
         updateButtonSelection(binding.btnEntrantsConfirmed);
     }
 
+    /**
+     * Updates button selection state and visual appearance.
+     */
     private void updateButtonSelection(LinearLayout selectedButton) {
         for (LinearLayout button : statusButtons) {
             boolean isSelected = button == selectedButton;
             button.setSelected(isSelected);
-
             button.setBackgroundResource(R.drawable.button_selector);
         }
     }
 
+    /**
+     * Loads initial entrants data (confirmed by default).
+     */
     private void loadEntrantsData() {
         loadConfirmedEntrants();
-
     }
 
-
+    /**
+     * Sets up the RecyclerView with entrant data.
+     */
     private void setupListView(List<Entrant> entrants) {
         binding.lvEventEntrantList.setLayoutManager(new LinearLayoutManager(requireContext()));
         EntrantAdapter adapter = new EntrantAdapter(requireContext(), entrants, eventId);
@@ -163,7 +185,6 @@ public class EntrantsFragment extends Fragment {
         adapter.setOnEntrantStatusChangeListener(new EntrantAdapter.OnEntrantStatusChangeListener() {
             @Override
             public void onEntrantStatusChanged() {
-                // Reload counts and refresh current list when status changes
                 loadRegistrationCounts();
 
                 // Reload current entrants based on selected filter
@@ -180,6 +201,9 @@ public class EntrantsFragment extends Fragment {
         });
     }
 
+    /**
+     * Loads confirmed entrants for the event.
+     */
     private void loadConfirmedEntrants() {
         registrationRepository.getConfirmedRegistrationsByEvent(eventId, new RegistrationRepository.RegistrationListCallback() {
             @Override
@@ -188,37 +212,7 @@ public class EntrantsFragment extends Fragment {
                     updateAdapterWithEntrants(new ArrayList<>());
                     return;
                 }
-
-                List<Entrant> entrants = new ArrayList<>();
-                final int[] processedCount = {0};
-
-                for (Registration registration : registrations) {
-                    entrantRepository.findEntrantById(registration.getEntrantId(), new EntrantRepository.EntrantCallback() {
-                        @Override
-                        public void onSuccess(Entrant entrant) {
-                            if (entrant != null) {
-                                entrants.add(entrant);
-                            }
-                            processedCount[0]++;
-
-                            // Check if all entrants have been processed
-                            if (processedCount[0] == registrations.size()) {
-                                updateAdapterWithEntrants(entrants);
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Exception e) {
-                            Log.e("EntrantsFragment", "Failed to load entrant: " + registration.getEntrantId(), e);
-                            processedCount[0]++;
-
-                            // Check if all entrants have been processed (even with failures)
-                            if (processedCount[0] == registrations.size()) {
-                                updateAdapterWithEntrants(entrants);
-                            }
-                        }
-                    });
-                }
+                loadEntrantsFromRegistrations(registrations);
             }
 
             @Override
@@ -229,6 +223,9 @@ public class EntrantsFragment extends Fragment {
         });
     }
 
+    /**
+     * Loads waiting entrants for the event.
+     */
     private void loadWaitingEntrants() {
         registrationRepository.getWaitingRegistrationsByEvent(eventId, new RegistrationRepository.RegistrationListCallback() {
             @Override
@@ -237,35 +234,7 @@ public class EntrantsFragment extends Fragment {
                     updateAdapterWithEntrants(new ArrayList<>());
                     return;
                 }
-
-                List<Entrant> entrants = new ArrayList<>();
-                final int[] processedCount = {0};
-
-                for (Registration registration : registrations) {
-                    entrantRepository.findEntrantById(registration.getEntrantId(), new EntrantRepository.EntrantCallback() {
-                        @Override
-                        public void onSuccess(Entrant entrant) {
-                            if (entrant != null) {
-                                entrants.add(entrant);
-                            }
-                            processedCount[0]++;
-
-                            if (processedCount[0] == registrations.size()) {
-                                updateAdapterWithEntrants(entrants);
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Exception e) {
-                            Log.e("EntrantsFragment", "Failed to load entrant: " + registration.getEntrantId(), e);
-                            processedCount[0]++;
-
-                            if (processedCount[0] == registrations.size()) {
-                                updateAdapterWithEntrants(entrants);
-                            }
-                        }
-                    });
-                }
+                loadEntrantsFromRegistrations(registrations);
             }
 
             @Override
@@ -276,6 +245,9 @@ public class EntrantsFragment extends Fragment {
         });
     }
 
+    /**
+     * Loads selected entrants for the event.
+     */
     private void loadSelectedEntrants() {
         registrationRepository.getSelectedRegistrationsByEvent(eventId, new RegistrationRepository.RegistrationListCallback() {
             @Override
@@ -284,35 +256,7 @@ public class EntrantsFragment extends Fragment {
                     updateAdapterWithEntrants(new ArrayList<>());
                     return;
                 }
-
-                List<Entrant> entrants = new ArrayList<>();
-                final int[] processedCount = {0};
-
-                for (Registration registration : registrations) {
-                    entrantRepository.findEntrantById(registration.getEntrantId(), new EntrantRepository.EntrantCallback() {
-                        @Override
-                        public void onSuccess(Entrant entrant) {
-                            if (entrant != null) {
-                                entrants.add(entrant);
-                            }
-                            processedCount[0]++;
-
-                            if (processedCount[0] == registrations.size()) {
-                                updateAdapterWithEntrants(entrants);
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Exception e) {
-                            Log.e("EntrantsFragment", "Failed to load entrant: " + registration.getEntrantId(), e);
-                            processedCount[0]++;
-
-                            if (processedCount[0] == registrations.size()) {
-                                updateAdapterWithEntrants(entrants);
-                            }
-                        }
-                    });
-                }
+                loadEntrantsFromRegistrations(registrations);
             }
 
             @Override
@@ -323,6 +267,9 @@ public class EntrantsFragment extends Fragment {
         });
     }
 
+    /**
+     * Loads cancelled entrants for the event.
+     */
     private void loadCancelledEntrants() {
         registrationRepository.getRegistrationsByStatus(eventId, EntrantRegistrationStatus.CANCELLED, new RegistrationRepository.RegistrationListCallback() {
             @Override
@@ -331,35 +278,7 @@ public class EntrantsFragment extends Fragment {
                     updateAdapterWithEntrants(new ArrayList<>());
                     return;
                 }
-
-                List<Entrant> entrants = new ArrayList<>();
-                final int[] processedCount = {0};
-
-                for (Registration registration : registrations) {
-                    entrantRepository.findEntrantById(registration.getEntrantId(), new EntrantRepository.EntrantCallback() {
-                        @Override
-                        public void onSuccess(Entrant entrant) {
-                            if (entrant != null) {
-                                entrants.add(entrant);
-                            }
-                            processedCount[0]++;
-
-                            if (processedCount[0] == registrations.size()) {
-                                updateAdapterWithEntrants(entrants);
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Exception e) {
-                            Log.e("EntrantsFragment", "Failed to load entrant: " + registration.getEntrantId(), e);
-                            processedCount[0]++;
-
-                            if (processedCount[0] == registrations.size()) {
-                                updateAdapterWithEntrants(entrants);
-                            }
-                        }
-                    });
-                }
+                loadEntrantsFromRegistrations(registrations);
             }
 
             @Override
@@ -370,7 +289,47 @@ public class EntrantsFragment extends Fragment {
         });
     }
 
+    /**
+     * Loads entrant details from registration records.
+     */
+    private void loadEntrantsFromRegistrations(List<Registration> registrations) {
+        List<Entrant> entrants = new ArrayList<>();
+        final int[] processedCount = {0};
+
+        for (Registration registration : registrations) {
+            entrantRepository.findEntrantById(registration.getEntrantId(), new EntrantRepository.EntrantCallback() {
+                @Override
+                public void onSuccess(Entrant entrant) {
+                    if (entrant != null) {
+                        entrants.add(entrant);
+                    }
+                    processedCount[0]++;
+
+                    if (processedCount[0] == registrations.size()) {
+                        updateAdapterWithEntrants(entrants);
+                    }
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    Log.e("EntrantsFragment", "Failed to load entrant: " + registration.getEntrantId(), e);
+                    processedCount[0]++;
+
+                    if (processedCount[0] == registrations.size()) {
+                        updateAdapterWithEntrants(entrants);
+                    }
+                }
+            });
+        }
+    }
+
+    /**
+     * Updates the adapter with new entrant data.
+     */
     private void updateAdapterWithEntrants(List<Entrant> entrants) {
+        if (binding == null || getView() == null || !isAdded()) {
+            return;
+        }
         EntrantAdapter adapter = (EntrantAdapter) binding.lvEventEntrantList.getAdapter();
         if (adapter != null) {
             adapter.updateData(entrants);
@@ -379,13 +338,23 @@ public class EntrantsFragment extends Fragment {
         }
     }
 
+    /**
+     * Updates the count displays for each registration status.
+     */
     public void updateEntrantsCount(int confirmed, int waiting, int selected, int cancelled) {
+        if (binding == null || getView() == null || !isAdded()) {
+            return;
+        }
+
         binding.tvEventEntrantsConfirmedNumber.setText("(" + confirmed + ")");
         binding.tvEntrantsWaitingNumber.setText("(" + waiting + ")");
         binding.tvEntrantsSelectedNumber.setText("(" + selected + ")");
         binding.tvEntrantsCancelledNumber.setText("(" + cancelled + ")");
     }
 
+    /**
+     * Cleans up resources when view is destroyed.
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();

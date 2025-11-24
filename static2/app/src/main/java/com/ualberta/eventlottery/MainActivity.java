@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         askNotificationPermission();
-        UserManager.initializeUser(this, new UserManager.InitCallback() {
+        UserManager.initializeUser (new UserManager.InitCallback() {
             @Override
             public void onSuccess(String userId) {
                 Log.d(TAG, "userInitialization:success:userId=" + userId);
