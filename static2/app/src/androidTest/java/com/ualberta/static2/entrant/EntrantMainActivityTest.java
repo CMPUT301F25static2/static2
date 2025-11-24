@@ -227,4 +227,36 @@ public class EntrantMainActivityTest {
 
     }
 
+    @Test
+    public void testFilterStaysDuringNav() {
+        ActivityScenario.launch(EntrantMainActivity.class);
+
+        onView(withId(R.id.availableEventsButton))
+                .perform(click());
+
+        onView(withId(R.id.filterButton))
+                .perform(click());
+
+        onView(CustomMatchers.first(withText("Sports")))
+                .perform(click());
+
+        onView(CustomMatchers.first(withText("Music")))
+                .perform(click());
+
+
+        //Navigate away from available event screen
+        onView(withId(R.id.myEventsButton))
+                .perform(click());
+
+        onView(withId(R.id.availableEventsButton))
+                .perform(click());
+
+        try {
+            Thread.sleep(2000);
+        } catch(InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
 }
