@@ -188,6 +188,17 @@ public class Event {
     }
 
     /**
+     * Updates the registration status based on the current time and deadline
+     * This method should be called to ensure the registration status reflects the deadline
+     */
+    public void updateRegistrationStatusBasedOnDeadline() {
+        Date now = new Date();
+        if (getRegistrationEnd() != null && now.after(getRegistrationEnd())) {
+            setRegistrationStatus(EventRegistrationStatus.REGISTRATION_CLOSED);
+        }
+    }
+
+    /**
      * Checks if the waiting list has reached its maximum capacity
      * @return true if waiting list is full
      */

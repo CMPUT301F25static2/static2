@@ -27,9 +27,10 @@
         </DialogSelection>
       </SelectionState>
       <SelectionState runConfigName="OrganizerEventInfoFragmentTest">
+      <SelectionState runConfigName="OrganizerEventShowcaseFragmentTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="OrganzierEventInfoFragmentTest">
+      <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

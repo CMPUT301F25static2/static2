@@ -116,11 +116,25 @@ public class OrganizerEventCreateFragment extends Fragment {
         eventFromCalendar = Calendar.getInstance();
         eventToCalendar = Calendar.getInstance();
 
+        setCalendarToNoon(registrationStartCalendar);
+        setCalendarToNoon(registrationEndCalendar);
+        setCalendarToNoon(eventStartCalendar);
+        setCalendarToNoon(eventEndCalendar);
+        setCalendarToNoon(eventFromCalendar);
+        setCalendarToNoon(eventToCalendar);
+
         // Set default times
         registrationEndCalendar.add(Calendar.DAY_OF_YEAR, 7);
         eventStartCalendar.add(Calendar.DAY_OF_YEAR, 14);
-        eventEndCalendar.add(Calendar.DAY_OF_YEAR, 14);
+        eventEndCalendar.add(Calendar.DAY_OF_YEAR, 44);
         eventToCalendar.add(Calendar.HOUR_OF_DAY, 2); // Default event duration: 2 hours
+    }
+
+    private void setCalendarToNoon(Calendar calendar) {
+        calendar.set(Calendar.HOUR_OF_DAY, 12);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
     }
 
     /**
