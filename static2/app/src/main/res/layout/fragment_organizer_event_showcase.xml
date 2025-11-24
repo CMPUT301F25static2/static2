@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/yoga"
+        android:src="@drawable/placeholder_background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -71,7 +71,7 @@
                         android:id="@+id/iv_event_poster_img"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:src="@drawable/yoga"
+                        android:src="@drawable/placeholder_background"
                         android:scaleType="centerCrop"/>
 
                 </androidx.cardview.widget.CardView>

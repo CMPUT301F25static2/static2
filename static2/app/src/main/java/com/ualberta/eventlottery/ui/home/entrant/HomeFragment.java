@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -18,6 +19,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.espresso.idling.CountingIdlingResource;
 
 import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.model.EventRegistrationStatus;
@@ -34,6 +36,11 @@ import java.util.List;
  *Options provided for filter, sort and search
  */
 public class HomeFragment extends Fragment implements EventAdapter.OnEventListener {
+    @VisibleForTesting
+    public static CountingIdlingResource idlingResource = new CountingIdlingResource("HomeFragment-AvailableEventsAction");
+    @VisibleForTesting
+    private CountingIdlingResource getAvailableEventsIdlingResource = null;
+
     // History button has been removed
     private Button filterButton, sortButton, myEventsButton, availableEventsButton;
     private EditText searchInputHome;
@@ -85,6 +92,10 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
             if (newData != null) {
                 availableEventsAdapter.updateEvents(newData);
             }
+            if (getAvailableEventsIdlingResource != null) {
+                getAvailableEventsIdlingResource.decrement();
+                getAvailableEventsIdlingResource = null;
+            }
         };
 
         // Observer for the dynamic "My Events" list
@@ -94,10 +105,8 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
             }
         };
 
-        // Set initial view to "My Events"
         showMyEvents();
 
-        // --- Listeners ---
         filterButton.setOnClickListener(v -> Toast.makeText(getContext(), "Filter options coming soon!", Toast.LENGTH_SHORT).show());
         sortButton.setOnClickListener(v -> Toast.makeText(getContext(), "Sort options coming soon!", Toast.LENGTH_SHORT).show());
 
@@ -116,6 +125,11 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
         return view;
     }
 
+    /**
+     * Called when an event is clicked.
+     *
+     * @param event The clicked event.
+     */
     @Override
     public void onEventClick(Event event) {
         Bundle bundle = new Bundle();
@@ -133,8 +147,10 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
         binding = null;
     }
 
+    /**
+     * Resets the style of all buttons.
+     */
     private void resetAllButtonStyles() {
-        // Now only handles two buttons
         Button[] buttons = {myEventsButton, availableEventsButton};
         for (Button btn : buttons) {
             btn.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.black));
@@ -142,11 +158,19 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
         }
     }
 
+    /**
+     * Sets the style of the active button.
+     *
+     * @param activeButton The button to be styled as active.
+     */
     private void setActiveButtonStyle(Button activeButton) {
         activeButton.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.white));
         activeButton.setTextColor(ContextCompat.getColorStateList(requireContext(), R.color.black));
     }
 
+    /**
+     * Shows the list of events the user has registered for.
+     */
     private void showMyEvents() {
 
         // Stop observing the other LiveData to prevent getting unwanted updates.
@@ -163,7 +187,12 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
         setActiveButtonStyle(myEventsButton);
     }
 
+    /**
+     * Shows the list of available events.
+     */
     private void showAvailableEvents() {
+        getAvailableEventsIdlingResource = idlingResource;
+        getAvailableEventsIdlingResource.increment();
 
         // Stop observing the other LiveData.
         homeViewModel.getMyEvents().removeObservers(getViewLifecycleOwner());

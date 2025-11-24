@@ -23,6 +23,9 @@ import com.ualberta.eventlottery.organzier.OrganizerMainActivity;
 import com.ualberta.eventlottery.utils.UserManager;
 import com.ualberta.static2.R;
 
+/**
+ * Activity for setting up a user's profile for the first time.
+ */
 public class ProfileSetupActivity extends AppCompatActivity {
 
     private EditText etName, etEmail, etPhoneNumber;
@@ -33,6 +36,16 @@ public class ProfileSetupActivity extends AppCompatActivity {
     private RadioGroup radioUserType;
     private RadioButton radioEntrant, radioOrganizer, radioAdmin;
 
+    /**
+     * Called when the activity is first created. This is where you should do all of your normal
+     * static set up: create views, bind data to lists, etc. This method also provides you with
+     * a Bundle containing the activity's previously frozen state, if there was one.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being
+     *                           shut down then this Bundle contains the data it most recently
+     *                           supplied in onSaveInstanceState(Bundle). Note: Otherwise it is
+     *                           null.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +68,10 @@ public class ProfileSetupActivity extends AppCompatActivity {
             public void onClick(View v) { setFCMTokenAndSaveProfile(); }
         });
     }
+
+    /**
+     * Saves the user's profile information to Firestore.
+     */
     private void saveProfile() {
         String name = etName.getText().toString().trim();
         String email = etEmail.getText().toString().trim();
@@ -115,6 +132,10 @@ public class ProfileSetupActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                 });
     }
+
+    /**
+     * Fetches the FCM token and then saves the user's profile.
+     */
     private void setFCMTokenAndSaveProfile() {
         FirebaseMessaging.getInstance().getToken()
                 .addOnCompleteListener(task -> {
@@ -133,6 +154,11 @@ public class ProfileSetupActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Navigates to the appropriate home screen based on the user's type.
+     *
+     * @param userType The user's type (e.g., "entrant", "organizer", "admin").
+     */
     private void navigateToUserHome(String userType) {
         Intent intent;
 
@@ -153,6 +179,11 @@ public class ProfileSetupActivity extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * Gets the selected user type from the radio buttons.
+     *
+     * @return The selected user type as a string.
+     */
     private String getUserType() {
         int selectedId = radioUserType.getCheckedRadioButtonId();
 

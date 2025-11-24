@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.model.EventStatus;
 import com.ualberta.eventlottery.repository.EventRepository;
@@ -26,6 +27,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+/**
+ * Fragment for displaying and editing event details.
+ * Allows organizers to view and modify event information.
+ *
+ * @author static2
+ * @version 1.0
+ */
 public class OrganizerEventInfoFragment extends Fragment {
     private static final String ARG_EVENT_ID = "event_id";
 
@@ -36,6 +44,12 @@ public class OrganizerEventInfoFragment extends Fragment {
     public EventRepository eventRepository;
     public SimpleDateFormat dateFormat;
 
+    /**
+     * Creates a new instance with the specified event ID.
+     *
+     * @param eventId the ID of the event to display
+     * @return new OrganizerEventInfoFragment instance
+     */
     public static OrganizerEventInfoFragment newInstance(String eventId) {
         OrganizerEventInfoFragment fragment = new OrganizerEventInfoFragment();
         Bundle args = new Bundle();
@@ -44,13 +58,18 @@ public class OrganizerEventInfoFragment extends Fragment {
         return fragment;
     }
 
-
+    /**
+     * Creates the fragment's view hierarchy.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentOrganizerEventInfoBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
+    /**
+     * Initializes the fragment after view creation.
+     */
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -60,6 +79,9 @@ public class OrganizerEventInfoFragment extends Fragment {
         loadEventData();
     }
 
+    /**
+     * Retrieves event ID from fragment arguments.
+     */
     private void receiveArguments() {
         Bundle args = getArguments();
         if (args != null && args.containsKey(ARG_EVENT_ID)) {
@@ -70,29 +92,31 @@ public class OrganizerEventInfoFragment extends Fragment {
         }
     }
 
+    /**
+     * Initializes data repositories and formatters.
+     */
     private void initData() {
         eventRepository = EventRepository.getInstance();
         dateFormat = new SimpleDateFormat("h:mma, MMM dd, yyyy", Locale.getDefault());
     }
 
+    /**
+     * Loads event data from repository.
+     */
     private void loadEventData() {
         binding.scrollView.setVisibility(View.GONE);
 
         eventRepository.findEventById(eventId, new EventRepository.EventCallback() {
             @Override
             public void onSuccess(Event event) {
-
                 binding.scrollView.setVisibility(View.VISIBLE);
-
                 currentEvent = event;
                 setUpView();
                 setUpListener();
-
             }
 
             @Override
             public void onFailure(Exception e) {
-//                requireActivity().onBackPressed();
                 if (!isAdded() || getContext() == null) {
                     return;
                 }
@@ -100,6 +124,9 @@ public class OrganizerEventInfoFragment extends Fragment {
         });
     }
 
+    /**
+     * Sets up the view with event data.
+     */
     private void setUpView() {
         if (currentEvent == null) {
             Toast.makeText(requireContext(), "Event not found", Toast.LENGTH_SHORT).show();
@@ -113,7 +140,21 @@ public class OrganizerEventInfoFragment extends Fragment {
         binding.tvEventUpdateDescription.setText(currentEvent.getDescription());
         binding.tvEventLocation.setText(currentEvent.getLocation());
 
-        //status
+        // set up image
+        if (currentEvent.getPosterUrl() != null && !currentEvent.getPosterUrl().isEmpty()) {
+            // use glide to load image
+            Glide.with(requireContext())
+                    .load(currentEvent.getPosterUrl())
+                    .placeholder(R.drawable.placeholder_background)
+                    .error(R.drawable.placeholder_background)
+                    .into(binding.ivEventPosterImg);
+
+        } else {
+            // if no imge, using placeholder
+            binding.ivEventPosterImg.setImageResource(R.drawable.placeholder_background);
+        }
+
+        // Set event status with color coding
         if (currentEvent.getEventStatus() != null) {
             String status = currentEvent.getEventStatus().toString();
             binding.tvEventUpdateStatus.setText(status);
@@ -132,11 +173,11 @@ public class OrganizerEventInfoFragment extends Fragment {
                     binding.tvEventUpdateStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_primary));
                     break;
             }
-
         } else {
             binding.tvEventUpdateStatus.setText("Not set");
         }
 
+        // Set event end time
         if (currentEvent.getEndTime() != null) {
             String formattedTime = dateFormat.format(currentEvent.getEndTime());
             binding.tvEventUpdateEndTime.setText(formattedTime);
@@ -144,8 +185,7 @@ public class OrganizerEventInfoFragment extends Fragment {
             binding.tvEventUpdateEndTime.setText("TBD");
         }
 
-
-        //registration end time
+        // Set registration end time
         if (currentEvent.getRegistrationEnd() != null) {
             String formattedTime = dateFormat.format(currentEvent.getRegistrationEnd());
             binding.tvEventUpdateRegistryEndTime.setText(formattedTime);
@@ -153,21 +193,12 @@ public class OrganizerEventInfoFragment extends Fragment {
             binding.tvEventUpdateRegistryEndTime.setText("TBD");
         }
 
-        //poster
-        if (currentEvent.getPosterUrl() != null && !currentEvent.getPosterUrl().isEmpty()) {
-            // TODO: use the image loading library to load images from web urls
-        } else {
-            binding.ivEventPosterImg.setImageResource(R.drawable.placeholder_background);
-        }
 
-        //location
-        if (currentEvent.getLocationUrl() != null && !currentEvent.getLocationUrl().isEmpty()) {
-            // TODO: use the image loading library to load images from web urls
-        } else {
-            binding.ivEventLocationImg.setImageResource(R.drawable.placeholder_background);
-        }
     }
 
+    /**
+     * Sets up click listeners for navigation and editing.
+     */
     private void setUpListener() {
         binding.btnBack.setOnClickListener(v -> {
             requireActivity().onBackPressed();
@@ -189,7 +220,7 @@ public class OrganizerEventInfoFragment extends Fragment {
                     .commit();
         });
 
-
+        // Edit field listeners
         binding.btnEventUpdateTitle.setOnClickListener(v -> {
             showEditDialog("title", currentEvent.getTitle());
         });
@@ -214,11 +245,11 @@ public class OrganizerEventInfoFragment extends Fragment {
             String currentStatus = currentEvent.getEventStatus().toString();
             showStatusDialog(currentStatus);
         });
-
-
     }
 
-
+    /**
+     * Shows dialog for updating event status.
+     */
     private void showStatusDialog(String currentStatus) {
         DialogUpdateStatus dialog = DialogUpdateStatus.newInstance(currentStatus);
         dialog.setOnStatusChangeListener(newStatus -> {
@@ -227,8 +258,9 @@ public class OrganizerEventInfoFragment extends Fragment {
         dialog.show(getChildFragmentManager(), "status_dialog");
     }
 
-
-
+    /**
+     * Shows dialog for editing text fields.
+     */
     private void showEditDialog(String fieldType, String currentValue) {
         DialogCustomContent dialog = DialogCustomContent.newInstance(fieldType, currentValue);
         dialog.setOnDialogConfirmListener((type, newValue) -> {
@@ -237,8 +269,10 @@ public class OrganizerEventInfoFragment extends Fragment {
         dialog.show(getChildFragmentManager(), "edit_dialog_" + fieldType);
     }
 
+    /**
+     * Shows time picker dialog for time fields.
+     */
     private void showDateTimePicker(String fieldType, Date currentDate) {
-        // initialize the calendar with the current date
         final Calendar calendar = Calendar.getInstance();
         if (currentDate != null) {
             calendar.setTime(currentDate);
@@ -249,7 +283,6 @@ public class OrganizerEventInfoFragment extends Fragment {
                 (view, hourOfDay, minute) -> {
                     calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
                     calendar.set(Calendar.MINUTE, minute);
-
                     showDatePicker(fieldType, calendar.getTime());
                 },
                 calendar.get(Calendar.HOUR_OF_DAY),
@@ -261,6 +294,9 @@ public class OrganizerEventInfoFragment extends Fragment {
         timePickerDialog.show();
     }
 
+    /**
+     * Shows date picker dialog for date fields.
+     */
     private void showDatePicker(String fieldType, Date selectedTime) {
         final Calendar calendar = Calendar.getInstance();
         if (selectedTime != null) {
@@ -273,7 +309,6 @@ public class OrganizerEventInfoFragment extends Fragment {
                     calendar.set(Calendar.YEAR, year);
                     calendar.set(Calendar.MONTH, month);
                     calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-
                     handleFieldUpdate(fieldType, calendar.getTime());
                 },
                 calendar.get(Calendar.YEAR),
@@ -285,6 +320,9 @@ public class OrganizerEventInfoFragment extends Fragment {
         datePickerDialog.show();
     }
 
+    /**
+     * Handles field updates and saves to repository.
+     */
     private void handleFieldUpdate(String fieldType, Object newValue) {
         switch (fieldType) {
             case "title":
@@ -306,7 +344,6 @@ public class OrganizerEventInfoFragment extends Fragment {
                     currentEvent.setRegistrationEnd((Date) newValue);
                 }
                 break;
-
             case "status":
                 if (newValue instanceof String) {
                     currentEvent.setEventStatus(EventStatus.valueOf(((String) newValue).toUpperCase()));
@@ -314,11 +351,9 @@ public class OrganizerEventInfoFragment extends Fragment {
                 break;
         }
 
-
         eventRepository.updateEvent(currentEvent, new EventRepository.BooleanCallback() {
             @Override
             public void onSuccess(boolean result) {
-
                 if (result) {
                     setUpView();
                     Toast.makeText(requireContext(), fieldType + " updated successfully", Toast.LENGTH_SHORT).show();
@@ -334,6 +369,9 @@ public class OrganizerEventInfoFragment extends Fragment {
         });
     }
 
+    /**
+     * Cleans up resources when view is destroyed.
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();

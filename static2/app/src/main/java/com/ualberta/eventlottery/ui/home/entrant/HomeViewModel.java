@@ -48,12 +48,18 @@ public class HomeViewModel extends ViewModel {
         return availableEventListLiveData;
     }
 
-    // Getter for the new "My Events" LiveData
+    /**
+     * Getter for the new "My Events" LiveData
+     *
+     * @return The LiveData for the list of events the user has registered for.
+     */
     public LiveData<List<Event>> getMyEvents() {
         return myEvents;
     }
 
-    // Method to trigger loading the user's registered events
+    /**
+     * Method to trigger loading the user's registered events
+     */
     public void loadMyRegisteredEvents() {
         String currentUserId = UserManager.getCurrentUserId();
         if (currentUserId == null || currentUserId.isEmpty()) {
@@ -61,7 +67,7 @@ public class HomeViewModel extends ViewModel {
             return;
         }
 
-        // 1. Get all registrations for the current user
+
         registrationRepository.getRegistrationsByEntrant(currentUserId, new RegistrationRepository.RegistrationListCallback() {
             @Override
             public void onSuccess(List<Registration> registrations) {

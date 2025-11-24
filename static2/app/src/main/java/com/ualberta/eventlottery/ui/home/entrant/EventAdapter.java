@@ -10,7 +10,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.espresso.idling.CountingIdlingResource;
 
 import com.ualberta.eventlottery.model.EntrantRegistrationStatus;
 import com.ualberta.eventlottery.model.Event;
@@ -32,6 +34,8 @@ import java.util.Locale;
  * for registration and withdrawal, and displays real-time waitlist count
  */
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
+    @VisibleForTesting
+    public static CountingIdlingResource idlingResource = new CountingIdlingResource("EventAdapter-RegistrationAction");
     private static SimpleDateFormat sdfWithoutYear = new SimpleDateFormat("MMM dd", Locale.CANADA);
     private static SimpleDateFormat sdfWithYear = new SimpleDateFormat("MMM dd, yyyy", Locale.CANADA);
 
@@ -124,16 +128,19 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
                 } else {
                     holder.btnActionText.setText(BTN_ACTION_TEXT_REGISTER);
                 }
+                idlingResource.decrement();
             }
 
             @Override
             public void onFailure(Exception e) {
                 Log.e("EventLottery", "failed to find registration", e);
                 holder.btnActionText.setText(NOT_ALLOWED_SYMBOL);
+                idlingResource.decrement();
             }
         };
 
         holder.btnAction.setOnClickListener(v -> {
+            idlingResource.increment();
             String btnActionText = holder.btnActionText.getText().toString();
             String userId = UserManager.getCurrentUserId();
             if (btnActionText.compareTo(BTN_ACTION_TEXT_REGISTER) == 0) {
@@ -144,6 +151,8 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
                 registrationRepository.unregisterUser(event.getId(), userId, callback);
             }
         });
+        idlingResource.increment();
+
         registrationRepository.findRegistrationByEventAndUser(event.getId(), UserManager.getCurrentUserId(), callback);
 
         holder.itemView.setOnClickListener(v -> {
@@ -153,6 +162,13 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
         });
     }
 
+    /**
+     * Returns the text for the number of entrants.
+     *
+     * @param waitListCount   The number of users on the waitlist.
+     * @param maxWaitListSize The maximum size of the waitlist.
+     * @return The formatted string for the number of entrants.
+     */
     private String getEntrantsText(int waitListCount, int maxWaitListSize) {
         StringBuffer buffer = new StringBuffer();
         if (waitListCount >= 0) {
@@ -169,6 +185,12 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
         return buffer.toString();
     }
 
+    /**
+     * Returns the formatted date range for the event.
+     *
+     * @param event The event.
+     * @return The formatted date range.
+     */
     private String getFromToText(Event event) {
         if (event.getStartTime() == null || event.getEndTime() == null) {
             return "Dates TBD";
@@ -186,6 +208,12 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
         return sdf.format(startTime.getTime()) + " - " + sdf.format(endTime.getTime());
     }
 
+    /**
+     * Returns the formatted session start time for the event.
+     *
+     * @param event The event.
+     * @return The formatted session start time.
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     private String getSessionStartTimeText(Event event){
         if (event.getDailyStartTime() == null) {
@@ -210,6 +238,12 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
     public static class ViewHolder extends RecyclerView.ViewHolder{
         TextView eventTitle, entrantsNumber, eventFromTo, eventStatus, eventSessionStartTime, btnActionText;
         LinearLayout btnAction;
+        /**
+         * Constructs a new ViewHolder.
+         *
+         * @param itemView The view that you inflated in
+         *                 {@link EventAdapter#onCreateViewHolder(ViewGroup, int)}
+         */
         public ViewHolder(@NonNull View itemView){
             super(itemView);
             eventTitle = itemView.findViewById(R.id.tv_event_title);
@@ -222,7 +256,15 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>{
         }
     }
 
+    /**
+     * Interface for listening to event clicks.
+     */
     public interface OnEventListener {
+        /**
+         * Called when an event is clicked.
+         *
+         * @param event The clicked event.
+         */
         void onEventClick(Event event);
     }
 }

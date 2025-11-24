@@ -31,12 +31,12 @@ public class UserManager {
     }
 
     // https://firebase.google.com/docs/auth/android/anonymous-auth
-    public static void initializeUser(Activity activity, InitCallback callback) {
+    public static void initializeUser(InitCallback callback) {
         mAuth = FirebaseAuth.getInstance();
         mCurrentUser = mAuth.getCurrentUser();
         if (mCurrentUser == null) {
             mAuth.signInAnonymously()
-                    .addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
+                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
