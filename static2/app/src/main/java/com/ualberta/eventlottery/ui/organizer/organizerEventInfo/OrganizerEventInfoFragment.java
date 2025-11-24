@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -134,6 +135,17 @@ public class OrganizerEventInfoFragment extends Fragment {
             return;
         }
 
+        // Update statuses based on current time and deadlines
+        currentEvent.updateRegistrationStatusBasedOnDeadline();
+        if (currentEvent.getEventStatus() == EventStatus.UPCOMING && currentEvent.getStartTime() != null) {
+            java.util.Date now = new java.util.Date();
+            if (now.after(currentEvent.getStartTime()) && now.before(currentEvent.getEndTime())) {
+                currentEvent.setEventStatus(EventStatus.ONGOING);
+            } else if (now.after(currentEvent.getEndTime())) {
+                currentEvent.setEventStatus(EventStatus.CLOSED);
+            }
+        }
+
         binding.tvEventTitle.setText(currentEvent.getTitle());
         binding.tvEventDescription.setText(currentEvent.getDescription());
         binding.tvEventUpdateTitle.setText(currentEvent.getTitle());
@@ -204,6 +216,34 @@ public class OrganizerEventInfoFragment extends Fragment {
             requireActivity().onBackPressed();
         });
 
+        binding.btnDeleteEvent.setOnClickListener(v -> {
+            // Show a confirmation dialog before deleting
+            new AlertDialog.Builder(requireContext())
+                    .setTitle("Delete Event")
+                    .setMessage("Are you sure you want to permanently delete this event? This action cannot be undone.")
+                    .setPositiveButton("Delete", (dialog, which) -> {
+                        eventRepository.deleteEvent(eventId, new EventRepository.BooleanCallback() {
+                            @Override
+                            public void onSuccess(boolean result) {
+                                if (isAdded()) {
+                                    Toast.makeText(requireContext(), "Event deleted successfully.", Toast.LENGTH_SHORT).show();
+                                    // Go back to the previous screen (OrganizerHomeFragment)
+                                    requireActivity().getSupportFragmentManager().popBackStack();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Exception e) {
+                                if (isAdded()) {
+                                    Toast.makeText(requireContext(), "Failed to delete event: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
+        });
+
         binding.btnEventShowcase.setOnClickListener(v -> {
             OrganizerEventShowcaseFragment fragment = OrganizerEventShowcaseFragment.newInstance(eventId);
             requireActivity().getSupportFragmentManager().beginTransaction()
@@ -246,6 +286,8 @@ public class OrganizerEventInfoFragment extends Fragment {
             showStatusDialog(currentStatus);
         });
     }
+
+
 
     /**
      * Shows dialog for updating event status.
