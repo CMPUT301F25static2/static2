@@ -8,6 +8,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
 
 import android.Manifest;
 
@@ -129,4 +131,100 @@ public class EntrantMainActivityTest {
             throw new RuntimeException(e);
         }
     }
+
+    //US 01.01.04 As an entrant I want to filter my interests and availability
+    @Test
+    public void testOpenFilterOptions() {
+        ActivityScenario.launch(EntrantMainActivity.class);
+
+        onView(withId(R.id.filterButton))
+                .perform(click());
+
+        try {
+            onView(allOf(CustomMatchers.first(withText("Filter")), isDisplayed()))
+                    .check(matches(isDisplayed()));
+        } catch (NoMatchingViewException nmve) {
+            // Check if there's a Filter button we can click to make this test pass
+            onView(allOf(CustomMatchers.first(withText("Filter")), isDisplayed()))
+                    .perform(click());
+        }
+
+        onView(CustomMatchers.first(withText("Filter")))
+                .perform(click());
+
+        try{
+            Thread.sleep(2000);
+        } catch (InterruptedException e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void testFilterByCategorySport(){
+        ActivityScenario.launch(EntrantMainActivity.class);
+
+        onView(withId(R.id.availableEventsButton))
+                .perform(click());
+
+        onView(withId(R.id.filterButton))
+                .perform(click());
+
+        try {
+            onView(allOf(CustomMatchers.first(withText("Sports")), isDisplayed()))
+                    .check(matches(isDisplayed()));
+        } catch (NoMatchingViewException nmve) {
+            // Check if there's a Filter button we can click to make this test pass
+            onView(allOf(CustomMatchers.first(withText("Filter")), isDisplayed()))
+                    .perform(click());
+        }
+
+        onView(CustomMatchers.first(withText("Sports")))
+                .perform(click());
+
+        onView(CustomMatchers.first(withText("Apply")))
+                .perform(click());
+        try {
+            Thread.sleep(2000);
+        } catch(InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void testFilterByMultipleCategories(){
+        ActivityScenario.launch(EntrantMainActivity.class);
+
+        onView(withId(R.id.availableEventsButton))
+                .perform(click());
+
+        onView(withId(R.id.filterButton))
+                .perform(click());
+
+        try {
+            onView(allOf(CustomMatchers.first(withText("Sports")), isDisplayed()))
+                    .check(matches(isDisplayed()));
+        } catch (NoMatchingViewException nmve) {
+            // Check if there's a Filter button we can click to make this test pass
+            onView(allOf(CustomMatchers.first(withText("Filter")), isDisplayed()))
+                    .perform(click());
+        }
+
+        onView(CustomMatchers.first(withText("Sports")))
+                .perform(click());
+
+        onView(CustomMatchers.first(withText("Music")))
+                .perform(click());
+
+        onView(CustomMatchers.first(withText("Apply")))
+                .perform(click());
+
+
+        try {
+            Thread.sleep(2000);
+        } catch(InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
 }
