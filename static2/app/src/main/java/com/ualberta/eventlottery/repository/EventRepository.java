@@ -467,7 +467,7 @@ public class EventRepository {
     public void getEventsByOrganizer(String organizerId, EventListCallback callback) {
         db.collection(COLLECTION_EVENTS)
                 .whereEqualTo("organizerId", organizerId)
-                .orderBy("createdAt", Query.Direction.DESCENDING)
+//                .orderBy("createdAt", Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     List<Event> events = new ArrayList<>();

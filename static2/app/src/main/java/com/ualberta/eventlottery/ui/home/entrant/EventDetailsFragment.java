@@ -1,6 +1,9 @@
 package com.ualberta.eventlottery.ui.home.entrant;
 
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,12 +11,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
+
+import com.ualberta.eventlottery.service.LocationService;
 
 import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.model.Registration;
@@ -37,9 +44,11 @@ public class EventDetailsFragment extends Fragment {
     private String mEventId;
     private EventDetailsViewModel eventDetailsViewModel;
     private RegistrationRepository registrationRepository;
-
+    private LocationService locationService;
 
     private Registration currentUserRegistration = null;
+    private ActivityResultLauncher<String[]> locationPermissionLauncher;
+    private Event currentEvent;
 
     /**
      * Required empty public constructor
@@ -61,6 +70,25 @@ public class EventDetailsFragment extends Fragment {
             mEventId = getArguments().getString(ARG_EVENT_ID);
         }
         registrationRepository = RegistrationRepository.getInstance();
+        locationService = new LocationService(getContext());
+
+        // Initialize location permission launcher
+        locationPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestMultiplePermissions(),
+                permissions -> {
+                    boolean fineLocationGranted = permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false);
+                    boolean coarseLocationGranted = permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false);
+
+                    if (fineLocationGranted || coarseLocationGranted) {
+                        // Permission granted, proceed with location capture and registration
+                        captureLocationAndRegister();
+                    } else {
+                        // Permission denied, show message
+                        Toast.makeText(getContext(), "Location permission is required for this event", Toast.LENGTH_LONG).show();
+                        resetButtonState();
+                    }
+                }
+        );
     }
 
     /**
@@ -178,13 +206,53 @@ public class EventDetailsFragment extends Fragment {
             Toast.makeText(getContext(), "You must be signed in to register", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (mEventId == null) return;
+        if (mEventId == null || currentEvent == null) return;
 
         binding.registerButton.setEnabled(false);
         binding.registerButton.setText("Registering...");
 
-        // Use the registerUser method you already have
-        registrationRepository.registerUser(mEventId, currentUserId, new RegistrationRepository.RegistrationCallback() {
+        // Check if geolocation is required for this event
+        if (currentEvent.isLocationRequired()) {
+            handleGeolocationRegistration(currentUserId);
+        } else {
+            proceedWithRegistration(currentUserId, null);
+        }
+    }
+
+    private void handleGeolocationRegistration(String currentUserId) {
+        if (!locationService.hasLocationPermissions()) {
+            // Request location permissions
+            locationPermissionLauncher.launch(new String[]{
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+            });
+        } else {
+            // Permission already granted, capture location and register
+            captureLocationAndRegister();
+        }
+    }
+
+    private void captureLocationAndRegister() {
+        locationService.getCurrentLocation()
+                .thenAccept(location -> {
+                    if (location != null) {
+                        // Location captured successfully, proceed with registration
+                        proceedWithRegistration(UserManager.getCurrentUserId(), location);
+                    } else {
+                        // Failed to get location
+                        Toast.makeText(getContext(), "Unable to get location. Please try again.", Toast.LENGTH_LONG).show();
+                        resetButtonState();
+                    }
+                })
+                .exceptionally(throwable -> {
+                    Toast.makeText(getContext(), "Location capture failed: " + throwable.getMessage(), Toast.LENGTH_LONG).show();
+                    resetButtonState();
+                    return null;
+                });
+    }
+
+    private void proceedWithRegistration(String currentUserId, Location location) {
+        registrationRepository.registerUser(mEventId, currentUserId, location, new RegistrationRepository.RegistrationCallback() {
             @Override
             public void onSuccess(Registration registration) {
                 Toast.makeText(getContext(), "Successfully registered!", Toast.LENGTH_SHORT).show();
@@ -201,6 +269,15 @@ public class EventDetailsFragment extends Fragment {
                 binding.registerButton.setEnabled(true);
             }
         });
+    }
+
+    private void resetButtonState() {
+        if (currentUserRegistration != null) {
+            updateButtonUi();
+        } else {
+            binding.registerButton.setEnabled(true);
+            binding.registerButton.setText("Register");
+        }
     }
 
     /**
@@ -243,7 +320,9 @@ public class EventDetailsFragment extends Fragment {
      * @param event The event whose details are to be displayed.
      */
     private void populateUi(Event event) {
-        // ... (this method is unchanged)
+        // Store the current event for geolocation checking
+        currentEvent = event;
+
         binding.eventDetailsTitle.setText(event.getTitle());
         binding.eventDetailsDescription.setText(event.getDescription());
         SimpleDateFormat dateSdf = new SimpleDateFormat("MMM dd, yyyy", Locale.CANADA);

@@ -1,5 +1,7 @@
 package com.ualberta.eventlottery.repository;
 
+import android.location.Location;
+
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.android.gms.tasks.Task;
@@ -8,6 +10,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.ualberta.eventlottery.model.Registration;
 import com.ualberta.eventlottery.model.EntrantRegistrationStatus;
+import com.ualberta.eventlottery.service.LocationService;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -553,6 +556,56 @@ public class RegistrationRepository {
                     newRegistration.setEntrantId(userId);
                     newRegistration.setStatus(EntrantRegistrationStatus.WAITING);
                     newRegistration.setRegisteredAt(new Date());
+
+                    docRef.set(newRegistration)
+                            .addOnSuccessListener(aVoid -> callback.onSuccess(newRegistration))
+                            .addOnFailureListener(callback::onFailure);
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                callback.onFailure(e);
+            }
+        });
+    }
+
+    /**
+     * Registers a user for an event with location data.
+     * Creates a new registration with WAITING status and location information if user is not already registered.
+     *
+     * @param eventId unique identifier of the event
+     * @param userId unique identifier of the user
+     * @param location the user's current location (null if geolocation not required)
+     * @param callback callback to handle the registration result
+     */
+    public void registerUser(String eventId, String userId, Location location, RegistrationCallback callback) {
+        findRegistrationByEventAndUser(eventId, userId, new RegistrationCallback() {
+            @Override
+            public void onSuccess(Registration registration) {
+                if (registration != null) {
+                    // Already registered so nothing to do.
+                    callback.onSuccess(registration);
+                } else {
+                    final Registration newRegistration = new Registration();
+                    DocumentReference docRef = db.collection(COLLECTION_REGISTRATIONS).document();
+                    newRegistration.setId(docRef.getId());
+                    newRegistration.setEventId(eventId);
+                    newRegistration.setEntrantId(userId);
+                    newRegistration.setStatus(EntrantRegistrationStatus.WAITING);
+                    newRegistration.setRegisteredAt(new Date());
+
+                    // Add location data if provided
+                    if (location != null) {
+                        newRegistration.setLatitude(location.getLatitude());
+                        newRegistration.setLongitude(location.getLongitude());
+
+                        // Store a simple coordinate string as location address for now
+                        // The full address will be generated in the UI layer
+                        String coordinateString = String.format("Lat: %.6f, Lng: %.6f",
+                                location.getLatitude(), location.getLongitude());
+                        newRegistration.setLocationAddress(coordinateString);
+                    }
 
                     docRef.set(newRegistration)
                             .addOnSuccessListener(aVoid -> callback.onSuccess(newRegistration))

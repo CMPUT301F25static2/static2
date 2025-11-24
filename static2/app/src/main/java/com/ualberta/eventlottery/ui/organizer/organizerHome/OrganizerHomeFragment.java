@@ -1,6 +1,7 @@
 package com.ualberta.eventlottery.ui.organizer.organizerHome;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -96,7 +97,7 @@ public class OrganizerHomeFragment extends Fragment {
 
                 binding.tvTotalEvents.setText(String.valueOf(totalEvents));
                 binding.tvTotalEntrants.setText(String.valueOf(totalEntrants));
-                binding.tvFullRate.setText(fullRate + "%");
+                binding.tvFullRate.setText(fullRate + "%"    );
 
                 binding.lvOrganzierEventList.setVisibility(View.VISIBLE);
                 setupAdapterWithData(events);
@@ -104,7 +105,10 @@ public class OrganizerHomeFragment extends Fragment {
 
             @Override
             public void onFailure(Exception e) {
-                Toast.makeText(requireContext(), "Failed to load events", Toast.LENGTH_SHORT).show();
+                Log.e("OrganizerHomeFragment", "Failed to load events", e);
+                if (isAdded() && getContext() != null) {
+                    Toast.makeText(requireContext(), "Failed to load events: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
