@@ -26,6 +26,7 @@ import androidx.test.espresso.idling.CountingIdlingResource;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.ualberta.eventlottery.model.Event;
@@ -50,7 +51,6 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
     private CountingIdlingResource getAvailableEventsIdlingResource = null;
 
     // History button has been removed
-    private Button myEventsButton, availableEventsButton;
     private EditText searchInputHome;
     private ChipGroup filterGroup;
     private Chip categoryFilter;
@@ -87,8 +87,6 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
         View view = binding.getRoot();
 
         searchInputHome = view.findViewById(R.id.searchInputHome);
-        myEventsButton = view.findViewById(R.id.myEventsButton);
-        availableEventsButton = view.findViewById(R.id.availableEventsButton);
         recyclerView = view.findViewById(R.id.eventsRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -133,9 +131,20 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
             return false;
         });
 
-        // Navigation listeners
-        myEventsButton.setOnClickListener(v -> showMyEvents());
-        availableEventsButton.setOnClickListener(v -> showAvailableEvents());
+        MaterialButtonToggleGroup toggleGroup = view.findViewById(R.id.toggleGroup);
+
+        toggleGroup.addOnButtonCheckedListener(new MaterialButtonToggleGroup.OnButtonCheckedListener() {
+            @Override
+            public void onButtonChecked(MaterialButtonToggleGroup group, int checkedId, boolean isChecked) {
+                if (isChecked) {  // Only act when a button becomes selected
+                    if (checkedId == R.id.myEventsButton) {
+                        showMyEvents();
+                    } else if (checkedId == R.id.availableEventsButton) {
+                        showAvailableEvents();
+                    }
+                }
+            }
+        });
 
         return view;
     }
@@ -234,17 +243,6 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
     }
 
     /**
-     * Resets the style of all buttons.
-     */
-    private void resetAllButtonStyles() {
-        Button[] buttons = {myEventsButton, availableEventsButton};
-        for (Button btn : buttons) {
-            btn.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.black));
-            btn.setTextColor(ContextCompat.getColorStateList(requireContext(), R.color.white));
-        }
-    }
-
-    /**
      * Sets the style of the active button.
      *
      * @param activeButton The button to be styled as active.
@@ -269,8 +267,6 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
         homeViewModel.loadMyRegisteredEvents();
 
         recyclerView.setAdapter(myEventsAdapter);
-        resetAllButtonStyles();
-        setActiveButtonStyle(myEventsButton);
     }
 
     /**
@@ -287,7 +283,5 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
         homeViewModel.getAvailableEvents().observe(getViewLifecycleOwner(), availableEventsObserver);
 
         recyclerView.setAdapter(availableEventsAdapter);
-        resetAllButtonStyles();
-        setActiveButtonStyle(availableEventsButton);
     }
 }
