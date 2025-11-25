@@ -98,7 +98,6 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
             @Override
             public void onClick(View view) {
                 showFilterBottomSheet();
-                // Optional: visually show chip as "active"
                 categoryFilter.setChecked(true);
             }
         });
@@ -201,13 +200,6 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
             String selectedFiltersCount = String.format("(%d)", selectedFilters.size());
             categoryFilter.setText(String.format("Category: %s", selectedFilters.size() == chipGroup.getChildCount() ? "Any" : selectedFiltersCount));
         });
-
-        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams)
-                ((View) bottomSheetView.getParent()).getLayoutParams();
-        CoordinatorLayout.Behavior behavior = params.getBehavior();
-        if (behavior instanceof BottomSheetBehavior) {
-            ((BottomSheetBehavior) behavior).setPeekHeight(400);
-        }
 
         bottomSheetDialog.show();
     }
