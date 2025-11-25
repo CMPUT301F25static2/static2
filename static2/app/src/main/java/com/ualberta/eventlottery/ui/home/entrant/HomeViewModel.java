@@ -34,6 +34,8 @@ public class HomeViewModel extends ViewModel {
 
     // This LiveData will now be used for the "My Events" tab.
     private final MutableLiveData<List<Event>> myEvents = new MutableLiveData<>();
+    private final MediatorLiveData<List<Event>> filteredMyEventList = new MediatorLiveData<>();
+
 
     /**
      * Constructs a HomeViewModel and initializes events from EventRepository
@@ -47,6 +49,7 @@ public class HomeViewModel extends ViewModel {
         selectedCategoryFilters.setValue(Stream.of(EventCategory.values())
                 .collect(Collectors.toList()));
 
+        //Observes the availableEventListLiveData and applies filter on new data
         filteredAvailableEventList.addSource(availableEventListLiveData, newData -> {
             filteredAvailableEventList.setValue(
                     applyCategoryFilters(newData, selectedCategoryFilters.getValue())
@@ -58,6 +61,16 @@ public class HomeViewModel extends ViewModel {
             );
         });
 
+        filteredMyEventList.addSource(myEvents, newData -> {
+            filteredMyEventList.setValue(
+                    applyCategoryFilters(newData, selectedCategoryFilters.getValue())
+            );
+        });
+        filteredMyEventList.addSource(selectedCategoryFilters, newFilters -> {
+            filteredMyEventList.setValue(
+                    applyCategoryFilters(myEvents.getValue(), newFilters)
+            );
+        });
     }
 
     /**
@@ -75,7 +88,7 @@ public class HomeViewModel extends ViewModel {
      * @return The LiveData for the list of events the user has registered for.
      */
     public LiveData<List<Event>> getMyEvents() {
-        return myEvents;
+        return filteredMyEventList;
     }
 
     public List<EventCategory> getSelectedCategories() {
