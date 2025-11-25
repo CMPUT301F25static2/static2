@@ -208,7 +208,8 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
             bottomSheetDialog.dismiss();
 
             String selectedFiltersCount = String.format("(%d)", selectedFilters.size());
-            categoryFilter.setText(String.format("Category: %s", selectedFilters.size() == chipGroup.getChildCount() ? "Any" : selectedFiltersCount));
+            boolean allOrNoFiltersSelected = selectedFilters.size() == chipGroup.getChildCount() || selectedFilters.size() == 0;
+            categoryFilter.setText(String.format("Category: %s", allOrNoFiltersSelected ? "Any" : selectedFiltersCount));
         });
 
         bottomSheetDialog.show();
