@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import com.ualberta.eventlottery.model.EntrantRegistrationStatus;
 import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.model.Registration;
 import com.ualberta.eventlottery.notification.NotificationController;
+import com.ualberta.eventlottery.ui.notifications.NotificationTemplate;
 import com.ualberta.eventlottery.repository.EventRepository;
 import com.ualberta.eventlottery.repository.RegistrationRepository;
 import com.ualberta.static2.databinding.FragmentOrganizerDrawBinding;
@@ -368,9 +370,10 @@ public class OrganizerEventDrawFragment extends Fragment {
                 Collections.shuffle(waitingRegistrations);
                 int actualDrawCount = Math.min(numberToDraw, waitingRegistrations.size());
                 List<Registration> selectedRegistrations = waitingRegistrations.subList(0, actualDrawCount);
+                List<Registration> nonSelectedRegistrations = new ArrayList<>(waitingRegistrations.subList(actualDrawCount, waitingRegistrations.size()));
 
                 // Update selected registrations status
-                updateSelectedRegistrations(selectedRegistrations, actualDrawCount);
+                updateSelectedRegistrations(selectedRegistrations,nonSelectedRegistrations, actualDrawCount);
             }
 
             @Override
@@ -383,11 +386,16 @@ public class OrganizerEventDrawFragment extends Fragment {
     /**
      * Updates selected registrations to SELECTED status and sends notifications.
      */
-    private void updateSelectedRegistrations(List<Registration> selectedRegistrations, int actualDrawCount) {
+    private void updateSelectedRegistrations(List<Registration> selectedRegistrations,List<Registration> nonSelectedRegistrations,int actualDrawCount) {
         // Prepare user IDs for notifications
         List<String> selectedUserIds = new ArrayList<>();
+        List<String> nonSelectedUserIds = new ArrayList<>();
+
         for (Registration registration : selectedRegistrations) {
             selectedUserIds.add(registration.getEntrantId());
+        }
+        for (Registration registration: nonSelectedRegistrations){
+            nonSelectedUserIds.add(registration.getEventId());
         }
 
         // Update each registration status
@@ -400,7 +408,7 @@ public class OrganizerEventDrawFragment extends Fragment {
                     loadEventData(); // Refresh the view
 
                     // Send notifications to all selected entrants
-                    sendNotificationsToSelectedUsers(selectedUserIds);
+                    sendNotificationsToSelectedUsers(selectedUserIds,nonSelectedUserIds);
                 }
 
                 @Override
@@ -414,15 +422,33 @@ public class OrganizerEventDrawFragment extends Fragment {
     /**
      * Sends notifications to users who were selected in the lottery draw.
      */
-    private void sendNotificationsToSelectedUsers(List<String> selectedUserIds) {
-        if (currentEvent != null && !selectedUserIds.isEmpty()) {
-            String notificationTitle = "Congratulations! You've been selected!";
-            String notificationBody = "You have been selected from the waiting list for the event: " +
-                    currentEvent.getTitle() + ". Please confirm your attendance within 48 hours.";
+    private void sendNotificationsToSelectedUsers(List<String> selectedUserIds, List<String> nonSelectedUserIds) {
+        //notification for selected users
+        if (!selectedUserIds.isEmpty()) {
+            String acceptedTitle = NotificationTemplate.getAcceptedTitle(currentEvent.getTitle());
+            String acceptedBody = NotificationTemplate.getAcceptedBody(currentEvent.getTitle());
 
-            notificationController.sendNotification(notificationTitle, notificationBody, currentEvent.getId(), selectedUserIds);
+            notificationController.sendNotification(
+                    acceptedTitle,
+                    acceptedBody,
+                    currentEvent.getId(),
+                    selectedUserIds
+            );
         }
+
+        // notification for non-selected users
+        if (!nonSelectedUserIds.isEmpty()) {
+            String notAcceptedTitle = NotificationTemplate.getNotAcceptedTitle(currentEvent.getTitle());
+            String notAcceptedBody = NotificationTemplate.getNotAcceptedBody(currentEvent.getTitle());
+
+            notificationController.sendNotification(
+                    notAcceptedTitle,
+                    notAcceptedBody,
+                    currentEvent.getId(),
+                    nonSelectedUserIds
+            );
     }
+        }
 
     /**
      * Shows result dialog after successful draw.
