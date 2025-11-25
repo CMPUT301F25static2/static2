@@ -96,7 +96,12 @@ public class HomeViewModel extends ViewModel {
     }
 
     public void applyCategoryFilters(List<EventCategory> selectedCategories) {
-        this.selectedCategoryFilters.setValue(selectedCategories);
+        if (selectedCategories.size() == 0) {
+            selectedCategoryFilters.setValue(Stream.of(EventCategory.values())
+                    .collect(Collectors.toList()));
+        } else {
+            this.selectedCategoryFilters.setValue(selectedCategories);
+        }
     }
 
     private List<Event> applyCategoryFilters(List<Event> currentData, List<EventCategory> categories) {
