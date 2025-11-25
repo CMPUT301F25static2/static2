@@ -145,7 +145,7 @@ public class CSVExportUtil {
                                 return;
                             }
 
-                            String fileName = generateFileName(event, "waiting_list");
+                            String fileName = generateFileName(event, "confirmed");
                             saveCSVFile(context, csvContent.toString(), fileName, callback);
 
                         } catch (Exception e) {

@@ -9,13 +9,10 @@ import androidx.annotation.RequiresApi;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -40,7 +37,6 @@ public class EventRepository {
     private FirebaseFirestore db;
     private FirebaseStorage storage;
     private static final String COLLECTION_EVENTS = "events";
-    private static final String COLLECTION_REGISTRATIONS = "registrations";
     private static final String STORAGE_PATH_POSTERS = "event_posters/";
     static final String STORAGE_PATH_QR_CODES = "event_qr_codes/";
 
@@ -331,7 +327,6 @@ public class EventRepository {
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     List<Event> events = new ArrayList<>();
-                    List<Task<QuerySnapshot>> tasks = new ArrayList<>();
                     for (DocumentSnapshot document : querySnapshot.getDocuments()) {
                         Event event = null;
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -340,27 +335,11 @@ public class EventRepository {
                         if (event != null) {
                             updateEventStatus(event);
                             events.add(event);
-                            tasks.add(getConfirmedAttendeesCount(event.getId()));
                         }
                     }
-
-                    Tasks.whenAllSuccess(tasks).addOnSuccessListener(results -> {
-                        for (int i = 0; i < events.size(); i++) {
-                            QuerySnapshot snapshot = (QuerySnapshot) results.get(i);
-                            events.get(i).setConfirmedAttendees(snapshot.size());
-                        }
-                        callback.onSuccess(events);
-                    });
+                    callback.onSuccess(events);
                 })
                 .addOnFailureListener(callback::onFailure);
-    }
-
-
-    public Task<QuerySnapshot> getConfirmedAttendeesCount(String eventId) {
-        return db.collection(COLLECTION_REGISTRATIONS)
-                .whereEqualTo("eventId", eventId)
-                .whereEqualTo("status", "CONFIRMED")
-                .get();
     }
 
 
@@ -512,7 +491,27 @@ public class EventRepository {
         return new EventListLiveData(openRegistrationQuery);
     }
 
-
+    public void getEventsWithOpenRegistration(EventListCallback callback) {
+        db.collection(COLLECTION_EVENTS)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<Event> events = new ArrayList<>();
+                    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                        Event event = null;
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            event = documentToEvent(document);
+                        }
+                        if (event != null) {
+                            updateEventStatus(event);
+                            if (event.getRegistrationStatus() == EventRegistrationStatus.REGISTRATION_OPEN) {
+                                events.add(event);
+                            }
+                        }
+                    }
+                    callback.onSuccess(events);
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
 
 
     public void getEventsByIds(List<String> eventIds, EventListCallback callback) {
