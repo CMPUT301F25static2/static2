@@ -14,15 +14,27 @@ import com.ualberta.eventlottery.utils.UserManager;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * ViewModel that manages and observes notification data for the current user.
+ * Listens to Firestore updates in real-time and provides notifications to the UI.
+ */
 public class NotificationsViewModel extends ViewModel {
 
     private final MutableLiveData<List<NotificationModel>> notifications = new MutableLiveData<>();
     private ListenerRegistration listenerRegistration;
 
+    /**
+     * Initializes the ViewModel and starts listening to Firestore for notification updates.
+     */
     public NotificationsViewModel() {
         listenToNotifications();
     }
 
+    /**
+     * Sets up a Firestore listener that retrieves all notifications
+     * where the current user's ID appears in the recipient list.
+     * Updates the LiveData when data changes.
+     */
     private void listenToNotifications() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String currentUserId = UserManager.getCurrentUserId();
@@ -46,16 +58,24 @@ public class NotificationsViewModel extends ViewModel {
                                 Log.d("NotificationsVM", "Document ID: " + doc.getId() + ", data: " + doc.getData());
                             }
                         }
-                        // Update LiveData
+
                         notifications.setValue(notificationList);
                     }
                 });
     }
 
+    /**
+     * Returns a LiveData list of notifications for the current user.
+     *
+     * @return LiveData containing notification objects
+     */
     public LiveData<List<NotificationModel>> getNotifications() {
         return notifications;
     }
 
+    /**
+     * Removes the Firestore listener when the ViewModel is cleared.
+     */
     @Override
     protected void onCleared() {
         super.onCleared();
