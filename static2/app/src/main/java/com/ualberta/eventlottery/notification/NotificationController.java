@@ -30,32 +30,47 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-
+/**
+ * Controls app notifications, including sending Firebase Cloud Messaging (FCM) notifications
+ * and displaying them locally on the device.
+ */
 public class NotificationController {
 
     private final Context context;
     private final String CHANNEL_ID = "notification channel";
 
+    /**
+     * Creates a new NotificationController and sets up the notification channel.
+     * @param context the application or activity context
+     */
     public NotificationController(Context context) {
         this.context = context;
         createNotificationChannel();
         NotificationModel.initialize(context);
     }
 
-    //display incoming fcm notifications to users
+    /**
+     * Displays a local notification to the user.
+     * Opens {@link } when the notification is tapped.
+     *
+     * @param title   the title of the notification
+     * @param body    the message body
+     * @param eventId the related event ID
+     */
+    // TODO: implement proper intent when event detail fragment finished
     public void displayNotification(String title, String body, String eventId) {
-        //create intent to set up onClick action of notification
         Intent intent = new Intent(context, EntrantMainActivity.class);
         intent.putExtra("eventId", eventId);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 context,
                 0,
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                // replace with actual icon
                 .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle(title)
                 .setContentText(body)
@@ -63,40 +78,35 @@ public class NotificationController {
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true);
 
-
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Missing notification permission
             return;
         }
+
         NotificationManagerCompat.from(context).notify(new Random().nextInt(), builder.build());
     }
+
     /**
-     * Sends a notification to a list of recipients using Firebase Cloud Messaging.
+     * Sends a push notification to a list of recipients via Firebase Cloud Messaging.
+     *
      * @param title           the title of the notification
-     * @param body            the body text of the notification
-     * @param eventId         the event ID associated with this notification
-     * @param recipientIdList a list of user IDs to receive the notification
+     * @param body            the message body
+     * @param eventId         the related event ID
+     * @param recipientIdList list of user IDs to receive the notification
      */
     public void sendNotification(String title, String body, String eventId, List<String> recipientIdList) {
         FirebaseFunctions functions = FirebaseFunctions.getInstance();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        // Save the notification record
         NotificationModel notification = new NotificationModel(title, body, eventId, recipientIdList);
         notification.fetchSenderIdAndSave();
-        // Prepare tasks to fetch all users
+
         List<Task<DocumentSnapshot>> tasks = new ArrayList<>();
         for (String recipientId : recipientIdList) {
             tasks.add(db.collection("users").document(recipientId).get());
         }
 
-        // Wait until all user documents are fetched
         Tasks.whenAllSuccess(tasks)
                 .addOnSuccessListener(results -> {
                     List<String> tokens = new ArrayList<>();
@@ -117,12 +127,11 @@ public class NotificationController {
                         return;
                     }
 
-                    // Prepare notification payload
                     Map<String, Object> data = new HashMap<>();
                     data.put("title", title);
                     data.put("body", body);
                     data.put("eventId", eventId);
-                    // Send notification
+
                     if (tokens.size() == 1) {
                         data.put("token", tokens.get(0));
                         functions.getHttpsCallable("sendNotification").call(data);
@@ -134,9 +143,10 @@ public class NotificationController {
                 .addOnFailureListener(e -> Log.e("Firestore", "Error fetching user tokens", e));
     }
 
-
-
-    //create notification channel
+    /**
+     * Creates the app's notification channel for Android 8.0 and above.
+     * Ensures notifications are properly categorized.
+     */
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "Event Lottery Notifications";

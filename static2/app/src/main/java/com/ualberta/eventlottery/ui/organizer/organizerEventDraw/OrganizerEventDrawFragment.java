@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +15,14 @@ import androidx.fragment.app.Fragment;
 import com.ualberta.eventlottery.model.EntrantRegistrationStatus;
 import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.model.Registration;
+import com.ualberta.eventlottery.notification.NotificationController;
+import com.ualberta.eventlottery.ui.notifications.NotificationTemplate;
 import com.ualberta.eventlottery.repository.EventRepository;
 import com.ualberta.eventlottery.repository.RegistrationRepository;
 import com.ualberta.static2.databinding.FragmentOrganizerDrawBinding;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -39,6 +43,7 @@ public class OrganizerEventDrawFragment extends Fragment {
 
     private EventRepository eventRepository;
     private RegistrationRepository registrationRepository;
+    private NotificationController notificationController;
     private SimpleDateFormat dateFormat;
 
     /**
@@ -96,6 +101,7 @@ public class OrganizerEventDrawFragment extends Fragment {
     private void initData() {
         eventRepository = EventRepository.getInstance();
         registrationRepository = RegistrationRepository.getInstance();
+        notificationController = new NotificationController(requireContext());
         dateFormat = new SimpleDateFormat("h:mma, MMM dd, yyyy", Locale.getDefault());
     }
 
@@ -364,9 +370,10 @@ public class OrganizerEventDrawFragment extends Fragment {
                 Collections.shuffle(waitingRegistrations);
                 int actualDrawCount = Math.min(numberToDraw, waitingRegistrations.size());
                 List<Registration> selectedRegistrations = waitingRegistrations.subList(0, actualDrawCount);
+                List<Registration> nonSelectedRegistrations = new ArrayList<>(waitingRegistrations.subList(actualDrawCount, waitingRegistrations.size()));
 
                 // Update selected registrations status
-                updateSelectedRegistrations(selectedRegistrations, actualDrawCount);
+                updateSelectedRegistrations(selectedRegistrations,nonSelectedRegistrations, actualDrawCount);
             }
 
             @Override
@@ -377,9 +384,21 @@ public class OrganizerEventDrawFragment extends Fragment {
     }
 
     /**
-     * Updates selected registrations to SELECTED status.
+     * Updates selected registrations to SELECTED status and sends notifications.
      */
-    private void updateSelectedRegistrations(List<Registration> selectedRegistrations, int actualDrawCount) {
+    private void updateSelectedRegistrations(List<Registration> selectedRegistrations,List<Registration> nonSelectedRegistrations,int actualDrawCount) {
+        // Prepare user IDs for notifications
+        List<String> selectedUserIds = new ArrayList<>();
+        List<String> nonSelectedUserIds = new ArrayList<>();
+
+        for (Registration registration : selectedRegistrations) {
+            selectedUserIds.add(registration.getEntrantId());
+        }
+        for (Registration registration: nonSelectedRegistrations){
+            nonSelectedUserIds.add(registration.getEventId());
+        }
+
+        // Update each registration status
         for (Registration registration : selectedRegistrations) {
             registration.setStatus(EntrantRegistrationStatus.SELECTED);
             registrationRepository.updateRegistration(registration, new RegistrationRepository.BooleanCallback() {
@@ -388,7 +407,8 @@ public class OrganizerEventDrawFragment extends Fragment {
                     showDrawResult(actualDrawCount, selectedRegistrations);
                     loadEventData(); // Refresh the view
 
-                    // TODO: Send notifications to all selected entrants
+                    // Send notifications to all selected entrants
+                    sendNotificationsToSelectedUsers(selectedUserIds,nonSelectedUserIds);
                 }
 
                 @Override
@@ -398,6 +418,37 @@ public class OrganizerEventDrawFragment extends Fragment {
             });
         }
     }
+
+    /**
+     * Sends notifications to users who were selected in the lottery draw.
+     */
+    private void sendNotificationsToSelectedUsers(List<String> selectedUserIds, List<String> nonSelectedUserIds) {
+        //notification for selected users
+        if (!selectedUserIds.isEmpty()) {
+            String acceptedTitle = NotificationTemplate.getAcceptedTitle(currentEvent.getTitle());
+            String acceptedBody = NotificationTemplate.getAcceptedBody(currentEvent.getTitle());
+
+            notificationController.sendNotification(
+                    acceptedTitle,
+                    acceptedBody,
+                    currentEvent.getId(),
+                    selectedUserIds
+            );
+        }
+
+        // notification for non-selected users
+        if (!nonSelectedUserIds.isEmpty()) {
+            String notAcceptedTitle = NotificationTemplate.getNotAcceptedTitle(currentEvent.getTitle());
+            String notAcceptedBody = NotificationTemplate.getNotAcceptedBody(currentEvent.getTitle());
+
+            notificationController.sendNotification(
+                    notAcceptedTitle,
+                    notAcceptedBody,
+                    currentEvent.getId(),
+                    nonSelectedUserIds
+            );
+    }
+        }
 
     /**
      * Shows result dialog after successful draw.
