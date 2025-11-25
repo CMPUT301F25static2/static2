@@ -115,12 +115,12 @@ public class OrganizerEventShowcaseFragment extends Fragment implements ImageVie
                 binding.tvEventTitle.setText(event.getTitle());
                 binding.tvEventDescription.setText(event.getDescription());
                 binding.tvEventCapacity.setText("Capacity: " + event.getMaxAttendees());
-                binding.tvEventCurrentEntrantsCount.setText(event.getConfirmedCount() + " entrants");
+                binding.tvEventCurrentEntrantsCount.setText(event.getConfirmedAttendees() + " entrants");
 
                 // Calculate and display fill rate
-                int fillRate = (event.getConfirmedCount() * 100) / event.getMaxAttendees();
+                int fillRate = (event.getConfirmedAttendees() * 100) / event.getMaxAttendees();
                 binding.tvEventFillRate.setText(fillRate + "%");
-                binding.tvEventFillRatio.setText(event.getConfirmedCount() + "/" + event.getMaxAttendees());
+                binding.tvEventFillRatio.setText(event.getConfirmedAttendees() + "/" + event.getMaxAttendees());
                 binding.pbEventProgeress.setProgress(fillRate);
 
                 // Set event images
