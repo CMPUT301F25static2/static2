@@ -11,96 +11,185 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.credentials.exceptions.domerrors.NotFoundError;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.auth.FirebaseAuth;
 import com.ualberta.eventlottery.admin.AdminMainActivity;
 import com.ualberta.eventlottery.entrant.EntrantMainActivity;
+import com.ualberta.eventlottery.notification.NotificationController;
 import com.ualberta.eventlottery.organzier.OrganizerMainActivity;
+import com.ualberta.eventlottery.ui.profile.ProfileViewModel;
 import com.ualberta.eventlottery.ui.profile.ProfileSetupActivity;
 import com.ualberta.eventlottery.utils.UserManager;
 import com.ualberta.static2.R;
+import com.ualberta.static2.databinding.ActivityEventLotteryMainBinding;
+
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "EventLottery";
+    private ActivityEventLotteryMainBinding binding;
+
+    private boolean isAdmin;
+    private static final String CHANNEL_ID = "demo_channel_id";
+    private FirebaseAuth mAuth;
+    private static String TAG = "Event Lottery";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        //Only initialize the view after User initialization below
+
+        // TODO: store into user profile
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.w("FCM", "Fetching FCM token failed", task.getException());
+                        return;
+                    }
+
+                    // Get the new FCM registration token
+                    String token = task.getResult();
+                    Log.d("FCM", "Current FCM token: " + token);
+                });
+
 
         askNotificationPermission();
-        setupAuthentication();
-    }
-
-    private void setupAuthentication() {
-        UserManager.initializeUser(new UserManager.InitCallback() {
+        UserManager.initializeUser (new UserManager.InitCallback() {
             @Override
             public void onSuccess(String userId) {
-                Log.d(TAG, "User initialization successful: " + userId);
-                checkUserProfile(userId);
+                Log.d(TAG, "userInitialization:success:userId=" + userId);
+                setContentView(R.layout.activity_main);
+                setupClickListeners();
             }
 
             @Override
             public void onFailure(Exception exception) {
-                Log.e(TAG, "User initialization failed", exception);
-                Toast.makeText(MainActivity.this, "Login failed. Please try again.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "User initialization failed.",
+                        Toast.LENGTH_SHORT).show();
+                setContentView(R.layout.activity_main);
+                setupClickListeners();
             }
         });
     }
 
-    private void checkUserProfile(String userId) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("users").document(userId).get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document != null && document.exists()) {
-                            // User profile exists, direct to the correct activity
-                            directUser(document);
-                        } else {
-                            // No profile found, direct to profile setup
-                            startActivity(new Intent(MainActivity.this, ProfileSetupActivity.class));
-                            finish(); // Finish MainActivity so user can't go back
-                        }
-                    } else {
-                        // Handle failure
-                        Log.e(TAG, "Failed to fetch user profile", task.getException());
-                        Toast.makeText(MainActivity.this, "Failed to load profile.", Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
+    private void setupClickListeners() {
 
-    private void directUser(DocumentSnapshot document) {
-        String userType = document.getString("userType");
-        if (userType != null) {
-            switch (userType) {
-                case "organizer":
-                    startActivity(new Intent(this, OrganizerMainActivity.class));
-                    break;
-                case "admin":
-                    startActivity(new Intent(this, AdminMainActivity.class));
-                    break;
-                default:
-                    // Default to entrant if userType is not specified or something else
-                    startActivity(new Intent(this, EntrantMainActivity.class));
-                    break;
+        findViewById(R.id.btn_entrant).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String userId = UserManager.getCurrentUserId();
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+                db.collection("users")
+                        .document(userId)
+                        .get()
+                        .addOnSuccessListener(documentSnapshot -> {
+                            if (documentSnapshot.exists()) {
+                                String userType = documentSnapshot.getString("userType");
+                                if ("organizer".equals(userType)) {
+                                    // User is an organizer, prevent them from entering as an entrant
+                                    new androidx.appcompat.app.AlertDialog.Builder(MainActivity.this)
+                                            .setTitle("Organizer Account")
+                                            .setMessage("Your account is registered as an Organizer. Please use the Organizer portal.")
+                                            .setPositiveButton("OK", null)
+                                            .show();
+                                }
+                                else {
+                                    // Profile exists, go directly to EntrantMainActivity
+                                    Intent intent = new Intent(MainActivity.this, EntrantMainActivity.class);
+                                    startActivity(intent);
+                                }
+
+                            } else {
+                                // Show dialog that profile is required
+                                new androidx.appcompat.app.AlertDialog.Builder(MainActivity.this)
+                                        .setTitle("Profile Required")
+                                        .setMessage("You need to set up your profile before continuing as an entrant.")
+                                        .setPositiveButton("Set Up Profile", (dialog, which) -> {
+                                            Intent intent = new Intent(MainActivity.this, ProfileSetupActivity.class);
+                                            startActivity(intent);
+                                        })
+                                        .setNegativeButton("Cancel", null)
+                                        .show();
+                            }
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(MainActivity.this,
+                                    "Error: " + e.getMessage(),
+                                    Toast.LENGTH_SHORT).show();
+                        });
             }
-        } else {
-            // If userType is not set, default to entrant
-            startActivity(new Intent(this, EntrantMainActivity.class));
-        }
-        finish(); // Finish MainActivity
+        });
+
+        findViewById(R.id.btn_admin).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, AdminMainActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        findViewById(R.id.btn_organizer).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String userId = UserManager.getCurrentUserId();
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+                db.collection("users")
+                        .document(userId)
+                        .get()
+                        .addOnSuccessListener(documentSnapshot -> {
+                            if (documentSnapshot.exists() && "organizer".equals(documentSnapshot.getString("userType"))) {
+                                // Profile exists and user is organizer, go directly to OrganizerMainActivity
+                                Intent intent = new Intent(MainActivity.this, OrganizerMainActivity.class);
+                                startActivity(intent);
+                            } else {
+                                // Show dialog that organizer profile is required
+                                new androidx.appcompat.app.AlertDialog.Builder(MainActivity.this)
+                                        .setTitle("Organizer Setup Required")
+                                        .setMessage("You need to set up your organizer profile before continuing.")
+                                        .setPositiveButton("Set Up Profile", (dialog, which) -> {
+                                            Intent intent = new Intent(MainActivity.this, ProfileSetupActivity.class);
+                                            startActivity(intent);
+                                        })
+                                        .setNegativeButton("Cancel", null)
+                                        .show();
+                            }
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(MainActivity.this,
+                                    "Error: " + e.getMessage(),
+                                    Toast.LENGTH_SHORT).show();
+                        });
+            }
+        });
+
+//        findViewById(R.id.btn_organizer).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(MainActivity.this, OrganizerMainActivity.class);
+//                startActivity(intent);
+//            }
+//        });
+
+
     }
 
+    // Check for POST_NOTIFICATIONS permission
     private void askNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
             }
         }
     }
+
 }
