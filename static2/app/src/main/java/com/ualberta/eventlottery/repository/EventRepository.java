@@ -224,9 +224,28 @@ public class EventRepository {
         }
 
         // current attendees count
-        Long currentAttendees = document.getLong("currentAttendees");
-        if (currentAttendees != null) {
-            event.setCurrentAttendees(currentAttendees.intValue());
+        Long confirmedAttendees = document.getLong("confirmedAttendees");
+        if (confirmedAttendees != null) {
+            event.setConfirmedAttendees(confirmedAttendees.intValue());
+        }
+
+
+
+        // User lists
+        List<String> confirmedUserIds = (List<String>) document.get("confirmedUserIds");
+        if (confirmedUserIds != null) {
+            event.setConfirmedUserIds(confirmedUserIds);
+        }
+
+
+        List<String> waitListUserIds = (List<String>) document.get("waitListUserIds");
+        if (waitListUserIds != null) {
+            event.setWaitListUserIds(waitListUserIds);
+        }
+
+        List<String> registeredUserIds = (List<String>) document.get("registeredUserIds");
+        if (registeredUserIds != null) {
+            event.setRegisteredUserIds(registeredUserIds);
         }
 
         // location required
@@ -304,6 +323,16 @@ public class EventRepository {
             if (waitListUserIds != null) {
                 event.setCurrentWaitListSize(waitListUserIds.size());
             }
+
+            List<String> confirmedUserIds = (List<String>) document.get("confirmedUserIds");
+            if (confirmedUserIds != null) {
+                event.setConfirmedUserIds(confirmedUserIds);
+            }
+
+            List<String> registeredUserIds = (List<String>) document.get("registeredUserIds");
+            if (registeredUserIds != null) {
+                event.setRegisteredUserIds(registeredUserIds);
+            }
         } catch (Exception e) {
             Log.e("EventLottery", "failed to convert document to event", e);
         }
@@ -331,7 +360,10 @@ public class EventRepository {
         eventMap.put("registrationEnd", event.getRegistrationEnd());
         eventMap.put("dailyStartTime", event.getDailyStartTime() != null ? event.getDailyStartTime().toString() : null);
         eventMap.put("dailyEndTime", event.getDailyEndTime() != null ? event.getDailyEndTime().toString() : null);
-        eventMap.put("currentAttendees", event.getCurrentAttendees());
+        eventMap.put("currentAttendees", event.getConfirmedCount());
+        eventMap.put("confirmedUserIds", event.getConfirmedUserIds());
+        eventMap.put("waitListUserIds", event.getWaitListUserIds());
+        eventMap.put("registeredUserIds", event.getRegisteredUserIds());
         eventMap.put("eventStatus", event.getEventStatus() != null ? event.getEventStatus().toString() : null);
         eventMap.put("registrationStatus", event.getRegistrationStatus() != null ? event.getRegistrationStatus().toString() : null);
         eventMap.put("posterUrl", event.getPosterUrl());

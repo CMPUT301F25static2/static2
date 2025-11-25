@@ -35,23 +35,21 @@ public class Event {
     private int maxAttendees;
     private int maxWaitListSize;
     private int currentWaitListSize;
-    private int currentAttendees;
-
-
-
+    private int confirmedAttendees;
     private List<String> registeredUserIds; //All users who registered
     private List<String> waitListUserIds; //Users in waiting list
     private List<String> confirmedUserIds; //Users who confirmed attendance
 
 
+
     // Constructors
     public Event() {
-        this.registeredUserIds = new ArrayList<>();
-        this.waitListUserIds = new ArrayList<>();
-        this.confirmedUserIds = new ArrayList<>();
         this.createdAt = new Date();
         this.eventRegistrationStatus = EventRegistrationStatus.REGISTRATION_OPEN;
         this.currentWaitListSize = 0;
+        this.registeredUserIds = new ArrayList<>();
+        this.waitListUserIds = new ArrayList<>();
+        this.confirmedUserIds = new ArrayList<>();
     }
 
     public Event(String id, String organizerId, String title, String description) {
@@ -131,12 +129,12 @@ public class Event {
     public boolean isLocationRequired() { return locationRequired; }
     public void setLocationRequired(boolean locationRequired) { this.locationRequired = locationRequired; }
 
-    public int getCurrentAttendees() {
-        return currentAttendees;
+    public int getConfirmedAttendees() {
+        return confirmedAttendees;
     }
 
-    public void setCurrentAttendees(int currentAttendees) {
-        this.currentAttendees = currentAttendees;
+    public void setConfirmedAttendees(int confirmedAttendees) {
+        this.confirmedAttendees = confirmedAttendees;
     }
 
     public String getPosterUrl() { return posterUrl; }
@@ -166,14 +164,7 @@ public class Event {
     public int getCurrentWaitListSize() { return currentWaitListSize; }
     public void setCurrentWaitListSize(int currentWaitListSize) { this.currentWaitListSize = currentWaitListSize; }
 
-    // List getters (return copies to prevent external modification)
-    public List<String> getRegisteredUserIds() { return new ArrayList<>(registeredUserIds); }
-    public List<String> getWaitListUserIds() { return new ArrayList<>(waitListUserIds); }
-
-    public void setWaitListUserIds(List<String> waitListUserIds) {
-        this.waitListUserIds = waitListUserIds;
-    }
-    public List<String> getConfirmedUserIds() { return new ArrayList<>(confirmedUserIds); }
+    // User list methods removed - individual user registrations are now handled by RegistrationRepository
 
     // Business Logic Methods
 
@@ -308,6 +299,23 @@ public class Event {
     public int getConfirmedCount() {
         return confirmedUserIds.size();
     }
+
+    public List<String> getRegisteredUserIds() { return new ArrayList<>(registeredUserIds); }
+    public List<String> getWaitListUserIds() { return new ArrayList<>(waitListUserIds); }
+
+    public void setConfirmedUserIds(List<String> confirmedUserIds) {
+       this.confirmedUserIds = confirmedUserIds != null ? confirmedUserIds : new ArrayList<>();
+    }
+
+   public void setRegisteredUserIds(List<String> registeredUserIds) {
+        this.registeredUserIds = registeredUserIds != null ? registeredUserIds : new ArrayList<>();
+    }
+
+    public List<String> getConfirmedUserIds() { return new ArrayList<>(confirmedUserIds); }
+
+    public void setWaitListUserIds(List<String> waitListUserIds) {
+       this.waitListUserIds = waitListUserIds != null ? waitListUserIds : new ArrayList<>();
+     }
 
     public int getAttendanceCount() {
         return confirmedUserIds.size();
