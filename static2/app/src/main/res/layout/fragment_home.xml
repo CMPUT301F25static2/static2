@@ -30,33 +30,33 @@
             android:textColorHint="@color/black" />
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/buttonContainer"
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/toggleGroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        app:singleSelection="true"
+        app:checkedButton="@id/myEventsButton">
 
-        <Button
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/myEventsButton"
+            style="@style/Widget.Material3.Button.OutlinedButton.Icon"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="My Events"
-            android:backgroundTint="@color/black"
-            android:textColor="@color/white"
-            android:layout_marginEnd="4dp" />
+            android:layout_weight="1"
+            android:text="My Events" />   <!-- optional icon -->
 
-        <Button
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/availableEventsButton"
+            style="@style/Widget.Material3.Button.OutlinedButton.Icon"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="Available"
-            android:backgroundTint="@color/black"
-            android:textColor="@color/white"
-            android:layout_marginStart="4dp" />
+            android:layout_weight="1"
+            android:text="Available Events" />   <!-- optional icon -->
 
-    </LinearLayout>
+
+    </com.google.android.material.button.MaterialButtonToggleGroup>
 
     <HorizontalScrollView
         android:layout_width="match_parent"
