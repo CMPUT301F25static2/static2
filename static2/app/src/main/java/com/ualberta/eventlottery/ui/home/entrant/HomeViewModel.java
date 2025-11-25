@@ -3,10 +3,12 @@ package com.ualberta.eventlottery.ui.home.entrant;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.ualberta.eventlottery.model.Event;
+import com.ualberta.eventlottery.model.EventCategory;
 import com.ualberta.eventlottery.model.Registration;
 import com.ualberta.eventlottery.repository.EventRepository;
 import com.ualberta.eventlottery.repository.RegistrationRepository;
@@ -15,6 +17,7 @@ import com.ualberta.eventlottery.utils.UserManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * ViewModel for the Home Fragment that manages event lists.
@@ -25,6 +28,10 @@ public class HomeViewModel extends ViewModel {
     private final RegistrationRepository registrationRepository;
 
     private final LiveData<List<Event>> availableEventListLiveData;
+    private final MutableLiveData<List<EventCategory>> selectedCategoryFilters = new MutableLiveData<>(new ArrayList<>());
+    private final MediatorLiveData<List<Event>> filteredAvailableEventList = new MediatorLiveData<>();
+
+
     // This LiveData will now be used for the "My Events" tab.
     private final MutableLiveData<List<Event>> myEvents = new MutableLiveData<>();
 
@@ -37,6 +44,20 @@ public class HomeViewModel extends ViewModel {
 
         // This correctly gets the live data for "Available" events from the repository
         availableEventListLiveData = eventRepository.getAvailableEvents();
+        selectedCategoryFilters.setValue(Stream.of(EventCategory.values())
+                .collect(Collectors.toList()));
+
+        filteredAvailableEventList.addSource(availableEventListLiveData, newData -> {
+            filteredAvailableEventList.setValue(
+                    applyCategoryFilters(newData, selectedCategoryFilters.getValue())
+            );
+        });
+        filteredAvailableEventList.addSource(selectedCategoryFilters, newFilters -> {
+            filteredAvailableEventList.setValue(
+                    applyCategoryFilters(availableEventListLiveData.getValue(), newFilters)
+            );
+        });
+
     }
 
     /**
@@ -45,7 +66,7 @@ public class HomeViewModel extends ViewModel {
      * @return LiveData object containing a list of available {@code Event} objects.
      */
     public LiveData<List<Event>> getAvailableEvents() {
-        return availableEventListLiveData;
+        return filteredAvailableEventList;
     }
 
     /**
@@ -56,6 +77,41 @@ public class HomeViewModel extends ViewModel {
     public LiveData<List<Event>> getMyEvents() {
         return myEvents;
     }
+
+    public List<EventCategory> getSelectedCategories() {
+        return selectedCategoryFilters.getValue();
+    }
+
+    public void applyCategoryFilters(List<EventCategory> selectedCategories) {
+        this.selectedCategoryFilters.setValue(selectedCategories);
+    }
+
+    private List<Event> applyCategoryFilters(List<Event> currentData, List<EventCategory> categories) {
+        if (currentData == null) {
+            return new ArrayList<>();
+        }
+
+        List<Event> resultList = new ArrayList<>();
+        if (categories == null || categories.isEmpty()) {
+            resultList.addAll(currentData);
+        } else {
+            for (Event event : currentData) {
+                if (event.getCategory() == null) {
+                    continue;
+                }
+                String category = event.getCategory();
+
+                if ((category == null && categories.size() == 0) || (category != null && categories.contains(EventCategory.valueOf(category.toUpperCase())))) {
+                    resultList.add(event);
+                }
+            }
+        }
+        return resultList;
+    }
+
+
+
+
 
     /**
      * Method to trigger loading the user's registered events

@@ -1,6 +1,7 @@
 package com.ualberta.eventlottery.ui.home.entrant;
 
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -21,7 +23,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.idling.CountingIdlingResource;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.ualberta.eventlottery.model.Event;
+import com.ualberta.eventlottery.model.EventCategory;
 import com.ualberta.eventlottery.model.EventRegistrationStatus;
 import com.ualberta.static2.R;
 import com.ualberta.static2.databinding.FragmentHomeBinding;
@@ -42,8 +50,10 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
     private CountingIdlingResource getAvailableEventsIdlingResource = null;
 
     // History button has been removed
-    private Button filterButton, sortButton, myEventsButton, availableEventsButton;
+    private Button myEventsButton, availableEventsButton;
     private EditText searchInputHome;
+    private ChipGroup filterGroup;
+    private Chip categoryFilter;
     private RecyclerView recyclerView;
     // History adapter has been removed
     private EventAdapter myEventsAdapter, availableEventsAdapter;
@@ -77,12 +87,21 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
         View view = binding.getRoot();
 
         searchInputHome = view.findViewById(R.id.searchInputHome);
-        filterButton = view.findViewById(R.id.filterButton);
-        sortButton = view.findViewById(R.id.sortButton);
         myEventsButton = view.findViewById(R.id.myEventsButton);
         availableEventsButton = view.findViewById(R.id.availableEventsButton);
         recyclerView = view.findViewById(R.id.eventsRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        filterGroup = view.findViewById(R.id.filterGroup);
+        categoryFilter = addFilterChip("Category", "Any");
+        categoryFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showFilterBottomSheet();
+                // Optional: visually show chip as "active"
+                categoryFilter.setChecked(true);
+            }
+        });
 
         // Initialize adapters and observers
         myEventsAdapter = new EventAdapter(new ArrayList<>(), this); // Now starts empty
@@ -107,9 +126,6 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
 
         showMyEvents();
 
-        filterButton.setOnClickListener(v -> Toast.makeText(getContext(), "Filter options coming soon!", Toast.LENGTH_SHORT).show());
-        sortButton.setOnClickListener(v -> Toast.makeText(getContext(), "Sort options coming soon!", Toast.LENGTH_SHORT).show());
-
         searchInputHome.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
                 // Search logic here
@@ -124,6 +140,83 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
 
         return view;
     }
+
+    private Chip addFilterChip(String label, String value) {
+        Chip chip = new Chip(getContext());
+        chip.setText(String.format("%s: %s", label, value));
+        chip.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 10);
+
+        chip.setId(View.generateViewId()); // Assign a unique ID if needed for single selection
+        filterGroup.addView(chip);
+        return chip;
+    }
+
+    private void showFilterBottomSheet() {
+        View bottomSheetView = getLayoutInflater().inflate(R.layout.filter_category_bottom_sheet, null);
+
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getContext());
+        bottomSheetDialog.setContentView(bottomSheetView);
+        bottomSheetDialog.setOnDismissListener(dialog -> {
+            // When user closes the sheet, uncheck the chip
+            categoryFilter.setChecked(false);
+        });
+
+        ChipGroup chipGroup = bottomSheetView.findViewById(R.id.filterGroup);
+        MaterialButton btnApply = bottomSheetView.findViewById(R.id.applyFilters);
+
+        List<EventCategory> selectedCategories = homeViewModel.getSelectedCategories();
+        for (EventCategory category : EventCategory.values()) {
+            Chip chip = new Chip(getContext());
+            chip.setId(View.generateViewId()); // Assign a unique ID if needed for single selection
+            chip.setText(category.toString().toLowerCase().replace("_", " "));
+            chip.setTag(category);
+            chipGroup.addView(chip);
+
+            chip.setCheckable(true); // Make the chip checkable
+            boolean isChecked = selectedCategories.contains(category);
+            chip.setChecked(isChecked);
+            if (isChecked) {
+                chipGroup.check(chip.getId());
+            }
+        }
+
+        btnApply.setOnClickListener(v -> {
+            // Get all checked chip IDs
+            List<Integer> selectedChipIds = chipGroup.getCheckedChipIds();
+
+            // Convert to readable strings (or use your own logic)
+            List<EventCategory> selectedFilters = new ArrayList<>();
+            for (Integer id : selectedChipIds) {
+                Chip chip = bottomSheetView.findViewById(id);
+                if (chip != null) {
+                    selectedFilters.add((EventCategory) chip.getTag());
+                }
+            }
+
+            homeViewModel.applyCategoryFilters(selectedFilters);
+
+            // Close the sheet
+            bottomSheetDialog.dismiss();
+
+            String selectedFiltersCount = String.format("(%d)", selectedFilters.size());
+            categoryFilter.setText(String.format("Category: %s", selectedFilters.size() == chipGroup.getChildCount() ? "Any" : selectedFiltersCount));
+        });
+
+        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams)
+                ((View) bottomSheetView.getParent()).getLayoutParams();
+        CoordinatorLayout.Behavior behavior = params.getBehavior();
+        if (behavior instanceof BottomSheetBehavior) {
+            ((BottomSheetBehavior) behavior).setPeekHeight(400);
+        }
+
+        bottomSheetDialog.show();
+    }
+
+    private void applyFilters(List<EventCategory> categoryFilters) {
+        homeViewModel.applyCategoryFilters(categoryFilters);
+    }
+
+
 
     /**
      * Called when an event is clicked.
