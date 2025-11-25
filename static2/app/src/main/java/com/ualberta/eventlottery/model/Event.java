@@ -4,9 +4,7 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.time.LocalTime;
 
 public class Event {
@@ -36,20 +34,13 @@ public class Event {
     private int maxWaitListSize;
     private int currentWaitListSize;
     private int confirmedAttendees;
-    private List<String> registeredUserIds; //All users who registered
-    private List<String> waitListUserIds; //Users in waiting list
-    private List<String> confirmedUserIds; //Users who confirmed attendance
-
-
 
     // Constructors
     public Event() {
         this.createdAt = new Date();
         this.eventRegistrationStatus = EventRegistrationStatus.REGISTRATION_OPEN;
         this.currentWaitListSize = 0;
-        this.registeredUserIds = new ArrayList<>();
-        this.waitListUserIds = new ArrayList<>();
-        this.confirmedUserIds = new ArrayList<>();
+        this.confirmedAttendees = 0;
     }
 
     public Event(String id, String organizerId, String title, String description) {
@@ -69,7 +60,6 @@ public class Event {
 
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
-
 
     public String getLocationUrl() {
         return locationUrl;
@@ -105,7 +95,7 @@ public class Event {
         }
     }
 
-        public int getSessionDuration() { return sessionDuration; }
+    public int getSessionDuration() { return sessionDuration; }
     public void setSessionDuration(int sessionDuration) { this.sessionDuration = sessionDuration; }
 
     public Date getCreatedAt() { return createdAt; }
@@ -164,8 +154,6 @@ public class Event {
     public int getCurrentWaitListSize() { return currentWaitListSize; }
     public void setCurrentWaitListSize(int currentWaitListSize) { this.currentWaitListSize = currentWaitListSize; }
 
-    // User list methods removed - individual user registrations are now handled by RegistrationRepository
-
     // Business Logic Methods
 
     /**
@@ -202,122 +190,6 @@ public class Event {
      * @return true if event is full
      */
     public boolean isEventFull() {
-        return confirmedUserIds.size() >= maxAttendees;
-    }
-
-    /**
-     * Adds a user to the waiting list
-     * @param userId The ID of the user to add
-     * @return true if user was added successfully
-     */
-    public boolean addToWaitingList(String userId) {
-        if (userId == null || userId.trim().isEmpty() ||
-                waitListUserIds.contains(userId) ||
-                !isRegistrationOpen() ||
-                isWaitingListFull()) {
-            return false;
-        }
-
-        boolean added = waitListUserIds.add(userId.trim());
-        if (added) {
-            currentWaitListSize++;
-            // Also add to registered users if not already there
-            if (!registeredUserIds.contains(userId)) {
-                registeredUserIds.add(userId);
-            }
-        }
-        return added;
-    }
-
-    /**
-     * Removes a user from the waiting list
-     * @param userId The ID of the user to remove
-     * @return true if user was removed successfully
-     */
-    public boolean removeFromWaitingList(String userId) {
-        boolean removed = waitListUserIds.remove(userId);
-        if (removed) {
-            currentWaitListSize = Math.max(0, currentWaitListSize - 1);
-        }
-        return removed;
-    }
-
-    /**
-     * Randomly draws participants from waiting list to confirmed list
-     * Note: This is a simplified version - actual implementation would be more complex
-     */
-    public void drawParticipants() {
-        if (!isRegistrationOpen() || waitListUserIds.isEmpty()) {
-            return;
-        }
-
-        int availableSpots = maxAttendees - confirmedUserIds.size();
-        int participantsToDraw = Math.min(availableSpots, waitListUserIds.size());
-
-
-        List<String> selected = new ArrayList<>();
-        for (int i = 0; i < participantsToDraw && i < waitListUserIds.size(); i++) {
-            selected.add(waitListUserIds.get(i));
-        }
-
-        // move selected users to confirmed list and remove from waitlist
-        confirmedUserIds.addAll(selected);
-        waitListUserIds.removeAll(selected);
-        currentWaitListSize = waitListUserIds.size();
-    }
-
-    /**
-     * Confirms a user's attendance (when they accept the invitation)
-     * @param userId The ID of the user to confirm
-     * @return true if user was confirmed successfully
-     */
-    public boolean confirmUser(String userId) {
-        if (userId == null || userId.trim().isEmpty() ||
-                !waitListUserIds.contains(userId) ||
-                isEventFull()) {
-            return false;
-        }
-
-        // Move from waitlist to confirmed
-        boolean removedFromWaitlist = waitListUserIds.remove(userId);
-        if (removedFromWaitlist) {
-            currentWaitListSize--;
-            return confirmedUserIds.add(userId);
-        }
-        return false;
-    }
-
-    // Utility Methods
-    public int getAvailableSpots() {
-        return maxAttendees - confirmedUserIds.size();
-    }
-
-    public int getWaitListCount() {
-        return waitListUserIds != null ? waitListUserIds.size() : 0;
-    }
-
-    public int getConfirmedCount() {
-        return confirmedUserIds.size();
-    }
-
-    public List<String> getRegisteredUserIds() { return new ArrayList<>(registeredUserIds); }
-    public List<String> getWaitListUserIds() { return new ArrayList<>(waitListUserIds); }
-
-    public void setConfirmedUserIds(List<String> confirmedUserIds) {
-       this.confirmedUserIds = confirmedUserIds != null ? confirmedUserIds : new ArrayList<>();
-    }
-
-   public void setRegisteredUserIds(List<String> registeredUserIds) {
-        this.registeredUserIds = registeredUserIds != null ? registeredUserIds : new ArrayList<>();
-    }
-
-    public List<String> getConfirmedUserIds() { return new ArrayList<>(confirmedUserIds); }
-
-    public void setWaitListUserIds(List<String> waitListUserIds) {
-       this.waitListUserIds = waitListUserIds != null ? waitListUserIds : new ArrayList<>();
-     }
-
-    public int getAttendanceCount() {
-        return confirmedUserIds.size();
+        return confirmedAttendees >= maxAttendees;
     }
 }

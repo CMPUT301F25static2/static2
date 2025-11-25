@@ -87,7 +87,7 @@ public class OrganizerHomeFragment extends Fragment {
                 int totalEntrants = 0;
                 int totalMaxAttendees = 0;
                 for (Event event : events) {
-                    totalEntrants += event.getConfirmedCount();
+                    totalEntrants += event.getConfirmedAttendees();
                     totalMaxAttendees += event.getMaxAttendees();
                 }
 

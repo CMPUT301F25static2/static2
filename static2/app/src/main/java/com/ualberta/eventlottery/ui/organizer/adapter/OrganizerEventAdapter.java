@@ -11,9 +11,11 @@ import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 
+import com.ualberta.eventlottery.model.EntrantRegistrationStatus;
 import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.model.EventStatus;
 import com.ualberta.eventlottery.model.EventRegistrationStatus;
+import com.ualberta.eventlottery.repository.RegistrationRepository;
 import com.ualberta.static2.R;
 
 import java.text.SimpleDateFormat;
@@ -27,7 +29,8 @@ public class OrganizerEventAdapter extends BaseAdapter {
     private SimpleDateFormat dateFormat;
     private OnDrawButtonClickListener onDrawButtonClickListener;
     private OnExportButtonClickListener onExportButtonClickListener;
-
+    private RegistrationRepository registrationRepository;
+    private int confirmedCount;
     public interface OnDrawButtonClickListener {
         void onDrawButtonClick(Event event);
     }
@@ -50,6 +53,7 @@ public class OrganizerEventAdapter extends BaseAdapter {
         this.eventList = eventList;
         this.inflater = LayoutInflater.from(context);
         this.dateFormat = new SimpleDateFormat("h:mma, MMM dd, yyyy", Locale.getDefault());
+        this.registrationRepository = RegistrationRepository.getInstance();
     }
 
     @Override
@@ -160,9 +164,20 @@ public class OrganizerEventAdapter extends BaseAdapter {
             holder.tv_event_registry_status.setTextColor(ContextCompat.getColor(context, R.color.text_secondary));
         }
 
+        confirmedCount = event.getConfirmedAttendees();
+        registrationRepository.getRegistrationCountByStatus(event.getId(), EntrantRegistrationStatus.CONFIRMED, new RegistrationRepository.CountCallback() {
+            @Override
+            public void onSuccess(int count) {
+                confirmedCount = count;
+            }
 
+            @Override
+            public void onFailure(Exception e) {
+
+            }
+        });
         // entrant number
-        String entrantsNumber = String.format("Entrants: %d/%d", event.getConfirmedCount(), event.getMaxAttendees());
+        String entrantsNumber = String.format("Entrants: %d/%d", confirmedCount, event.getMaxAttendees());
         holder.tv_event_entrants_number.setText(entrantsNumber);
 
         // start time
