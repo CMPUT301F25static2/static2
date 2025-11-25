@@ -26,13 +26,22 @@ public class OrganizerEventAdapter extends BaseAdapter {
     private LayoutInflater inflater;
     private SimpleDateFormat dateFormat;
     private OnDrawButtonClickListener onDrawButtonClickListener;
+    private OnExportButtonClickListener onExportButtonClickListener;
 
     public interface OnDrawButtonClickListener {
         void onDrawButtonClick(Event event);
     }
 
+    public interface OnExportButtonClickListener {
+        void onExportButtonClick(Event event);
+    }
+
     public void setOnDrawButtonClickListener(OnDrawButtonClickListener listener) {
         this.onDrawButtonClickListener = listener;
+    }
+
+    public void setOnExportButtonClickListener(OnExportButtonClickListener listener) {
+        this.onExportButtonClickListener = listener;
     }
 
 
@@ -71,6 +80,7 @@ public class OrganizerEventAdapter extends BaseAdapter {
             holder.tv_event_status = convertView.findViewById(R.id.tv_event_status);
             holder.tv_event_registry_status = convertView.findViewById(R.id.tv_event_registry_status);
             holder.btn_draw = convertView.findViewById(R.id.btn_draw);
+            holder.btn_export = convertView.findViewById(R.id.btn_export);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -181,6 +191,15 @@ public class OrganizerEventAdapter extends BaseAdapter {
             });
         }
 
+        // set up export button event
+        if (holder.btn_export != null) {
+            holder.btn_export.setOnClickListener(v -> {
+                if (onExportButtonClickListener != null) {
+                    onExportButtonClickListener.onExportButtonClick(event);
+                }
+            });
+        }
+
 
         return convertView;
     }
@@ -193,6 +212,7 @@ public class OrganizerEventAdapter extends BaseAdapter {
         TextView tv_event_status;
         TextView tv_event_registry_status;
         LinearLayout btn_draw;
+        LinearLayout btn_export;
 
 
     }

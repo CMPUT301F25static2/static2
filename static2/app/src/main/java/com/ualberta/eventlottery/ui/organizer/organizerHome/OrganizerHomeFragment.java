@@ -15,6 +15,7 @@ import com.ualberta.eventlottery.ui.organizer.adapter.OrganizerEventAdapter;
 import com.ualberta.eventlottery.ui.organizer.organizerEventCreate.OrganizerEventCreateFragment;
 import com.ualberta.eventlottery.ui.organizer.organizerEventDraw.OrganizerEventDrawFragment;
 import com.ualberta.eventlottery.ui.organizer.organizerEventInfo.OrganizerEventInfoFragment;
+import com.ualberta.eventlottery.utils.CSVExportUtil;
 import com.ualberta.eventlottery.utils.UserManager;
 import com.ualberta.static2.R;
 import com.ualberta.static2.databinding.FragmentOrganizerHomeBinding;
@@ -86,7 +87,7 @@ public class OrganizerHomeFragment extends Fragment {
                 int totalEntrants = 0;
                 int totalMaxAttendees = 0;
                 for (Event event : events) {
-                    totalEntrants += event.getCurrentAttendees();
+                    totalEntrants += event.getConfirmedCount();
                     totalMaxAttendees += event.getMaxAttendees();
                 }
 
@@ -129,6 +130,24 @@ public class OrganizerHomeFragment extends Fragment {
                     .replace(R.id.fragment_container_organizer, fragment)
                     .addToBackStack(null)
                     .commit();
+        });
+
+        // Set up export button click listener
+        adapter.setOnExportButtonClickListener(event -> {
+            // Export confirmed entrants to CSV
+            CSVExportUtil.exportConfirmedEntrants(requireContext(), event, new CSVExportUtil.ExportCallback() {
+                @Override
+                public void onSuccess(android.net.Uri fileUri) {
+                    // Success message is already shown by CSVExportUtil
+                    Log.d("OrganizerHomeFragment", "CSV export successful for event: " + event.getTitle());
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    // Error message is already shown by CSVExportUtil
+                    Log.e("OrganizerHomeFragment", "CSV export failed for event: " + event.getTitle(), e);
+                }
+            });
         });
 
         // Set up event item click listener
