@@ -30,6 +30,7 @@ import com.ualberta.eventlottery.ui.home.entrant.EventAdapter;
 import com.ualberta.eventlottery.ui.home.entrant.HomeFragment;
 import com.ualberta.eventlottery.ui.home.entrant.HomeViewModel;
 import com.ualberta.eventlottery.ui.profile.ProfileFragment;
+import com.ualberta.eventlottery.utils.UserManager;
 import com.ualberta.static2.R;
 import com.ualberta.static2.databinding.FragmentAdminHomeBinding;
 import com.ualberta.static2.databinding.FragmentHomeBinding;
@@ -79,6 +80,8 @@ public class AdminHomeFragment extends Fragment {
 
         browseOptions.setAdapter(optionAdapter);
 
+        Toast.makeText(this.getContext(), ""+ UserManager.getCurrentUserId()+" ", Toast.LENGTH_SHORT).show();
+
         browseOptions.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             /**
@@ -115,10 +118,10 @@ public class AdminHomeFragment extends Fragment {
                     bundle.putString("isAdmin", "true");
                     selectedFragment.setArguments(bundle);
                     getParentFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.fragment_container, selectedFragment)
-                        .addToBackStack(null)
-                        .commit();
+                            .beginTransaction()
+                            .replace(R.id.fragment_container, selectedFragment)
+                            .addToBackStack(null)
+                            .commit();
                 }
             }
         });
