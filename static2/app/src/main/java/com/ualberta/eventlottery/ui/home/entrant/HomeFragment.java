@@ -164,6 +164,7 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
         MaterialButton btnApply = bottomSheetView.findViewById(R.id.applyFilters);
 
         List<EventCategory> selectedCategories = homeViewModel.getSelectedCategories();
+        boolean allCategoriesSelected = selectedCategories.size() == EventCategory.values().length;
         for (EventCategory category : EventCategory.values()) {
             Chip chip = new Chip(getContext());
             chip.setId(View.generateViewId()); // Assign a unique ID if needed for single selection
@@ -173,8 +174,8 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
 
             chip.setCheckable(true); // Make the chip checkable
             boolean isChecked = selectedCategories.contains(category);
-            chip.setChecked(isChecked);
-            if (isChecked) {
+            if (isChecked && !allCategoriesSelected) {
+                chip.setChecked(isChecked);
                 chipGroup.check(chip.getId());
             }
         }
