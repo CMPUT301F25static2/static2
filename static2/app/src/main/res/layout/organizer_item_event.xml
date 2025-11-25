@@ -220,30 +220,30 @@
                     </LinearLayout>
 
 <!--                    data btn-->
-                    <LinearLayout
-                        android:id="@+id/btn_data"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/rounded_sm"
-                        android:backgroundTint="@color/text_tertiary"
-                        android:paddingHorizontal="10dp"
-                        android:paddingVertical="6dp"
-                        android:gravity="center">
+<!--                    <LinearLayout-->
+<!--                        android:id="@+id/btn_data"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:background="@drawable/rounded_sm"-->
+<!--                        android:backgroundTint="@color/text_tertiary"-->
+<!--                        android:paddingHorizontal="10dp"-->
+<!--                        android:paddingVertical="6dp"-->
+<!--                        android:gravity="center">-->
 
-                        <ImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:src="@drawable/ic_analytics_24dp_000000_fill0_wght400_grad0_opsz24"
-                            app:tint="@color/black" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Data"
-                            android:layout_marginLeft="2dp"
-                            android:textColor="@color/black"
-                            android:textStyle="bold"
-                            android:textSize="12sp"/>
-                    </LinearLayout>
+<!--                        <ImageView-->
+<!--                            android:layout_width="18dp"-->
+<!--                            android:layout_height="18dp"-->
+<!--                            android:src="@drawable/ic_analytics_24dp_000000_fill0_wght400_grad0_opsz24"-->
+<!--                            app:tint="@color/black" />-->
+<!--                        <TextView-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:text="Data"-->
+<!--                            android:layout_marginLeft="2dp"-->
+<!--                            android:textColor="@color/black"-->
+<!--                            android:textStyle="bold"-->
+<!--                            android:textSize="12sp"/>-->
+<!--                    </LinearLayout>-->
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
