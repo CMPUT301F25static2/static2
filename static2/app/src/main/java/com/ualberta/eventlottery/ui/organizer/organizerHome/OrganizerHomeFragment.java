@@ -69,6 +69,7 @@ public class OrganizerHomeFragment extends Fragment {
     private void initViews() {
         binding.lvOrganzierEventList.setDivider(null);
         binding.lvOrganzierEventList.setDividerHeight(18);
+
     }
 
     /**
@@ -80,6 +81,23 @@ public class OrganizerHomeFragment extends Fragment {
         eventRepository.getEventsByOrganizer(organizerId, new EventRepository.EventListCallback() {
             @Override
             public void onSuccess(List<Event> events) {
+                int totalEvents = events.size();
+                int totalEntrants = 0;
+                int totalMaxAttendees = 0;
+                for (Event event : events) {
+                    totalEntrants += event.getCurrentAttendees();
+                    totalMaxAttendees += event.getMaxAttendees();
+                }
+
+                int fullRate = 0;
+                if (totalMaxAttendees > 0) {
+                    fullRate = (int) (((double) totalEntrants / totalMaxAttendees) * 100);
+                }
+
+                binding.tvTotalEvents.setText(String.valueOf(totalEvents));
+                binding.tvTotalEntrants.setText(String.valueOf(totalEntrants));
+                binding.tvFullRate.setText(fullRate + "%");
+
                 binding.lvOrganzierEventList.setVisibility(View.VISIBLE);
                 setupAdapterWithData(events);
             }

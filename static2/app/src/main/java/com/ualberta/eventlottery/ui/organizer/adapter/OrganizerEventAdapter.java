@@ -66,6 +66,7 @@ public class OrganizerEventAdapter extends BaseAdapter {
             holder = new ViewHolder();
             holder.tv_event_title = convertView.findViewById(R.id.tv_event_title);
             holder.tv_event_entrants_number = convertView.findViewById(R.id.tv_event_entrants_number);
+            holder.tv_event_start_time = convertView.findViewById(R.id.tv_event_start_time);
             holder.tv_event_end_time = convertView.findViewById(R.id.tv_event_end_time);
             holder.tv_event_status = convertView.findViewById(R.id.tv_event_status);
             holder.tv_event_registry_status = convertView.findViewById(R.id.tv_event_registry_status);
@@ -76,6 +77,19 @@ public class OrganizerEventAdapter extends BaseAdapter {
         }
 
         Event event = eventList.get(position);
+
+        // Update registration status based on deadline before displaying
+        event.updateRegistrationStatusBasedOnDeadline();
+
+        // Update event status based on current time if needed
+        if (event.getEventStatus() == EventStatus.UPCOMING && event.getStartTime() != null) {
+            java.util.Date now = new java.util.Date();
+            if (now.after(event.getStartTime()) && now.before(event.getEndTime())) {
+                event.setEventStatus(EventStatus.ONGOING);
+            } else if (now.after(event.getEndTime())) {
+                event.setEventStatus(EventStatus.CLOSED);
+            }
+        }
 
         // title
         holder.tv_event_title.setText(event.getTitle());
@@ -141,12 +155,21 @@ public class OrganizerEventAdapter extends BaseAdapter {
         String entrantsNumber = String.format("Entrants: %d/%d", event.getConfirmedCount(), event.getMaxAttendees());
         holder.tv_event_entrants_number.setText(entrantsNumber);
 
+        // start time
+        if (event.getStartTime() != null) {
+            String formattedTime = "Start: " + dateFormat.format(event.getStartTime());
+            holder.tv_event_start_time.setText(formattedTime);
+        } else {
+            holder.tv_event_start_time.setText("Start: TBD");
+        }
+
+
         // end time
         if (event.getEndTime() != null) {
-            String formattedTime = "End: " + dateFormat.format(event.getEndTime());
+            String formattedTime = "End:  " + dateFormat.format(event.getEndTime());
             holder.tv_event_end_time.setText(formattedTime);
         } else {
-            holder.tv_event_end_time.setText("End: TBD");
+            holder.tv_event_end_time.setText("End:  TBD");
         }
 
         // set up draw button event
@@ -165,6 +188,7 @@ public class OrganizerEventAdapter extends BaseAdapter {
     static class ViewHolder {
         TextView tv_event_title;
         TextView tv_event_entrants_number;
+        TextView tv_event_start_time;
         TextView tv_event_end_time;
         TextView tv_event_status;
         TextView tv_event_registry_status;
