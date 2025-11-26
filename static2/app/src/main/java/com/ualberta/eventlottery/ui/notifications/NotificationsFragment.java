@@ -37,8 +37,16 @@ public class NotificationsFragment extends Fragment {
 
         // Setup ListView and adapter
         ListView listView = binding.listNotifications;
-        adapter = new NotificationsListAdapter(requireContext(), notification -> {
-            // Handle item click if needed
+        adapter = new NotificationsListAdapter(requireContext(), new NotificationsListAdapter.OnNotificationClickListener() {
+            @Override
+            public void onNotificationClick(NotificationModel notification) {
+
+            }
+
+            @Override
+            public void onNotificationClose(NotificationModel notification) {
+                notification.markAsRead();
+            }
         });
         listView.setAdapter(adapter);
 
