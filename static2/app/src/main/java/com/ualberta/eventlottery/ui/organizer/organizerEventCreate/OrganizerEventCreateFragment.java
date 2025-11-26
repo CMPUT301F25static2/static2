@@ -332,6 +332,7 @@ public class OrganizerEventCreateFragment extends Fragment {
             newEvent.setTitle(binding.etCreateEventTitle.getText().toString().trim());
             newEvent.setDescription(binding.etCreateEventDescription.getText().toString().trim());
             newEvent.setLocation(binding.etCreateEventLocation.getText().toString().trim());
+            newEvent.setLocationRequired(binding.switchGeolocationRequired.isChecked());
 
             // Set capacity
             String capacityText = binding.etCreateEventCapacity.getText().toString().trim();
@@ -360,22 +361,26 @@ public class OrganizerEventCreateFragment extends Fragment {
             newEvent.setCategory("General");
             newEvent.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_OPEN);
             newEvent.setEventStatus(EventStatus.UPCOMING);
-            newEvent.setCurrentAttendees(0);
+            newEvent.setConfirmedAttendees(0);
 
             eventRepository.addEventWithPoster(newEvent, selectedImageUri, new EventRepository.OperationCallback() {
                 @Override
                 public void onSuccess() {
-                    requireActivity().runOnUiThread(() -> {
-                        Toast.makeText(requireContext(), "Event created successfully!", Toast.LENGTH_SHORT).show();
-                        requireActivity().onBackPressed();
-                    });
+                    if (isAdded()) {
+                        requireActivity().runOnUiThread(() -> {
+                            Toast.makeText(requireContext(), "Event created successfully!", Toast.LENGTH_SHORT).show();
+                            requireActivity().onBackPressed();
+                        });
+                    }
                 }
 
                 @Override
                 public void onFailure(Exception e) {
-                    requireActivity().runOnUiThread(() -> {
-                        Toast.makeText(requireContext(), "Failed to create event: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
+                    if (isAdded()) {
+                        requireActivity().runOnUiThread(() -> {
+                            Toast.makeText(requireContext(), "Failed to create event: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
+                    }
                 }
             });
 

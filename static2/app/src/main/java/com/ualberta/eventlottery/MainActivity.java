@@ -91,9 +91,21 @@ public class MainActivity extends AppCompatActivity {
                         .get()
                         .addOnSuccessListener(documentSnapshot -> {
                             if (documentSnapshot.exists()) {
-                                // Profile exists, go directly to EntrantMainActivity
-                                Intent intent = new Intent(MainActivity.this, EntrantMainActivity.class);
-                                startActivity(intent);
+                                String userType = documentSnapshot.getString("userType");
+                                if ("organizer".equals(userType)) {
+                                    // User is an organizer, prevent them from entering as an entrant
+                                    new androidx.appcompat.app.AlertDialog.Builder(MainActivity.this)
+                                            .setTitle("Organizer Account")
+                                            .setMessage("Your account is registered as an Organizer. Please use the Organizer portal.")
+                                            .setPositiveButton("OK", null)
+                                            .show();
+                                }
+                                else {
+                                    // Profile exists, go directly to EntrantMainActivity
+                                    Intent intent = new Intent(MainActivity.this, EntrantMainActivity.class);
+                                    startActivity(intent);
+                                }
+
                             } else {
                                 // Show dialog that profile is required
                                 new androidx.appcompat.app.AlertDialog.Builder(MainActivity.this)

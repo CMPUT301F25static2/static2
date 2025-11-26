@@ -57,6 +57,11 @@ dependencies {
     implementation(libs.rules)
     implementation(libs.espresso.idling.resource)
     implementation(libs.firebase.crashlytics.buildtools)
+
+    // Google Maps and Location Services
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
+    implementation("com.google.android.gms:play-services-location:21.2.0")
+    implementation("com.google.maps.android:android-maps-utils:3.8.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
