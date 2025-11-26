@@ -45,7 +45,7 @@ public class AdminMainActivity extends AppCompatActivity {
                     .commit();
         }
 
-        // ✅ Handle bottom nav clicks with manual fragment transactions
+        // Handle bottom nav clicks with manual fragment transactions
         binding.navViewAdmin.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             Fragment selectedFragment = null;
