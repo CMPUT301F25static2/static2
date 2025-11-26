@@ -128,10 +128,36 @@ public class MainActivity extends AppCompatActivity {
         });
 
         findViewById(R.id.btn_admin).setOnClickListener(new View.OnClickListener() {
-            @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, AdminMainActivity.class);
-                startActivity(intent);
+                String userId = UserManager.getCurrentUserId();
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+                db.collection("users")
+                        .document(userId)
+                        .get()
+                        .addOnSuccessListener(documentSnapshot -> {
+                            if (documentSnapshot.exists() && "admin".equals(documentSnapshot.getString("userType"))) {
+                                // Profile exists and user is admin, go directly to AdminMainActivity
+                                Intent intent = new Intent(MainActivity.this, AdminMainActivity.class);
+                                startActivity(intent);
+                            } else {
+                                // Show dialog that organizer profile is required
+                                new androidx.appcompat.app.AlertDialog.Builder(MainActivity.this)
+                                        .setTitle("Admin Setup Required")
+                                        .setMessage("You need to set up your admin profile before continuing.")
+                                        .setPositiveButton("Set Up Profile", (dialog, which) -> {
+                                            Intent intent = new Intent(MainActivity.this, ProfileSetupActivity.class);
+                                            startActivity(intent);
+                                        })
+                                        .setNegativeButton("Cancel", null)
+                                        .show();
+                            }
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(MainActivity.this,
+                                    "Error: " + e.getMessage(),
+                                    Toast.LENGTH_SHORT).show();
+                        });
             }
         });
 

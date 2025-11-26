@@ -78,14 +78,14 @@ public class AdminUsersFragment extends Fragment {
         binding.adminBackButton.setOnClickListener(v -> {
             requireActivity().onBackPressed();
         });
-        db = FirebaseFirestore.getInstance();
-        usersRef = db.collection("users");
 
         adapter = new UserAdapter(requireContext(), displayList);
         binding.userListView.setAdapter(adapter);
 
         // Listen for changes to the users collection
         // If a change is detected, update the list of users
+        db = FirebaseFirestore.getInstance();
+        usersRef = db.collection("users");
         usersRef.addSnapshotListener((value, error) -> {
                     if (error != null) {
                         Log.e("Firestore", error.toString());
