@@ -57,6 +57,9 @@ public class NotificationModel {
     }
 
     public String getNotificationId() { return notificationId; }
+    public void setNotificationId(String notificationId) {
+        this.notificationId = notificationId;
+    }
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
     public String getBody() { return body; }

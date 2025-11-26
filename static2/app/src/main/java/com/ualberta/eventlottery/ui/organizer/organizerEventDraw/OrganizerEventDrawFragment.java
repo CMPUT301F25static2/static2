@@ -395,7 +395,7 @@ public class OrganizerEventDrawFragment extends Fragment {
             selectedUserIds.add(registration.getEntrantId());
         }
         for (Registration registration: nonSelectedRegistrations){
-            nonSelectedUserIds.add(registration.getEventId());
+            nonSelectedUserIds.add(registration.getEntrantId());
         }
 
         // Update each registration status
@@ -418,10 +418,6 @@ public class OrganizerEventDrawFragment extends Fragment {
             });
         }
     }
-
-    /**
-     * Sends notifications to users who were selected in the lottery draw.
-     */
     private void sendNotificationsToSelectedUsers(List<String> selectedUserIds, List<String> nonSelectedUserIds) {
         //notification for selected users
         if (!selectedUserIds.isEmpty()) {

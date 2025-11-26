@@ -25,7 +25,7 @@ public class NotificationTemplate {
     public static String getAcceptedBody(String eventTitle) {
         return "Congratulations! You have been selected to attend the event \""
                 + eventTitle
-                + "\". Please confirm your attendance as soon as possible.";
+                + "\". Please confirm your attendance within 48 hours.";
     }
 
     /**
