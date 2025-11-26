@@ -53,7 +53,7 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
     // History button has been removed
     private EditText searchInputHome;
     private ChipGroup filterGroup;
-    private Chip categoryFilter;
+    private Chip categoryFilter, classTimeFilter, daysOfTheWeekFilter;
     private RecyclerView recyclerView;
     // History adapter has been removed
     private EventAdapter myEventsAdapter, availableEventsAdapter;
@@ -91,12 +91,27 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         filterGroup = view.findViewById(R.id.filterGroup);
-        categoryFilter = addFilterChip("Category", "Any");
+        categoryFilter = addFilterChip("category", "Category", "Any");
         categoryFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showFilterBottomSheet();
-                categoryFilter.setChecked(true);
+                showFilterBottomSheet(categoryFilter);
+            }
+        });
+
+        classTimeFilter = addFilterChip("classTime", " Start Time", "Any");
+        classTimeFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showFilterBottomSheet(classTimeFilter);
+            }
+        });
+
+        daysOfTheWeekFilter = addFilterChip("daysOfTheWeek", "Day of the Week", "Any");
+        daysOfTheWeekFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showFilterBottomSheet(daysOfTheWeekFilter);
             }
         });
 
@@ -149,68 +164,108 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
         return view;
     }
 
-    private Chip addFilterChip(String label, String value) {
+    private Chip addFilterChip(String tag, String label, String value) {
         Chip chip = new Chip(getContext());
         chip.setText(String.format("%s: %s", label, value));
         chip.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 10);
+        chip.setTag(tag);
 
         chip.setId(View.generateViewId()); // Assign a unique ID if needed for single selection
         filterGroup.addView(chip);
         return chip;
     }
 
-    private void showFilterBottomSheet() {
+    private void showFilterBottomSheet(Chip filterChip) {
         View bottomSheetView = getLayoutInflater().inflate(R.layout.filter_category_bottom_sheet, null);
 
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getContext());
         bottomSheetDialog.setContentView(bottomSheetView);
-        bottomSheetDialog.setOnDismissListener(dialog -> {
-            // When user closes the sheet, uncheck the chip
-            categoryFilter.setChecked(false);
-        });
 
         ChipGroup chipGroup = bottomSheetView.findViewById(R.id.filterGroup);
         MaterialButton btnApply = bottomSheetView.findViewById(R.id.applyFilters);
 
-        List<EventCategory> selectedCategories = homeViewModel.getSelectedCategories();
-        boolean allCategoriesSelected = selectedCategories.size() == EventCategory.values().length;
-        for (EventCategory category : EventCategory.values()) {
-            Chip chip = new Chip(getContext());
-            chip.setId(View.generateViewId()); // Assign a unique ID if needed for single selection
-            chip.setText(category.toString().toLowerCase().replace("_", " "));
-            chip.setTag(category);
-            chipGroup.addView(chip);
+        if (filterChip.getTag().toString().compareTo("category") == 0) {
+            List<EventCategory> selectedCategories = homeViewModel.getSelectedCategories();
+            boolean allCategoriesSelected = selectedCategories.size() == EventCategory.values().length;
+            for (EventCategory category : EventCategory.values()) {
+                Chip chip = new Chip(getContext());
+                chip.setId(View.generateViewId()); // Assign a unique ID if needed for single selection
+                chip.setText(category.toString().toLowerCase().replace("_", " "));
+                chip.setTag(category);
+                chipGroup.addView(chip);
 
-            chip.setCheckable(true); // Make the chip checkable
-            boolean isChecked = selectedCategories.contains(category);
-            if (isChecked && !allCategoriesSelected) {
-                chip.setChecked(isChecked);
-                chipGroup.check(chip.getId());
-            }
-        }
-
-        btnApply.setOnClickListener(v -> {
-            // Get all checked chip IDs
-            List<Integer> selectedChipIds = chipGroup.getCheckedChipIds();
-
-            // Convert to readable strings (or use your own logic)
-            List<EventCategory> selectedFilters = new ArrayList<>();
-            for (Integer id : selectedChipIds) {
-                Chip chip = bottomSheetView.findViewById(id);
-                if (chip != null) {
-                    selectedFilters.add((EventCategory) chip.getTag());
+                chip.setCheckable(true); // Make the chip checkable
+                boolean isChecked = selectedCategories.contains(category);
+                if (isChecked && !allCategoriesSelected) {
+                    chip.setChecked(isChecked);
+                    chipGroup.check(chip.getId());
                 }
             }
 
-            homeViewModel.applyCategoryFilters(selectedFilters);
+            btnApply.setOnClickListener(v -> {
+                // Get all checked chip IDs
+                List<Integer> selectedChipIds = chipGroup.getCheckedChipIds();
 
-            // Close the sheet
-            bottomSheetDialog.dismiss();
+                // Convert to readable strings (or use your own logic)
+                List<EventCategory> selectedFilters = new ArrayList<>();
+                for (Integer id : selectedChipIds) {
+                    Chip chip = bottomSheetView.findViewById(id);
+                    if (chip != null) {
+                        selectedFilters.add((EventCategory) chip.getTag());
+                    }
+                }
 
-            String selectedFiltersCount = String.format("(%d)", selectedFilters.size());
-            boolean allOrNoFiltersSelected = selectedFilters.size() == chipGroup.getChildCount() || selectedFilters.size() == 0;
-            categoryFilter.setText(String.format("Category: %s", allOrNoFiltersSelected ? "Any" : selectedFiltersCount));
-        });
+                homeViewModel.applyCategoryFilters(selectedFilters);
+
+                // Close the sheet
+                bottomSheetDialog.dismiss();
+
+                String selectedFiltersCount = String.format("(%d)", selectedFilters.size());
+                boolean allOrNoFiltersSelected = selectedFilters.size() == chipGroup.getChildCount() || selectedFilters.size() == 0;
+                categoryFilter.setText(String.format("Category: %s", allOrNoFiltersSelected ? "Any" : selectedFiltersCount));
+            });
+        } else if (filterChip.getTag().toString().compareTo("classTime") == 0) {
+            List<EventCategory> selectedCategories = homeViewModel.getSelectedCategories();
+            boolean allCategoriesSelected = selectedCategories.size() == EventCategory.values().length;
+            for (EventCategory category : EventCategory.values()) {
+                Chip chip = new Chip(getContext());
+                chip.setId(View.generateViewId()); // Assign a unique ID if needed for single selection
+                chip.setText(category.toString().toLowerCase().replace("_", " "));
+                chip.setTag(category);
+                chipGroup.addView(chip);
+
+                chip.setCheckable(true); // Make the chip checkable
+                boolean isChecked = selectedCategories.contains(category);
+                if (isChecked && !allCategoriesSelected) {
+                    chip.setChecked(isChecked);
+                    chipGroup.check(chip.getId());
+                }
+            }
+
+            btnApply.setOnClickListener(v -> {
+                // Get all checked chip IDs
+                List<Integer> selectedChipIds = chipGroup.getCheckedChipIds();
+
+                // Convert to readable strings (or use your own logic)
+                List<EventCategory> selectedFilters = new ArrayList<>();
+                for (Integer id : selectedChipIds) {
+                    Chip chip = bottomSheetView.findViewById(id);
+                    if (chip != null) {
+                        selectedFilters.add((EventCategory) chip.getTag());
+                    }
+                }
+
+                homeViewModel.applyCategoryFilters(selectedFilters);
+
+                // Close the sheet
+                bottomSheetDialog.dismiss();
+
+                String selectedFiltersCount = String.format("(%d)", selectedFilters.size());
+                boolean allOrNoFiltersSelected = selectedFilters.size() == chipGroup.getChildCount() || selectedFilters.size() == 0;
+                categoryFilter.setText(String.format("Category: %s", allOrNoFiltersSelected ? "Any" : selectedFiltersCount));
+            });
+
+        }
 
         bottomSheetDialog.show();
     }
