@@ -133,21 +133,6 @@ public class AdminEventFragment extends Fragment implements EventAdapter.OnEvent
 
         });
 
-/* Fix: Event browse onClickListener
-
-        binding.adminEventsRecyclerView.On((parent, view, position, id) -> {
-            Event selectedEvent = eventList.get(position);
-            OrganizerEventInfoFragment fragment = OrganizerEventInfoFragment.newInstance(selectedEvent.getId());
-            requireActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container_organizer, fragment)
-                    .addToBackStack(null)
-                    .commit();
-        });
-
- //*/
-
-
-
         binding.adminSearchEvents.addTextChangedListener(new android.text.TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -238,8 +223,6 @@ public class AdminEventFragment extends Fragment implements EventAdapter.OnEvent
                 }
             }
         });
-
-
     }
 
     public String getName(String userId) {
