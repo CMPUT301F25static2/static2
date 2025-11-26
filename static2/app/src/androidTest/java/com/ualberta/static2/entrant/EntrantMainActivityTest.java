@@ -137,7 +137,7 @@ public class EntrantMainActivityTest {
     public void testOpenFilterOptions() {
         ActivityScenario.launch(EntrantMainActivity.class);
 
-        onView(withId(R.id.filterButton))
+        onView(withId(R.id.filterGroup))
                 .perform(click());
 
         try {
@@ -166,7 +166,7 @@ public class EntrantMainActivityTest {
         onView(withId(R.id.availableEventsButton))
                 .perform(click());
 
-        onView(withId(R.id.filterButton))
+        onView(withId(R.id.filterGroup))
                 .perform(click());
 
         try {
@@ -197,7 +197,7 @@ public class EntrantMainActivityTest {
         onView(withId(R.id.availableEventsButton))
                 .perform(click());
 
-        onView(withId(R.id.filterButton))
+        onView(withId(R.id.filterGroup))
                 .perform(click());
 
         try {
@@ -234,7 +234,7 @@ public class EntrantMainActivityTest {
         onView(withId(R.id.availableEventsButton))
                 .perform(click());
 
-        onView(withId(R.id.filterButton))
+        onView(withId(R.id.filterGroup))
                 .perform(click());
 
         onView(CustomMatchers.first(withText("Sports")))
@@ -267,7 +267,7 @@ public class EntrantMainActivityTest {
         onView(withId(R.id.availableEventsButton))
                 .perform(click());
 
-        onView(withId(R.id.filterButton))
+        onView(withId(R.id.filterGroup))
                 .perform(click());
 
         onView(CustomMatchers.first(withText("Sports")))
