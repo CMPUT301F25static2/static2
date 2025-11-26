@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    
+
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,8 +16,12 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Static2"
-        >
+        android:theme="@style/Theme.Static2">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDDvjMmxR1qvf6dh4agTE-36E5e_MAbUrw" />
+
         <!--Register Firebase Messaging Service-->
         <service
             android:name="com.ualberta.eventlottery.notification.MyFirebaseMessagingService"
@@ -23,25 +31,21 @@
             </intent-filter>
         </service>
 
-
         <activity
             android:name="com.ualberta.eventlottery.MainActivity"
             android:exported="true"
             android:label="@string/title_activity_event_lottery_main">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="true">
-        </activity>
+            android:exported="true" />
         <activity
             android:name="com.ualberta.eventlottery.admin.AdminMainActivity"
-            android:exported="true">
-        </activity>
+            android:exported="true" />
         <activity
             android:name="com.ualberta.eventlottery.organzier.OrganizerMainActivity"
             android:label="Organizer"
@@ -57,20 +61,15 @@
             android:name="com.ualberta.eventlottery.entrant.EntrantMainActivity"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"></action>
-                <category android:name="android.intent.category.DEFAULT"></category>
-                <category android:name="android.intent.category.BROWSABLE"></category>
-
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="eventlottery" android:host="com.ualberta.eventlottery" android:path="/viewevent"/>
             </intent-filter>
         </activity>
-
         <activity
             android:name="com.ualberta.eventlottery.ui.profile.ProfileSetupActivity"
-            android:exported="false">
-        </activity>
-
-
+            android:exported="false" />
 
     </application>
 
