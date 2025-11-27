@@ -75,6 +75,10 @@ public class ImageViewerFragment extends Fragment {
             return true;
         });
 
+        binding.ivFullscreenImage.setOnClickListener(v -> {
+
+        });
+
         return binding.getRoot();
     }
 
