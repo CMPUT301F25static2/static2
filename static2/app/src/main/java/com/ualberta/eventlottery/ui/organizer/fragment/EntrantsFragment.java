@@ -1,10 +1,12 @@
 package com.ualberta.eventlottery.ui.organizer.fragment;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -14,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.ualberta.eventlottery.model.Entrant;
 import com.ualberta.eventlottery.model.EntrantRegistrationStatus;
 import com.ualberta.eventlottery.model.Registration;
+import com.ualberta.eventlottery.notification.NotificationController;
 import com.ualberta.eventlottery.repository.EntrantRepository;
 import com.ualberta.eventlottery.repository.RegistrationRepository;
 import com.ualberta.eventlottery.ui.organizer.adapter.EntrantAdapter;
@@ -36,6 +39,7 @@ public class EntrantsFragment extends Fragment {
     private List<LinearLayout> statusButtons = new ArrayList<>();
     private RegistrationRepository registrationRepository = RegistrationRepository.getInstance();
     private EntrantRepository entrantRepository = EntrantRepository.getInstance();
+    private NotificationController notificationController;
 
     private static final String ARG_EVENT_ID = "event_id";
     private String eventId;
@@ -78,6 +82,9 @@ public class EntrantsFragment extends Fragment {
         initViews();
         setupClickListeners();
         loadEntrantsData();
+
+        // Initialize notification controller
+        notificationController = new NotificationController(requireContext());
     }
 
     /**
@@ -151,6 +158,11 @@ public class EntrantsFragment extends Fragment {
             loadCancelledEntrants();
         });
 
+        // Add click listener for notification button
+        binding.btnSendNotifications.setOnClickListener(v -> {
+            showNotificationDialog();
+        });
+
         // Set initial selection
         updateButtonSelection(binding.btnEntrantsConfirmed);
     }
@@ -164,6 +176,55 @@ public class EntrantsFragment extends Fragment {
             button.setSelected(isSelected);
             button.setBackgroundResource(R.drawable.button_selector);
         }
+    }
+
+    /**
+     * Shows dialog for entering notification message.
+     */
+    private void showNotificationDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Send Notification");
+
+        final EditText input = new EditText(requireContext());
+        input.setHint("Enter your notification message...");
+        builder.setView(input);
+
+        builder.setPositiveButton("Send", (dialog, which) -> {
+            String message = input.getText().toString().trim();
+            if (!message.isEmpty()) {
+                sendNotificationToSelected(message);
+            } else {
+                Toast.makeText(requireContext(), "Please enter a message", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+
+        builder.show();
+    }
+
+    /**
+     * Sends notification to selected entrants.
+     */
+    private void sendNotificationToSelected(String message) {
+        EntrantAdapter adapter = (EntrantAdapter) binding.lvEventEntrantList.getAdapter();
+        if (adapter == null) return;
+
+        List<String> selectedEntrantIds = adapter.getSelectedEntrantIds();
+        if (selectedEntrantIds.isEmpty()) {
+            Toast.makeText(requireContext(), "No entrants selected", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Send notification
+        notificationController.sendNotification(
+                "Event Notification",
+                message,
+                eventId,
+                selectedEntrantIds
+        );
+
+        Toast.makeText(requireContext(), "Notification sent to " + selectedEntrantIds.size() + " entrants", Toast.LENGTH_SHORT).show();
     }
 
     /**

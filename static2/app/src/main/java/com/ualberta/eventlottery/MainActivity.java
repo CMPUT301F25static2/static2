@@ -91,9 +91,21 @@ public class MainActivity extends AppCompatActivity {
                         .get()
                         .addOnSuccessListener(documentSnapshot -> {
                             if (documentSnapshot.exists()) {
-                                // Profile exists, go directly to EntrantMainActivity
-                                Intent intent = new Intent(MainActivity.this, EntrantMainActivity.class);
-                                startActivity(intent);
+                                String userType = documentSnapshot.getString("userType");
+                                if ("organizer".equals(userType)) {
+                                    // User is an organizer, prevent them from entering as an entrant
+                                    new androidx.appcompat.app.AlertDialog.Builder(MainActivity.this)
+                                            .setTitle("Organizer Account")
+                                            .setMessage("Your account is registered as an Organizer. Please use the Organizer portal.")
+                                            .setPositiveButton("OK", null)
+                                            .show();
+                                }
+                                else {
+                                    // Profile exists, go directly to EntrantMainActivity
+                                    Intent intent = new Intent(MainActivity.this, EntrantMainActivity.class);
+                                    startActivity(intent);
+                                }
+
                             } else {
                                 // Show dialog that profile is required
                                 new androidx.appcompat.app.AlertDialog.Builder(MainActivity.this)
@@ -116,10 +128,36 @@ public class MainActivity extends AppCompatActivity {
         });
 
         findViewById(R.id.btn_admin).setOnClickListener(new View.OnClickListener() {
-            @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, AdminMainActivity.class);
-                startActivity(intent);
+                String userId = UserManager.getCurrentUserId();
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+                db.collection("users")
+                        .document(userId)
+                        .get()
+                        .addOnSuccessListener(documentSnapshot -> {
+                            if (documentSnapshot.exists() && "admin".equals(documentSnapshot.getString("userType"))) {
+                                // Profile exists and user is admin, go directly to AdminMainActivity
+                                Intent intent = new Intent(MainActivity.this, AdminMainActivity.class);
+                                startActivity(intent);
+                            } else {
+                                // Show dialog that organizer profile is required
+                                new androidx.appcompat.app.AlertDialog.Builder(MainActivity.this)
+                                        .setTitle("Admin Setup Required")
+                                        .setMessage("You need to set up your admin profile before continuing.")
+                                        .setPositiveButton("Set Up Profile", (dialog, which) -> {
+                                            Intent intent = new Intent(MainActivity.this, ProfileSetupActivity.class);
+                                            startActivity(intent);
+                                        })
+                                        .setNegativeButton("Cancel", null)
+                                        .show();
+                            }
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(MainActivity.this,
+                                    "Error: " + e.getMessage(),
+                                    Toast.LENGTH_SHORT).show();
+                        });
             }
         });
 
