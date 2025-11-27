@@ -15,6 +15,7 @@ import android.os.Looper;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.location.LocationManagerCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -70,6 +71,14 @@ public class LocationService {
         ActivityCompat.requestPermissions(activity,
                 new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION},
                 REQUEST_BACKGROUND_LOCATION_PERMISSIONS_REQUEST_CODE);
+    }
+
+    public boolean isLocationEnabled() {
+        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        if (locationManager != null) {
+            return LocationManagerCompat.isLocationEnabled(locationManager);
+        }
+        return false;
     }
 
     @SuppressLint("MissingPermission")
