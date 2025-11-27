@@ -20,6 +20,7 @@
            android:textStyle="bold"  />
 
        <ImageView
+           android:id="@+id/btn_send_notifications"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
            android:src="@drawable/ic_notification_add_24dp_000000_fill0_wght400_grad0_opsz24"/>
