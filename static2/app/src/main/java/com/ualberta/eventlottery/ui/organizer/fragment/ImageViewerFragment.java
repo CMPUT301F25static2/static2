@@ -66,7 +66,12 @@ public class ImageViewerFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentImageViewerBinding.inflate(inflater, container, false);
 
-        binding.getRoot().setOnClickListener(v -> closeFragment());
+        binding.getRoot().setOnClickListener(v -> {
+            if (getParentFragmentManager() != null) {
+                getParentFragmentManager().popBackStack();
+            }
+        });
+
 
         // Add long press listener for update poster functionality
         binding.ivFullscreenImage.setOnLongClickListener(v -> {
