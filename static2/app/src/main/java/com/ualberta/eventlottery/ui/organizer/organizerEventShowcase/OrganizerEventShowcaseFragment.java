@@ -195,12 +195,14 @@ public class OrganizerEventShowcaseFragment extends Fragment implements ImageVie
 
         binding.ivEventGallery.setOnClickListener(v -> {
             if (posterUrl != null && !posterUrl.isEmpty()) {
-                ImageViewerFragment viewerFragment = ImageViewerFragment.newInstance(posterUrl, eventId);
-                viewerFragment.setOnPosterUpdatedListener(this);
-                requireActivity().getSupportFragmentManager().beginTransaction()
-                        .add(R.id.fragment_container_organizer, viewerFragment)
-                        .addToBackStack(null)
-                        .commit();
+                if (requireActivity().getSupportFragmentManager().findFragmentByTag("image_viewer") == null) {
+                    ImageViewerFragment viewerFragment = ImageViewerFragment.newInstance(posterUrl, eventId);
+                    viewerFragment.setOnPosterUpdatedListener(this);
+                    requireActivity().getSupportFragmentManager().beginTransaction()
+                            .add(R.id.fragment_container_organizer, viewerFragment, "image_viewer")
+                            .addToBackStack(null)
+                            .commit();
+                }
             } else {
                 Toast.makeText(requireContext(), "Image not available", Toast.LENGTH_SHORT).show();
             }
