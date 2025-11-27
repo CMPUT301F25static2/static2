@@ -7,6 +7,12 @@
     android:padding="10dp"
     android:gravity="center_vertical">
 
+    <CheckBox
+        android:id="@+id/cb_entrant_select"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp" />
+
     <!--    entrant name and joined time-->
     <LinearLayout
         android:layout_width="0dp"
