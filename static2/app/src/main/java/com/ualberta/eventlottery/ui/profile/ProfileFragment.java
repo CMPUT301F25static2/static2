@@ -29,6 +29,7 @@ public class ProfileFragment extends Fragment {
     private CollectionReference docRef;
 
 
+
     /**
      * Called to have the fragment instantiate its user interface view. [11]
      * This is optional, and non-graphical fragments can return null. This will be called between
@@ -100,6 +101,15 @@ public class ProfileFragment extends Fragment {
             if (message != null && !message.isEmpty()) {
                 Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
             }
+        });
+
+        profileViewModel.getNotificationsEnabled().observe(getViewLifecycleOwner(), enabled -> {
+            binding.switchNotifications.setChecked(enabled != null && enabled);
+        });
+
+        // Handle user toggling the switch
+        binding.switchNotifications.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            profileViewModel.setNotificationsEnabled(isChecked);
         });
 
 
