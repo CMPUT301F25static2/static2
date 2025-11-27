@@ -23,6 +23,11 @@
         <entry key="dad5d35e-8cf2-4c8e-b380-63ba77d182f7">
           <value>
             <set>
+              <option value="2134b050-fb66-456a-88f8-38be433dcc84" />
+              <option value="6f0ddb3a-7a77-437c-b83a-98ab796b2331" />
+              <option value="7d30796e-2f9e-464b-96d0-84d6bdb5b6b9" />
+              <option value="7d41c58f-466d-4830-872f-0aa68ee055d7" />
+              <option value="834f7039-f2a0-4ea8-8a1e-f35de1c83e65" />
               <option value="b20f5d44-11f8-47e3-829f-912d47ad2789" />
             </set>
           </value>
@@ -31,6 +36,18 @@
     </option>
     <pendingWorkingSetItems>
       <entry key="632182d6-2b1b-43c8-a6c9-a8658facb49e" />
+      <entry key="dad5d35e-8cf2-4c8e-b380-63ba77d182f7">
+        <set>
+          <option value="file://$PROJECT_DIR$/app/src/main/java/com/ualberta/eventlottery/model/ImageItem.java" />
+          <option value="file://$PROJECT_DIR$/app/src/main/java/com/ualberta/eventlottery/ui/adminImages/AdminImagesAdapter.java" />
+          <option value="file://$PROJECT_DIR$/app/src/main/res/layout/item_admin_image.xml" />
+          <option value="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_admin_images.xml" />
+          <option value="file://$PROJECT_DIR$/app/src/main/java/com/ualberta/eventlottery/ui/adminImages/AdminImageViewModel.java" />
+          <option value="file://$PROJECT_DIR$/app/src/main/java/com/ualberta/eventlottery/ui/adminImages/AdminImagesFragment.java" />
+          <option value="file://$PROJECT_DIR$/app/src/main/java/com/ualberta/eventlottery/ui/adminImages/AdminImagesAdapterFixed.java" />
+          <option value="file://$PROJECT_DIR$/app/src/androidTest/java/com/ualberta/static2/AdminImageRemovalTest.java" />
+        </set>
+      </entry>
     </pendingWorkingSetItems>
   </component>
 </project>
