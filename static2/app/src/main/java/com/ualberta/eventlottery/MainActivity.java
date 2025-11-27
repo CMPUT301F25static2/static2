@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
                                 Intent intent = new Intent(MainActivity.this, AdminMainActivity.class);
                                 startActivity(intent);
                             } else {
-                                // Show dialog that organizer profile is required
+                                // Show dialog that admin profile is required
                                 new androidx.appcompat.app.AlertDialog.Builder(MainActivity.this)
                                         .setTitle("Admin Setup Required")
                                         .setMessage("You need to set up your admin profile before continuing.")
