@@ -40,6 +40,9 @@ public class EntrantMainActivity extends AppCompatActivity {
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_event_lottery_main);
         NavigationUI.setupWithNavController(binding.navView, navController);
+        if (getIntent() != null && getIntent().getBooleanExtra("open_notifications", false)) {
+            navController.navigate(R.id.navigation_notifications); // Your NotificationsFragment ID
+        }
 
         // Sources used for QR code scanning
         // https://stackoverflow.com/questions/36079523/launch-app-or-play-store-by-scanning-qr-code
@@ -62,4 +65,15 @@ public class EntrantMainActivity extends AppCompatActivity {
         }
         Log.d(TAG, "Launched with eventId=" + eventId);
     }
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_event_lottery_main);
+        if (intent.getBooleanExtra("open_notifications", false)) {
+            navController.navigate(R.id.navigation_notifications);
+        }
+    }
+
 }
