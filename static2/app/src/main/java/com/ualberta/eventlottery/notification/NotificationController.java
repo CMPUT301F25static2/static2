@@ -113,15 +113,16 @@ public class NotificationController {
                     for (Object result : results) {
                         DocumentSnapshot userDoc = (DocumentSnapshot) result;
                         if (userDoc.exists()) {
+                            Boolean notificationsEnabled = userDoc.getBoolean("notificationsEnabled");
                             String fcmToken = userDoc.getString("fcmToken");
-                            if (fcmToken != null && !fcmToken.isEmpty()) {
+                            if (Boolean.TRUE.equals(notificationsEnabled) && fcmToken != null && !fcmToken.isEmpty()) {
                                 tokens.add(fcmToken);
                             }
                         } else {
                             Log.d("Firestore", "No such user!");
                         }
                     }
-
+                    
                     if (tokens.isEmpty()) {
                         Log.e("FCM", "No tokens available — cannot send notification.");
                         return;

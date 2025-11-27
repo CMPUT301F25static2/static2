@@ -126,7 +126,7 @@ public class AdminImagesFragment extends Fragment implements AdminImagesAdapter.
     public void onViewImage(ImageItem imageItem) {
         // Open image viewer fragment to view full image
         if (imageItem.getImageUrl() != null && !imageItem.getImageUrl().isEmpty()) {
-            ImageViewerFragment viewerFragment = ImageViewerFragment.newInstance(imageItem.getImageUrl());
+            ImageViewerFragment viewerFragment = ImageViewerFragment.newInstance(imageItem.getImageUrl(),"123");
             getParentFragmentManager()
                     .beginTransaction()
                     .replace(android.R.id.content, viewerFragment)
