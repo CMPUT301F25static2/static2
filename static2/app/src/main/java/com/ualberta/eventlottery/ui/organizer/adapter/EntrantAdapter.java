@@ -3,10 +3,12 @@ package com.ualberta.eventlottery.ui.organizer.adapter;
 import android.content.Context;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,6 +23,7 @@ import com.ualberta.eventlottery.model.Registration;
 import com.ualberta.eventlottery.repository.RegistrationRepository;
 import com.ualberta.static2.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EntrantAdapter extends RecyclerView.Adapter<EntrantAdapter.ViewHolder> {
@@ -28,6 +31,7 @@ public class EntrantAdapter extends RecyclerView.Adapter<EntrantAdapter.ViewHold
     private List<Entrant> entrants;
     private String eventId;
     private RegistrationRepository registrationRepository = RegistrationRepository.getInstance();
+    private SparseBooleanArray selectedItems = new SparseBooleanArray();
 
     // Listener for status changes
     public interface OnEntrantStatusChangeListener {
@@ -53,6 +57,16 @@ public class EntrantAdapter extends RecyclerView.Adapter<EntrantAdapter.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Entrant entrant = entrants.get(position);
         holder.tvName.setText(entrant.getName());
+
+        // Set checkbox state and listener
+        holder.cbSelect.setChecked(selectedItems.get(position, false));
+        holder.cbSelect.setOnClickListener(v -> {
+            if (holder.cbSelect.isChecked()) {
+                selectedItems.put(position, true);
+            } else {
+                selectedItems.delete(position);
+            }
+        });
 
         registrationRepository.findRegistrationByEventAndUser(eventId, entrant.getUserId(), new RegistrationRepository.RegistrationCallback() {
             @Override
@@ -149,7 +163,19 @@ public class EntrantAdapter extends RecyclerView.Adapter<EntrantAdapter.ViewHold
     // Update data method
     public void updateData(List<Entrant> newEntrants) {
         this.entrants = newEntrants;
+        selectedItems.clear(); // Clear selections on data update
         notifyDataSetChanged();
+    }
+
+    public List<String> getSelectedEntrantIds() {
+        List<String> selectedIds = new ArrayList<>();
+        for (int i = 0; i < selectedItems.size(); i++) {
+            int position = selectedItems.keyAt(i);
+            if (selectedItems.valueAt(i)) {
+                selectedIds.add(entrants.get(position).getUserId());
+            }
+        }
+        return selectedIds;
     }
 
     @Override
@@ -158,11 +184,13 @@ public class EntrantAdapter extends RecyclerView.Adapter<EntrantAdapter.ViewHold
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
+        CheckBox cbSelect;
         TextView tvName;
         TextView tvStatus;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            cbSelect = itemView.findViewById(R.id.cb_entrant_select);
             tvName = itemView.findViewById(R.id.tv_entrant_name);
             tvStatus = itemView.findViewById(R.id.tv_entrant_status);
         }
