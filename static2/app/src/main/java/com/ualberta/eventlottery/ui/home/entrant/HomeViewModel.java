@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel;
 import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.model.EventCategory;
 import com.ualberta.eventlottery.model.Registration;
+import com.ualberta.eventlottery.model.TimeRanges;
 import com.ualberta.eventlottery.repository.EventRepository;
 import com.ualberta.eventlottery.repository.RegistrationRepository;
 import com.ualberta.eventlottery.utils.UserManager;
@@ -30,6 +31,8 @@ public class HomeViewModel extends ViewModel {
     private final LiveData<List<Event>> availableEventListLiveData;
     private final MutableLiveData<List<EventCategory>> selectedCategoryFilters = new MutableLiveData<>(new ArrayList<>());
     private final MediatorLiveData<List<Event>> filteredAvailableEventList = new MediatorLiveData<>();
+
+    private final MutableLiveData<List<TimeRanges>> selectedTimeFilters = new MutableLiveData<>(new ArrayList<>());
 
 
     // This LiveData will now be used for the "My Events" tab.
@@ -61,6 +64,7 @@ public class HomeViewModel extends ViewModel {
             );
         });
 
+        //Observes myEvents and applies filter on new data
         filteredMyEventList.addSource(myEvents, newData -> {
             filteredMyEventList.setValue(
                     applyCategoryFilters(newData, selectedCategoryFilters.getValue())
@@ -125,6 +129,10 @@ public class HomeViewModel extends ViewModel {
             }
         }
         return resultList;
+    }
+
+    public List<TimeRanges> getSelectedTimeRanges() {
+        return selectedTimeFilters.getValue();
     }
 
 
