@@ -60,7 +60,7 @@ public class NotificationController {
     // TODO: implement proper intent when event detail fragment finished
     public void displayNotification(String title, String body, String eventId) {
         Intent intent = new Intent(context, EntrantMainActivity.class);
-        intent.putExtra("eventId", eventId);
+        intent.putExtra("open_notifications", true); // Flag to open NotificationsFragment
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(
@@ -80,7 +80,6 @@ public class NotificationController {
 
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS)
                 != PackageManager.PERMISSION_GRANTED) {
-            // Missing notification permission
             return;
         }
 
@@ -122,7 +121,7 @@ public class NotificationController {
                             Log.d("Firestore", "No such user!");
                         }
                     }
-                    
+
                     if (tokens.isEmpty()) {
                         Log.e("FCM", "No tokens available — cannot send notification.");
                         return;
