@@ -25,7 +25,7 @@ import java.util.Locale;
  * @author static2
  * @version 1.0
  */
-public class OrganizerEventShowcaseFragment extends Fragment {
+public class OrganizerEventShowcaseFragment extends Fragment implements ImageViewerFragment.OnPosterUpdatedListener {
     private static final String ARG_EVENT_ID = "event_id";
     private FragmentOrganizerEventShowcaseBinding binding;
     private String eventId;
@@ -115,12 +115,12 @@ public class OrganizerEventShowcaseFragment extends Fragment {
                 binding.tvEventTitle.setText(event.getTitle());
                 binding.tvEventDescription.setText(event.getDescription());
                 binding.tvEventCapacity.setText("Capacity: " + event.getMaxAttendees());
-                binding.tvEventCurrentEntrantsCount.setText(event.getConfirmedCount() + " entrants");
+                binding.tvEventCurrentEntrantsCount.setText(event.getConfirmedAttendees() + " entrants");
 
                 // Calculate and display fill rate
-                int fillRate = (event.getConfirmedCount() * 100) / event.getMaxAttendees();
+                int fillRate = (event.getConfirmedAttendees() * 100) / event.getMaxAttendees();
                 binding.tvEventFillRate.setText(fillRate + "%");
-                binding.tvEventFillRatio.setText(event.getConfirmedCount() + "/" + event.getMaxAttendees());
+                binding.tvEventFillRatio.setText(event.getConfirmedAttendees() + "/" + event.getMaxAttendees());
                 binding.pbEventProgeress.setProgress(fillRate);
 
                 // Set event images
@@ -195,11 +195,14 @@ public class OrganizerEventShowcaseFragment extends Fragment {
 
         binding.ivEventGallery.setOnClickListener(v -> {
             if (posterUrl != null && !posterUrl.isEmpty()) {
-                ImageViewerFragment viewerFragment = ImageViewerFragment.newInstance(posterUrl);
-                requireActivity().getSupportFragmentManager().beginTransaction()
-                        .add(R.id.fragment_container_organizer, viewerFragment)
-                        .addToBackStack(null)
-                        .commit();
+                if (requireActivity().getSupportFragmentManager().findFragmentByTag("image_viewer") == null) {
+                    ImageViewerFragment viewerFragment = ImageViewerFragment.newInstance(posterUrl, eventId);
+                    viewerFragment.setOnPosterUpdatedListener(this);
+                    requireActivity().getSupportFragmentManager().beginTransaction()
+                            .add(R.id.fragment_container_organizer, viewerFragment, "image_viewer")
+                            .addToBackStack(null)
+                            .commit();
+                }
             } else {
                 Toast.makeText(requireContext(), "Image not available", Toast.LENGTH_SHORT).show();
             }
@@ -214,5 +217,28 @@ public class OrganizerEventShowcaseFragment extends Fragment {
         getChildFragmentManager().beginTransaction()
                 .replace(R.id.fragment_entrants_conatiner, entrantsFragment)
                 .commit();
+    }
+
+    /**
+     * Called when the poster image is updated from the ImageViewerFragment.
+     * Updates the poster images in the showcase fragment immediately.
+     */
+    @Override
+    public void onPosterUpdated(String newPosterUrl) {
+        posterUrl = newPosterUrl;
+        if (binding != null && getContext() != null) {
+            // Update both poster images in the showcase
+            Glide.with(getContext())
+                    .load(newPosterUrl)
+                    .placeholder(R.drawable.placeholder_background)
+                    .error(R.drawable.placeholder_background)
+                    .into(binding.ivEventGallery);
+
+            Glide.with(getContext())
+                    .load(newPosterUrl)
+                    .placeholder(R.drawable.placeholder_background)
+                    .error(R.drawable.placeholder_background)
+                    .into(binding.ivEventPosterImg);
+        }
     }
 }
