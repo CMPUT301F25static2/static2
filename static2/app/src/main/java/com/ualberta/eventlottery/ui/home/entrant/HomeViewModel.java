@@ -20,8 +20,6 @@ import com.ualberta.eventlottery.utils.UserManager;
 import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -36,7 +34,7 @@ public class HomeViewModel extends ViewModel {
 
     private final LiveData<List<Event>> availableEventListLiveData;
     private final MutableLiveData<List<EventCategory>> selectedCategoryFilters = new MutableLiveData<>(new ArrayList<>());
-    private final MutableLiveData<List<DayOfWeek>> selectedDaysOfWeek = new MutableLiveData<>();
+    private final MutableLiveData<List<DayOfWeek>> selectedDaysOfWeekFilters = new MutableLiveData<>();
     private final MediatorLiveData<List<Event>> filteredAvailableEventList = new MediatorLiveData<>();
 
     private final MutableLiveData<List<TimeRanges>> selectedTimeFilters = new MutableLiveData<>(new ArrayList<>());
@@ -59,13 +57,13 @@ public class HomeViewModel extends ViewModel {
         availableEventListLiveData = eventRepository.getAvailableEvents();
         selectedCategoryFilters.setValue(Stream.of(EventCategory.values())
                 .collect(Collectors.toList()));
-        selectedDaysOfWeek.setValue(Stream.of(DayOfWeek.values())
+        selectedDaysOfWeekFilters.setValue(Stream.of(DayOfWeek.values())
                 .collect(Collectors.toList()));
 
         //Observes the availableEventListLiveData and applies filter on new data
         filteredAvailableEventList.addSource(availableEventListLiveData, newData -> {
             List<Event> filteredEvents = applyCategoryFilters(newData, selectedCategoryFilters.getValue());
-            filteredEvents = applyDaysOfWeekFilter(filteredEvents, selectedDaysOfWeek.getValue());
+            filteredEvents = applyDaysOfWeekFilter(filteredEvents, selectedDaysOfWeekFilters.getValue());
             filteredAvailableEventList.setValue(filteredEvents);
         });
 
@@ -75,7 +73,7 @@ public class HomeViewModel extends ViewModel {
             );
         });
 
-        filteredAvailableEventList.addSource(selectedDaysOfWeek, newDaysOfWeek -> {
+        filteredAvailableEventList.addSource(selectedDaysOfWeekFilters, newDaysOfWeek -> {
             filteredAvailableEventList.setValue(
                     applyDaysOfWeekFilter(availableEventListLiveData.getValue(), newDaysOfWeek)
             );
@@ -116,6 +114,10 @@ public class HomeViewModel extends ViewModel {
         return selectedCategoryFilters.getValue();
     }
 
+    public List<DayOfWeek> getSelectedDaysOfWeek() {
+        return selectedDaysOfWeekFilters.getValue();
+    }
+
     public void applyCategoryFilters(List<EventCategory> selectedCategories) {
         if (selectedCategories.size() == 0) {
             selectedCategoryFilters.setValue(Stream.of(EventCategory.values())
@@ -125,8 +127,14 @@ public class HomeViewModel extends ViewModel {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void applyDaysOfWeekFilter(List<DayOfWeek> selectedDaysOfWeek) {
-        this.selectedDaysOfWeek.setValue(selectedDaysOfWeek);
+        if (selectedDaysOfWeek.size() == 0) {
+            selectedDaysOfWeekFilters.setValue(Stream.of(DayOfWeek.values())
+                    .collect(Collectors.toList()));
+        } else {
+            this.selectedDaysOfWeekFilters.setValue(selectedDaysOfWeek);
+        }
     }
 
     private List<Event> applyCategoryFilters(List<Event> currentData, List<EventCategory> categories) {
