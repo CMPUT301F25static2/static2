@@ -247,7 +247,33 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
         View bottomSheetView = getLayoutInflater().inflate(R.layout.filter_days_of_week_bottom_sheet, null);
         ChipGroup chipGroup = bottomSheetView.findViewById(R.id.filterGroup);
 
-        showFilterBottomSheet(bottomSheetView, null, view -> {
+        Runnable buildChipGroup = () -> {
+            List<DayOfWeek> selectedDaysOfWeek = homeViewModel.getSelectedDaysOfWeek();
+            boolean allDaysSelected = selectedDaysOfWeek.size() == DayOfWeek.values().length;
+            if (allDaysSelected) {
+                return;
+            }
+            for (int i = 0; i < chipGroup.getChildCount(); ++i) {
+                View child = chipGroup.getChildAt(i);
+                if (child instanceof Chip) {
+                    Chip chip = (Chip) child;
+
+                    String chipTag = (String) chip.getTag();
+                    if (chipTag != null) {
+                        DayOfWeek dow = DayOfWeek.valueOf(chipTag);
+                        if (dow != null) {
+                            boolean isChecked = selectedDaysOfWeek.contains(dow);
+                            chip.setChecked(isChecked);
+                            if (isChecked) {
+                                chipGroup.check(chip.getId());
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        showFilterBottomSheet(bottomSheetView, buildChipGroup, view -> {
             List<Integer> selectedChipIds = chipGroup.getCheckedChipIds();
 
             // Convert to readable strings (or use your own logic)
