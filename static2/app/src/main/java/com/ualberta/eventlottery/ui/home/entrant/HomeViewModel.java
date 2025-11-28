@@ -62,20 +62,33 @@ public class HomeViewModel extends ViewModel {
 
         //Observes the availableEventListLiveData and applies filter on new data
         filteredAvailableEventList.addSource(availableEventListLiveData, newData -> {
-            List<Event> filteredEvents = applyCategoryFilters(newData, selectedCategoryFilters.getValue());
-            filteredEvents = applyDaysOfWeekFilter(filteredEvents, selectedDaysOfWeekFilters.getValue());
-            filteredAvailableEventList.setValue(filteredEvents);
+            filteredAvailableEventList.setValue(
+                    applyAllFilters(
+                            newData,
+                            selectedCategoryFilters.getValue(),
+                            selectedDaysOfWeekFilters.getValue()
+                    )
+            );
+
         });
 
         filteredAvailableEventList.addSource(selectedCategoryFilters, newFilters -> {
             filteredAvailableEventList.setValue(
-                    applyCategoryFilters(availableEventListLiveData.getValue(), newFilters)
+                    applyAllFilters(
+                            availableEventListLiveData.getValue(),
+                            newFilters,
+                            selectedDaysOfWeekFilters.getValue()
+                    )
             );
         });
 
         filteredAvailableEventList.addSource(selectedDaysOfWeekFilters, newDaysOfWeek -> {
             filteredAvailableEventList.setValue(
-                    applyDaysOfWeekFilter(availableEventListLiveData.getValue(), newDaysOfWeek)
+                    applyAllFilters(
+                            availableEventListLiveData.getValue(),
+                            selectedCategoryFilters.getValue(),
+                            newDaysOfWeek
+                    )
             );
         });
 
@@ -189,6 +202,13 @@ public class HomeViewModel extends ViewModel {
             }
         }
         return resultList;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private List<Event> applyAllFilters(List<Event> currentData, List<EventCategory> selectedCategories, List<DayOfWeek> selectedDaysOfWeek) {
+        List<Event> filteredEvents = applyCategoryFilters(currentData, selectedCategories);
+        filteredEvents = applyDaysOfWeekFilter(filteredEvents, selectedDaysOfWeek);
+        return filteredEvents;
     }
 
     /**
