@@ -1,5 +1,6 @@
 package com.ualberta.eventlottery.ui.home.entrant;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.KeyEvent;
@@ -12,6 +13,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
@@ -35,9 +37,12 @@ import com.ualberta.eventlottery.model.EventRegistrationStatus;
 import com.ualberta.static2.R;
 import com.ualberta.static2.databinding.FragmentHomeBinding;
 
+import java.time.DayOfWeek;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Fragment that displays home screen for the entrants.
@@ -53,7 +58,7 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
     // History button has been removed
     private EditText searchInputHome;
     private ChipGroup filterGroup;
-    private Chip categoryFilter, classTimeFilter, daysOfTheWeekFilter;
+    private Chip categoryFilter, classTimeFilter, daysOfWeekFilter;
     private RecyclerView recyclerView;
     // History adapter has been removed
     private EventAdapter myEventsAdapter, availableEventsAdapter;
@@ -93,6 +98,7 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
         filterGroup = view.findViewById(R.id.filterGroup);
         categoryFilter = addFilterChip("category", "Category", "Any");
         categoryFilter.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View view) {
                 showFilterBottomSheet(categoryFilter);
@@ -101,17 +107,19 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
 
         classTimeFilter = addFilterChip("classTime", " Start Time", "Any");
         classTimeFilter.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View view) {
                 showFilterBottomSheet(classTimeFilter);
             }
         });
 
-        daysOfTheWeekFilter = addFilterChip("daysOfTheWeek", "Day of the Week", "Any");
-        daysOfTheWeekFilter.setOnClickListener(new View.OnClickListener() {
+        daysOfWeekFilter = addFilterChip("daysOfWeek", "Days", "Any");
+        daysOfWeekFilter.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View view) {
-                showFilterBottomSheet(daysOfTheWeekFilter);
+                showFilterBottomSheet(daysOfWeekFilter);
             }
         });
 
@@ -175,8 +183,18 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
         return chip;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void showFilterBottomSheet(Chip filterChip) {
-        View bottomSheetView = getLayoutInflater().inflate(R.layout.filter_category_bottom_sheet, null);
+        View bottomSheetView;
+
+        String chipTag = (String) filterChip.getTag();
+        if (chipTag.compareTo("category") == 0) {
+            bottomSheetView = getLayoutInflater().inflate(R.layout.filter_category_bottom_sheet, null);
+        } else if (chipTag.compareTo("daysOfWeek") == 0) {
+            bottomSheetView = getLayoutInflater().inflate(R.layout.filter_days_of_week_bottom_sheet, null);
+        } else {
+            bottomSheetView = getLayoutInflater().inflate(R.layout.filter_category_bottom_sheet, null);
+        }
 
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getContext());
         bottomSheetDialog.setContentView(bottomSheetView);
@@ -184,7 +202,7 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
         ChipGroup chipGroup = bottomSheetView.findViewById(R.id.filterGroup);
         MaterialButton btnApply = bottomSheetView.findViewById(R.id.applyFilters);
 
-        if (filterChip.getTag().toString().compareTo("category") == 0) {
+        if (chipTag.compareTo("category") == 0) {
             List<EventCategory> selectedCategories = homeViewModel.getSelectedCategories();
             boolean allCategoriesSelected = selectedCategories.size() == EventCategory.values().length;
             for (EventCategory category : EventCategory.values()) {
@@ -224,7 +242,40 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
                 boolean allOrNoFiltersSelected = selectedFilters.size() == chipGroup.getChildCount() || selectedFilters.size() == 0;
                 categoryFilter.setText(String.format("Category: %s", allOrNoFiltersSelected ? "Any" : selectedFiltersCount));
             });
-        } else if (filterChip.getTag().toString().compareTo("classTime") == 0) {
+        } else if (chipTag.compareTo("daysOfWeek") == 0) {
+            btnApply.setOnClickListener(v -> {
+                List<Integer> selectedChipIds = chipGroup.getCheckedChipIds();
+
+                // Convert to readable strings (or use your own logic)
+                List<DayOfWeek> selectedDaysOfWeek = new ArrayList<>();
+                for (Integer id : selectedChipIds) {
+                    Chip chip = bottomSheetView.findViewById(id);
+                    if (chip != null) {
+                        selectedDaysOfWeek.add(DayOfWeek.valueOf((String) chip.getTag()));
+                    }
+                }
+
+                homeViewModel.applyDaysOfWeekFilter(selectedDaysOfWeek);
+
+                // Close the sheet
+                bottomSheetDialog.dismiss();
+
+                String fmt = "Days: %s";
+                if (selectedDaysOfWeek.size() == 7 || selectedDaysOfWeek.isEmpty()) {
+                    daysOfWeekFilter.setText(String.format(fmt, "Any"));
+                } else {
+                    StringBuffer buffer = new StringBuffer();
+                    for (DayOfWeek dow : DayOfWeek.values()) {
+                        if (selectedDaysOfWeek.contains(dow)) {
+                            buffer.append(dow.getDisplayName(TextStyle.NARROW, Locale.CANADA));
+                            buffer.append(" ");
+                        }
+                    }
+                    daysOfWeekFilter.setText(String.format(fmt, buffer.toString().trim()));
+                }
+            });
+
+        } else if (chipTag.compareTo("classTime") == 0) {
             List<EventCategory> selectedCategories = homeViewModel.getSelectedCategories();
             boolean allCategoriesSelected = selectedCategories.size() == EventCategory.values().length;
             for (EventCategory category : EventCategory.values()) {
