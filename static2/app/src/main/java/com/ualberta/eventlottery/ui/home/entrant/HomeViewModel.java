@@ -166,17 +166,18 @@ public class HomeViewModel extends ViewModel {
 
         List<Event> resultList = new ArrayList<>();
 
-        if (daysOfWeek == null || daysOfWeek.isEmpty()) {
+        if (daysOfWeek == null || daysOfWeek.isEmpty() || daysOfWeek.size() == DayOfWeek.values().length) {
             resultList.addAll(currentData);
         } else {
             for (Event event : currentData) {
                 if (event.getStartTime() == null) {
                     continue;
                 }
+
                 cal.setTime(event.getStartTime());
                 if (daysOfWeek.contains(DayOfWeek.of(cal.get(Calendar.DAY_OF_WEEK)))) {
                     resultList.add(event);
-                };
+                }
             }
         }
         return resultList;
