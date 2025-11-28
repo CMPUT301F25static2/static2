@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModel;
 import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.model.EventCategory;
 import com.ualberta.eventlottery.model.Registration;
-import com.ualberta.eventlottery.model.TimeRanges;
+import com.ualberta.eventlottery.model.TimeRange;
 import com.ualberta.eventlottery.repository.EventRepository;
 import com.ualberta.eventlottery.repository.RegistrationRepository;
 import com.ualberta.eventlottery.utils.UserManager;
@@ -35,9 +35,8 @@ public class HomeViewModel extends ViewModel {
     private final LiveData<List<Event>> availableEventListLiveData;
     private final MutableLiveData<List<EventCategory>> selectedCategoryFilters = new MutableLiveData<>(new ArrayList<>());
     private final MutableLiveData<List<DayOfWeek>> selectedDaysOfWeekFilters = new MutableLiveData<>();
+    private final MutableLiveData<List<TimeRange>> selectedTimeFilters = new MutableLiveData<>();
     private final MediatorLiveData<List<Event>> filteredAvailableEventList = new MediatorLiveData<>();
-
-    private final MutableLiveData<List<TimeRanges>> selectedTimeFilters = new MutableLiveData<>(new ArrayList<>());
 
 
     // This LiveData will now be used for the "My Events" tab.
@@ -59,6 +58,8 @@ public class HomeViewModel extends ViewModel {
                 .collect(Collectors.toList()));
         selectedDaysOfWeekFilters.setValue(Stream.of(DayOfWeek.values())
                 .collect(Collectors.toList()));
+        selectedTimeFilters.setValue(Stream.of(TimeRange.values())
+                .collect(Collectors.toList()));
 
         //Observes the availableEventListLiveData and applies filter on new data
         filteredAvailableEventList.addSource(availableEventListLiveData, newData -> {
@@ -66,28 +67,45 @@ public class HomeViewModel extends ViewModel {
                     applyAllFilters(
                             newData,
                             selectedCategoryFilters.getValue(),
-                            selectedDaysOfWeekFilters.getValue()
+                            selectedDaysOfWeekFilters.getValue(),
+                            selectedTimeFilters.getValue()
                     )
             );
 
         });
 
+        //Category source for available events
         filteredAvailableEventList.addSource(selectedCategoryFilters, newFilters -> {
             filteredAvailableEventList.setValue(
                     applyAllFilters(
                             availableEventListLiveData.getValue(),
                             newFilters,
-                            selectedDaysOfWeekFilters.getValue()
+                            selectedDaysOfWeekFilters.getValue(),
+                            selectedTimeFilters.getValue()
                     )
             );
         });
 
+        //Days of the week source for available events
         filteredAvailableEventList.addSource(selectedDaysOfWeekFilters, newDaysOfWeek -> {
             filteredAvailableEventList.setValue(
                     applyAllFilters(
                             availableEventListLiveData.getValue(),
                             selectedCategoryFilters.getValue(),
-                            newDaysOfWeek
+                            newDaysOfWeek,
+                            selectedTimeFilters.getValue()
+                    )
+            );
+        });
+
+        //Time Ranges source for available events
+        filteredAvailableEventList.addSource(selectedTimeFilters, newTimeRanges -> {
+            filteredAvailableEventList.setValue(
+                    applyAllFilters(
+                            availableEventListLiveData.getValue(),
+                            selectedCategoryFilters.getValue(),
+                            selectedDaysOfWeekFilters.getValue(),
+                            newTimeRanges
                     )
             );
         });
@@ -98,7 +116,8 @@ public class HomeViewModel extends ViewModel {
                     applyAllFilters(
                             newData,
                             selectedCategoryFilters.getValue(),
-                            selectedDaysOfWeekFilters.getValue()
+                            selectedDaysOfWeekFilters.getValue(),
+                            selectedTimeFilters.getValue()
                     )
             );
         });
@@ -107,7 +126,8 @@ public class HomeViewModel extends ViewModel {
                     applyAllFilters(
                             myEvents.getValue(),
                             newFilters,
-                            selectedDaysOfWeekFilters.getValue()
+                            selectedDaysOfWeekFilters.getValue(),
+                            selectedTimeFilters.getValue()
                     )
             );
         });
@@ -116,6 +136,17 @@ public class HomeViewModel extends ViewModel {
                     applyAllFilters(
                             myEvents.getValue(),
                             selectedCategoryFilters.getValue(),
+                            newFilters,
+                            selectedTimeFilters.getValue()
+                    )
+            );
+        });
+        filteredMyEventList.addSource(selectedTimeFilters, newFilters -> {
+            filteredMyEventList.setValue(
+                    applyAllFilters(
+                            myEvents.getValue(),
+                            selectedCategoryFilters.getValue(),
+                            selectedDaysOfWeekFilters.getValue(),
                             newFilters
                     )
             );
@@ -148,6 +179,10 @@ public class HomeViewModel extends ViewModel {
         return selectedDaysOfWeekFilters.getValue();
     }
 
+    public List<TimeRange> getSelectedTimeRanges() {
+        return selectedTimeFilters.getValue();
+    }
+
     public void applyCategoryFilters(List<EventCategory> selectedCategories) {
         if (selectedCategories.size() == 0) {
             selectedCategoryFilters.setValue(Stream.of(EventCategory.values())
@@ -164,6 +199,16 @@ public class HomeViewModel extends ViewModel {
                     .collect(Collectors.toList()));
         } else {
             this.selectedDaysOfWeekFilters.setValue(selectedDaysOfWeek);
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void applyTimeRangeFilter(List<TimeRange> selectedTimeRanges) {
+        if (selectedTimeRanges.size() == 0) {
+            selectedTimeFilters.setValue(Stream.of(TimeRange.values())
+                    .collect(Collectors.toList()));
+        } else {
+            this.selectedTimeFilters.setValue(selectedTimeRanges);
         }
     }
 
@@ -188,10 +233,6 @@ public class HomeViewModel extends ViewModel {
             }
         }
         return resultList;
-    }
-
-    public List<TimeRanges> getSelectedTimeRanges() {
-        return selectedTimeFilters.getValue();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -222,9 +263,35 @@ public class HomeViewModel extends ViewModel {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private List<Event> applyAllFilters(List<Event> currentData, List<EventCategory> selectedCategories, List<DayOfWeek> selectedDaysOfWeek) {
+    private List<Event> applyTimeRangesFilter(List<Event> currentData, List<TimeRange> timeRanges) {
+        if (currentData == null) {
+            return new ArrayList<>();
+        }
+
+        List<Event> resultList = new ArrayList<>();
+
+        if (timeRanges == null || timeRanges.isEmpty() || timeRanges.size() == TimeRange.values().length) {
+            resultList.addAll(currentData);
+        } else {
+            for (Event event : currentData) {
+                if (event.getDailyStartTime() == null) {
+                    continue;
+                }
+               for (TimeRange tr : timeRanges) {
+                   if (tr.isInRange(event.getDailyStartTime())) {
+                       resultList.add(event);
+                   }
+               }
+            }
+        }
+        return resultList;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private List<Event> applyAllFilters(List<Event> currentData, List<EventCategory> selectedCategories, List<DayOfWeek> selectedDaysOfWeek, List<TimeRange> selectedTimeRanges) {
         List<Event> filteredEvents = applyCategoryFilters(currentData, selectedCategories);
         filteredEvents = applyDaysOfWeekFilter(filteredEvents, selectedDaysOfWeek);
+        filteredEvents = applyTimeRangesFilter(filteredEvents, selectedTimeRanges);
         return filteredEvents;
     }
 

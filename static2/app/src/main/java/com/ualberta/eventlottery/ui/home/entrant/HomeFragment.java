@@ -10,12 +10,10 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -25,7 +23,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.idling.CountingIdlingResource;
 
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.button.MaterialButtonToggleGroup;
@@ -33,14 +30,13 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.model.EventCategory;
-import com.ualberta.eventlottery.model.EventRegistrationStatus;
+import com.ualberta.eventlottery.model.TimeRange;
 import com.ualberta.static2.R;
 import com.ualberta.static2.databinding.FragmentHomeBinding;
 
 import java.time.DayOfWeek;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -58,7 +54,7 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
     // History button has been removed
     private EditText searchInputHome;
     private ChipGroup filterGroup;
-    private Chip categoryFilter, classTimeFilter, daysOfWeekFilter;
+    private Chip categoryFilter, timeRangesFilter, daysOfWeekFilter;
     private RecyclerView recyclerView;
     // History adapter has been removed
     private EventAdapter myEventsAdapter, availableEventsAdapter;
@@ -105,21 +101,21 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
             }
         });
 
-        classTimeFilter = addFilterChip("classTime", " Start Time", "Any");
-        classTimeFilter.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
-            @Override
-            public void onClick(View view) {
-                showClassTimeFilterBottomSheet();
-            }
-        });
-
         daysOfWeekFilter = addFilterChip("daysOfWeek", "Days", "Any");
         daysOfWeekFilter.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View view) {
                 showDaysOfWeekFilterBottomSheet();
+            }
+        });
+
+        timeRangesFilter = addFilterChip("timeRanges", " Start Time", "Any");
+        timeRangesFilter.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onClick(View view) {
+                showTimeRangeFilterBottomSheet();
             }
         });
 
@@ -303,45 +299,64 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
         });
     }
 
-    private void showClassTimeFilterBottomSheet() {
-        View bottomSheetView = getLayoutInflater().inflate(R.layout.filter_days_of_week_bottom_sheet, null);
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void showTimeRangeFilterBottomSheet() {
+        View bottomSheetView = getLayoutInflater().inflate(R.layout.filter_time_ranges_bottom_sheet, null);
         ChipGroup chipGroup = bottomSheetView.findViewById(R.id.filterGroup);
 
-        // To-Do filtering based on class time preference
         Runnable buildChipGroup = () -> {
-//            List<EventCategory> selectedCategories = homeViewModel.getSelectedCategories();
-//            for (EventCategory category : EventCategory.values()) {
-//                Chip chip = new Chip(getContext());
-//                chip.setId(View.generateViewId()); // Assign a unique ID if needed for single selection
-//                chip.setText(category.toString().toLowerCase().replace("_", " "));
-//                chip.setTag(category);
-//                chipGroup.addView(chip);
-//                chip.setCheckable(true); // Make the chip checkable
-//                boolean isChecked = selectedCategories.contains(category);
-//                chip.setChecked(isChecked);
-//                if (isChecked) {
-//                    chipGroup.check(chip.getId());
-//                }
-//            }
+            List<TimeRange> selectedTimeRanges = homeViewModel.getSelectedTimeRanges();
+            boolean allRangesSelected = selectedTimeRanges.size() == TimeRange.values().length;
+            if (allRangesSelected) {
+                return;
+            }
+            for (int i = 0; i < chipGroup.getChildCount(); ++i) {
+                View child = chipGroup.getChildAt(i);
+                if (child instanceof Chip) {
+                    Chip chip = (Chip) child;
+
+                    String chipTag = (String) chip.getTag();
+                    if (chipTag != null) {
+                        TimeRange tr = TimeRange.valueOf(chipTag);
+                        if (tr != null) {
+                            boolean isChecked = selectedTimeRanges.contains(tr);
+                            chip.setChecked(isChecked);
+                            if (isChecked) {
+                                chipGroup.check(chip.getId());
+                            }
+                        }
+                    }
+                }
+            }
         };
 
         showFilterBottomSheet(bottomSheetView, buildChipGroup, view -> {
-            // Get all checked chip IDs
-//            List<Integer> selectedChipIds = chipGroup.getCheckedChipIds();
-//
-//            // Convert to readable strings (or use your own logic)
-//            List<EventCategory> selectedFilters = new ArrayList<>();
-//            for (Integer id : selectedChipIds) {
-//                Chip chip = bottomSheetView.findViewById(id);
-//                if (chip != null) {
-//                    selectedFilters.add((EventCategory) chip.getTag());
-//                }
-//            }
-//
-//            homeViewModel.applyCategoryFilters(selectedFilters);
-//
-//            String selectedFiltersCount = String.format("(%d)", selectedFilters.size());
-//            categoryFilter.setText(String.format("Category: %s", selectedFilters.size() == chipGroup.getChildCount() ? "Any" : selectedFiltersCount));
+            List<Integer> selectedChipIds = chipGroup.getCheckedChipIds();
+
+            // Convert to readable strings (or use your own logic)
+            List<TimeRange> selectedTimeRanges = new ArrayList<>();
+            for (Integer id : selectedChipIds) {
+                Chip chip = bottomSheetView.findViewById(id);
+                if (chip != null) {
+                    selectedTimeRanges.add(TimeRange.valueOf((String) chip.getTag()));
+                }
+            }
+
+            homeViewModel.applyTimeRangeFilter(selectedTimeRanges);
+
+            String fmt = "Start Time: %s";
+            if (selectedTimeRanges.size() == 3 || selectedTimeRanges.isEmpty()) {
+                timeRangesFilter.setText(String.format(fmt, "Any"));
+            } else {
+                StringBuffer buffer = new StringBuffer();
+                for (int i = 0; i < selectedTimeRanges.size(); ++i) {
+                    if (i > 0) {
+                        buffer.append(", ");
+                    }
+                    buffer.append(selectedTimeRanges.get(i).getShortDisplayName());
+                }
+                timeRangesFilter.setText(String.format(fmt, buffer.toString().trim()));
+            }
         });
     }
 
