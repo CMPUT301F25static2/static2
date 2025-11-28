@@ -95,12 +95,29 @@ public class HomeViewModel extends ViewModel {
         //Observes myEvents and applies filter on new data
         filteredMyEventList.addSource(myEvents, newData -> {
             filteredMyEventList.setValue(
-                    applyCategoryFilters(newData, selectedCategoryFilters.getValue())
+                    applyAllFilters(
+                            newData,
+                            selectedCategoryFilters.getValue(),
+                            selectedDaysOfWeekFilters.getValue()
+                    )
             );
         });
         filteredMyEventList.addSource(selectedCategoryFilters, newFilters -> {
             filteredMyEventList.setValue(
-                    applyCategoryFilters(myEvents.getValue(), newFilters)
+                    applyAllFilters(
+                            myEvents.getValue(),
+                            newFilters,
+                            selectedDaysOfWeekFilters.getValue()
+                    )
+            );
+        });
+        filteredMyEventList.addSource(selectedDaysOfWeekFilters, newFilters -> {
+            filteredMyEventList.setValue(
+                    applyAllFilters(
+                            myEvents.getValue(),
+                            selectedCategoryFilters.getValue(),
+                            newFilters
+                    )
             );
         });
     }
