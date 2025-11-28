@@ -126,14 +126,16 @@ public class AdminImagesFragment extends Fragment implements AdminImagesAdapter.
     public void onViewImage(ImageItem imageItem) {
         // Open image viewer fragment to view full image
         if (imageItem.getImageUrl() != null && !imageItem.getImageUrl().isEmpty()) {
-            ImageViewerFragment viewerFragment = ImageViewerFragment.newInstance(imageItem.getImageUrl(),"123");
+            // Correctly pass both the image URL and the title
+            ImageViewerFragment viewerFragment = ImageViewerFragment.newInstance(imageItem.getImageUrl(), imageItem.getTitle());
             getParentFragmentManager()
                     .beginTransaction()
-                    .replace(android.R.id.content, viewerFragment)
+                    .replace(this.getId(), viewerFragment) // It's better practice to replace the current fragment's container
                     .addToBackStack(null)
                     .commit();
         }
     }
+
 
     @Override
     public void onDestroyView() {
