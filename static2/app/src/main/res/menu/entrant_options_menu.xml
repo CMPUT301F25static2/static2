@@ -6,5 +6,5 @@
 
     <item
         android:id="@+id/menu_delete_from_waiting_list"
-        android:title="delete form waiting list" />
+        android:title="cancel registrtaion" />
 </menu>
