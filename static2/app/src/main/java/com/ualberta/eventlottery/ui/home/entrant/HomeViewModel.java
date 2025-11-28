@@ -1,7 +1,9 @@
 package com.ualberta.eventlottery.ui.home.entrant;
 
+import android.os.Build;
 import android.util.Log;
 
+import androidx.annotation.RequiresApi;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -15,7 +17,11 @@ import com.ualberta.eventlottery.repository.EventRepository;
 import com.ualberta.eventlottery.repository.RegistrationRepository;
 import com.ualberta.eventlottery.utils.UserManager;
 
+import java.time.DayOfWeek;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,6 +36,7 @@ public class HomeViewModel extends ViewModel {
 
     private final LiveData<List<Event>> availableEventListLiveData;
     private final MutableLiveData<List<EventCategory>> selectedCategoryFilters = new MutableLiveData<>(new ArrayList<>());
+    private final MutableLiveData<List<DayOfWeek>> selectedDaysOfWeek = new MutableLiveData<>();
     private final MediatorLiveData<List<Event>> filteredAvailableEventList = new MediatorLiveData<>();
 
     private final MutableLiveData<List<TimeRanges>> selectedTimeFilters = new MutableLiveData<>(new ArrayList<>());
@@ -43,6 +50,7 @@ public class HomeViewModel extends ViewModel {
     /**
      * Constructs a HomeViewModel and initializes events from EventRepository
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public HomeViewModel() {
         eventRepository = EventRepository.getInstance();
         registrationRepository = RegistrationRepository.getInstance();
@@ -51,16 +59,25 @@ public class HomeViewModel extends ViewModel {
         availableEventListLiveData = eventRepository.getAvailableEvents();
         selectedCategoryFilters.setValue(Stream.of(EventCategory.values())
                 .collect(Collectors.toList()));
+        selectedDaysOfWeek.setValue(Stream.of(DayOfWeek.values())
+                .collect(Collectors.toList()));
 
         //Observes the availableEventListLiveData and applies filter on new data
         filteredAvailableEventList.addSource(availableEventListLiveData, newData -> {
-            filteredAvailableEventList.setValue(
-                    applyCategoryFilters(newData, selectedCategoryFilters.getValue())
-            );
+            List<Event> filteredEvents = applyCategoryFilters(newData, selectedCategoryFilters.getValue());
+            filteredEvents = applyDaysOfWeekFilter(filteredEvents, selectedDaysOfWeek.getValue());
+            filteredAvailableEventList.setValue(filteredEvents);
         });
+
         filteredAvailableEventList.addSource(selectedCategoryFilters, newFilters -> {
             filteredAvailableEventList.setValue(
                     applyCategoryFilters(availableEventListLiveData.getValue(), newFilters)
+            );
+        });
+
+        filteredAvailableEventList.addSource(selectedDaysOfWeek, newDaysOfWeek -> {
+            filteredAvailableEventList.setValue(
+                    applyDaysOfWeekFilter(availableEventListLiveData.getValue(), newDaysOfWeek)
             );
         });
 
@@ -108,6 +125,10 @@ public class HomeViewModel extends ViewModel {
         }
     }
 
+    public void applyDaysOfWeekFilter(List<DayOfWeek> selectedDaysOfWeek) {
+        this.selectedDaysOfWeek.setValue(selectedDaysOfWeek);
+    }
+
     private List<Event> applyCategoryFilters(List<Event> currentData, List<EventCategory> categories) {
         if (currentData == null) {
             return new ArrayList<>();
@@ -135,9 +156,31 @@ public class HomeViewModel extends ViewModel {
         return selectedTimeFilters.getValue();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private List<Event> applyDaysOfWeekFilter(List<Event> currentData, List<DayOfWeek> daysOfWeek) {
+        if (currentData == null) {
+            return new ArrayList<>();
+        }
 
+        Calendar cal = Calendar.getInstance();
 
+        List<Event> resultList = new ArrayList<>();
 
+        if (daysOfWeek == null || daysOfWeek.isEmpty()) {
+            resultList.addAll(currentData);
+        } else {
+            for (Event event : currentData) {
+                if (event.getStartTime() == null) {
+                    continue;
+                }
+                cal.setTime(event.getStartTime());
+                if (daysOfWeek.contains(DayOfWeek.of(cal.get(Calendar.DAY_OF_WEEK)))) {
+                    resultList.add(event);
+                };
+            }
+        }
+        return resultList;
+    }
 
     /**
      * Method to trigger loading the user's registered events

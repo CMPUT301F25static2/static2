@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select Preferred Days of the Week"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp"/>
+
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/filterGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        app:singleSelection="false">
+
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/dayOfWeekMonday"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:checkedIconEnabled="false"
+            android:tag="MONDAY"
+            android:text="Mon" />
+
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/dayOfWeekTuesday"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:checkedIconEnabled="false"
+            android:tag="TUESDAY"
+            android:text="Tue" />
+
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/dayOfWeekWednesday"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:checkedIconEnabled="false"
+            android:tag="WEDNESDAY"
+            android:text="Wed" />
+
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/dayOfWeekThursday"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:checkedIconEnabled="false"
+            android:tag="THURSDAY"
+            android:text="Thu" />
+
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/dayOfWeekFriday"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:checkedIconEnabled="false"
+            android:tag="FRIDAY"
+            android:text="Fri" />
+
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/dayOfWeekSaturday"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:checkedIconEnabled="false"
+            android:tag="SATURDAY"
+            android:text="Sat" />
+
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/dayOfWeekSunday"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:checkedIconEnabled="false"
+            android:tag="SUNDAY"
+            android:text="Sun" />
+    </com.google.android.material.chip.ChipGroup>
+
+
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Apply Selections"
+        android:id="@+id/applyFilters"
+        style="@style/Widget.Material3.Button.ElevatedButton" />
+
+
+</LinearLayout>
+
+
+
+
+
