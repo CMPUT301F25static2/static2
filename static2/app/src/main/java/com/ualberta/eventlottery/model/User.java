@@ -14,6 +14,7 @@ public class User {
     private String fcmToken;
 
     private String userType;
+    private Boolean notificationsEnabled;
 
 
 
@@ -42,7 +43,7 @@ public class User {
         this.fcmToken = fcmToken;
     }
 
-    public User(String userId, String name, String email, String phone, String fcmToken, String userType, String favRecCenter) {
+    public User(String userId, String name, String email, String phone, String fcmToken, String userType, String favRecCenter, Boolean notificationsEnabled) {
         this.userId = userId;
         this.name = name;
         this.email = email;
@@ -51,6 +52,7 @@ public class User {
         this.fcmToken = fcmToken;
         this.userType = userType;
         this.favRecCenter = favRecCenter;
+        this.notificationsEnabled = notificationsEnabled;
     }
 
 
@@ -76,6 +78,7 @@ public class User {
     public String getUserType() {
         return userType;
     }
+    public Boolean getNotificationsEnabled() { return notificationsEnabled; }
 
     public void setUserType(String userType) {
         this.userType = userType;
@@ -91,6 +94,7 @@ public class User {
     public void setEmail(String email) { this.email = email; }
     public void setPhone(String phone) { this.phone = phone; }
     public void setFavRecCenter(String favRecCenter) { this.favRecCenter = favRecCenter; }
+    public void setNotificationsEnabled(Boolean notificationsEnabled) { this.notificationsEnabled = notificationsEnabled; }
     public String getFcmToken() { return fcmToken; }
     public void setFcmToken(String fcmToken) { this.fcmToken = fcmToken; }
 
@@ -123,4 +127,5 @@ public class User {
         }
         return false;
     }
+
 }
