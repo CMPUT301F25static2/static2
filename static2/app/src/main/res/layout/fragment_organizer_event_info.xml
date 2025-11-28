@@ -431,7 +431,7 @@
 
            <!--        location-->
            <LinearLayout
-               android:id="@+id/btn_event_update_location"
+               android:id="@+id/location_section"
                android:layout_width="match_parent"
                android:layout_height="wrap_content"
                android:orientation="vertical"
@@ -445,37 +445,64 @@
                    android:textSize="16sp"
                    android:layout_marginVertical="10dp"/>
 
-
+               <!-- Geolocation requirement toggle -->
                <LinearLayout
+                   android:id="@+id/btn_event_update_geolocation"
                    android:layout_width="match_parent"
                    android:layout_height="wrap_content"
+                   android:orientation="horizontal"
                    android:gravity="center_vertical"
-                   android:background="@drawable/rounded_md"
+                   android:layout_marginBottom="16dp"
+                   android:background="@drawable/border_radius"
                    android:backgroundTint="@color/white"
-                   android:padding="16dp">
+                   android:paddingHorizontal="12dp">
 
-                   <LinearLayout
-                       android:layout_width="match_parent"
+                   <TextView
+                       android:layout_width="0dp"
                        android:layout_height="wrap_content"
-                       android:orientation="vertical">
+                       android:layout_weight="1"
+                       android:text="Require Geolocation"
+                       android:textColor="@color/black"
+                       android:textSize="@dimen/text_size_body" />
 
-                       <ImageView
-                           android:id="@+id/iv_event_location_img"
-                           android:layout_width="match_parent"
-                           android:layout_height="wrap_content"
-                           android:src="@drawable/location"
-                           android:scaleType="centerCrop"/>
-
-                       <TextView
-                           android:id="@+id/tv_event_location"
-                           android:layout_marginTop="5dp"
-                           android:layout_gravity="center"
-                           android:layout_width="wrap_content"
-                           android:layout_height="wrap_content"
-                           android:text="116 St 85 Ave, Edmonton, AB T6G 2R3"/>
-                   </LinearLayout>
-
+                   <com.google.android.material.switchmaterial.SwitchMaterial
+                       android:id="@+id/switch_event_geolocation_required"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:checked="true" />
                </LinearLayout>
+
+               <com.google.android.material.chip.ChipGroup
+                   android:id="@+id/chip_group_entrant_status"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:layout_marginBottom="10dp"
+                   app:singleSelection="true">
+
+                   <com.google.android.material.chip.Chip
+                       android:id="@+id/chip_all_entrants"
+                       style="@style/Widget.MaterialComponents.Chip.Choice"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:text="All"
+                       android:checked="true" />
+
+                   <com.google.android.material.chip.Chip
+                       android:id="@+id/chip_waiting_list"
+                       style="@style/Widget.MaterialComponents.Chip.Choice"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:text="Waiting List" />
+
+               </com.google.android.material.chip.ChipGroup>
+
+               <fragment
+                   android:id="@+id/map"
+                   android:name="com.google.android.gms.maps.SupportMapFragment"
+                   android:layout_width="match_parent"
+                   android:layout_height="300dp" />
+
+
            </LinearLayout>
 
 
