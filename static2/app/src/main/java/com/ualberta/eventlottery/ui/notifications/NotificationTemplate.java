@@ -49,4 +49,10 @@ public class NotificationTemplate {
                 + eventTitle
                 + "\" at this time. You remain on the waiting list and will be notified if a spot opens up.";
     }
+    public static String getAcceptedOrganizer( String name, String eventTitle ){
+        return name + " has accepted their spot in your event: " + eventTitle;
+    }
+    public static String getNotAcceptedOrganizer( String name, String eventTitle ){
+        return name + " has chosen cancelled their spot in your event: " + eventTitle;
+    }
 }

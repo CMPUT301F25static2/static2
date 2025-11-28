@@ -660,5 +660,25 @@ public class RegistrationRepository {
                 callback.onFailure(e);
             }
         });
+
     }
+    public void acceptInvitation(String registrationId, RegistrationCallback callback) {
+        if (registrationId == null || registrationId.isEmpty()) {
+            callback.onFailure(new IllegalArgumentException("Invalid registrationId"));
+            return;
+        }
+
+        DocumentReference regRef = db.collection("registrations").document(registrationId);
+
+        regRef.update(
+                "status", "CONFIRMED",
+                "respondedAt", new Date()
+        ).addOnSuccessListener(unused ->
+                regRef.get().addOnSuccessListener(doc -> {
+                    Registration updated = doc.toObject(Registration.class);
+                    callback.onSuccess(updated);
+                })
+        ).addOnFailureListener(callback::onFailure);
+    }
+
 }
