@@ -55,10 +55,8 @@ public class NotificationController {
      *
      * @param title   the title of the notification
      * @param body    the message body
-     * @param eventId the related event ID
      */
-    // TODO: implement proper intent when event detail fragment finished
-    public void displayNotification(String title, String body, String eventId) {
+    public void displayNotification(String title, String body) {
         Intent intent = new Intent(context, EntrantMainActivity.class);
         intent.putExtra("open_notifications", true); // Flag to open NotificationsFragment
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
