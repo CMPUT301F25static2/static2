@@ -36,6 +36,7 @@ public class ProfileViewModel extends ViewModel {
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private final MutableLiveData<String> favoriteRecCenter = new MutableLiveData<>("");
+    private final MutableLiveData<Boolean> notificationsEnabled = new MutableLiveData<>(null);
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -76,6 +77,13 @@ public class ProfileViewModel extends ViewModel {
      * @return The LiveData for the user's favorite rec center.
      */
     public LiveData<String> getFavoriteRecCenter() { return favoriteRecCenter; }
+    /**
+     * Returns the LiveData for the user's notification permissions.
+     *
+     * @return The LiveData for the user's notification permissions.
+     */
+    public LiveData<Boolean> getNotificationsEnabled() { return notificationsEnabled; }
+
 
 
     /**
@@ -105,6 +113,14 @@ public class ProfileViewModel extends ViewModel {
     public void setFavoriteRecCenter(String value) {
         favoriteRecCenter.setValue(value);
     }
+    /**
+     * Sets the user's notification permission.
+     *
+     * @param value The new notification permission.
+     */
+    public void setNotificationsEnabled(Boolean value) {
+        notificationsEnabled.setValue(value);
+    }
 
     /**
      * Loads the user's profile from Firebase.
@@ -126,6 +142,7 @@ public class ProfileViewModel extends ViewModel {
                             email.setValue(profile.getEmail());
                             phone.setValue(profile.getPhone());
                             favoriteRecCenter.setValue(profile.getFavRecCenter());
+                            notificationsEnabled.setValue(profile.getNotificationsEnabled());
                             Log.d(TAG, "Profile loaded successfully");
                         }
                     } else {
@@ -152,6 +169,7 @@ public class ProfileViewModel extends ViewModel {
         updates.put("email", email.getValue());
         updates.put("phone", phone.getValue());
         updates.put("favRecCenter", favoriteRecCenter.getValue());
+        updates.put("notificationsEnabled", notificationsEnabled.getValue());
 
         db.collection("users")
                 .document(userId)
@@ -169,6 +187,5 @@ public class ProfileViewModel extends ViewModel {
                     Log.e(TAG, "Error saving profile", e);
                 });
     }
-
 
 }

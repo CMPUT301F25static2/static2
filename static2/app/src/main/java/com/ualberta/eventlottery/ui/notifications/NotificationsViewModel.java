@@ -38,31 +38,35 @@ public class NotificationsViewModel extends ViewModel {
     private void listenToNotifications() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String currentUserId = UserManager.getCurrentUserId();
+        Log.d("NotificationsVM", "Current user ID: " + currentUserId);
+
 
         listenerRegistration = db.collection("notifications")
                 .whereArrayContains("recipientIdList", currentUserId)
+                .whereEqualTo("isRead", false)
+                .orderBy("createdAt")
                 .addSnapshotListener((snapshots, e) -> {
                     if (e != null) {
                         Log.e("NotificationsVM", "Firestore listener error", e);
                         return;
                     }
 
+                    List<NotificationModel> list = new ArrayList<>();
                     if (snapshots != null) {
-                        Log.d("NotificationsVM", "Retrieved " + snapshots.size() + " documents from Firestore");
-
-                        List<NotificationModel> notificationList = new ArrayList<>();
                         for (var doc : snapshots.getDocuments()) {
                             NotificationModel notification = doc.toObject(NotificationModel.class);
+
                             if (notification != null) {
-                                notificationList.add(notification);
-                                Log.d("NotificationsVM", "Document ID: " + doc.getId() + ", data: " + doc.getData());
+                                notification.setNotificationId(doc.getId()); // <-- critical
+                                list.add(notification);
                             }
                         }
-
-                        notifications.setValue(notificationList);
                     }
+
+                    notifications.postValue(list);  // make sure UI refreshes
                 });
     }
+
 
     /**
      * Returns a LiveData list of notifications for the current user.

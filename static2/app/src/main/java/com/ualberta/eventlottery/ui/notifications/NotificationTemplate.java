@@ -25,7 +25,7 @@ public class NotificationTemplate {
     public static String getAcceptedBody(String eventTitle) {
         return "Congratulations! You have been selected to attend the event \""
                 + eventTitle
-                + "\". Please confirm your attendance as soon as possible.";
+                + "\". Please confirm your attendance within 48 hours.";
     }
 
     /**
@@ -48,5 +48,11 @@ public class NotificationTemplate {
         return "Unfortunately, you were not selected for the event \""
                 + eventTitle
                 + "\" at this time. You remain on the waiting list and will be notified if a spot opens up.";
+    }
+    public static String getAcceptedOrganizer( String name, String eventTitle ){
+        return name + " has accepted their spot in your event: " + eventTitle;
+    }
+    public static String getNotAcceptedOrganizer( String name, String eventTitle ){
+        return name + " has chosen cancelled their spot in your event: " + eventTitle;
     }
 }
