@@ -101,7 +101,7 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View view) {
-                showFilterBottomSheet(categoryFilter);
+                showCategoryFilterBottomSheet();
             }
         });
 
@@ -110,7 +110,7 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View view) {
-                showFilterBottomSheet(classTimeFilter);
+                showClassTimeFilterBottomSheet();
             }
         });
 
@@ -119,7 +119,7 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View view) {
-                showFilterBottomSheet(daysOfWeekFilter);
+                showDaysOfWeekFilterBottomSheet();
             }
         });
 
@@ -182,143 +182,141 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
         filterGroup.addView(chip);
         return chip;
     }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void showFilterBottomSheet(Chip filterChip) {
-        View bottomSheetView;
-
-        String chipTag = (String) filterChip.getTag();
-        if (chipTag.compareTo("category") == 0) {
-            bottomSheetView = getLayoutInflater().inflate(R.layout.filter_category_bottom_sheet, null);
-        } else if (chipTag.compareTo("daysOfWeek") == 0) {
-            bottomSheetView = getLayoutInflater().inflate(R.layout.filter_days_of_week_bottom_sheet, null);
-        } else {
-            bottomSheetView = getLayoutInflater().inflate(R.layout.filter_category_bottom_sheet, null);
-        }
-
+    private void showFilterBottomSheet(View bottomSheetView, Runnable buildChipGroup, View.OnClickListener applyBtnClickListener) {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getContext());
         bottomSheetDialog.setContentView(bottomSheetView);
 
-        ChipGroup chipGroup = bottomSheetView.findViewById(R.id.filterGroup);
-        MaterialButton btnApply = bottomSheetView.findViewById(R.id.applyFilters);
-
-        if (chipTag.compareTo("category") == 0) {
-            List<EventCategory> selectedCategories = homeViewModel.getSelectedCategories();
-            boolean allCategoriesSelected = selectedCategories.size() == EventCategory.values().length;
-            for (EventCategory category : EventCategory.values()) {
-                Chip chip = new Chip(getContext());
-                chip.setId(View.generateViewId()); // Assign a unique ID if needed for single selection
-                chip.setText(category.toString().toLowerCase().replace("_", " "));
-                chip.setTag(category);
-                chipGroup.addView(chip);
-
-                chip.setCheckable(true); // Make the chip checkable
-                boolean isChecked = selectedCategories.contains(category);
-                if (isChecked && !allCategoriesSelected) {
-                    chip.setChecked(isChecked);
-                    chipGroup.check(chip.getId());
-                }
-            }
-
-            btnApply.setOnClickListener(v -> {
-                // Get all checked chip IDs
-                List<Integer> selectedChipIds = chipGroup.getCheckedChipIds();
-
-                // Convert to readable strings (or use your own logic)
-                List<EventCategory> selectedFilters = new ArrayList<>();
-                for (Integer id : selectedChipIds) {
-                    Chip chip = bottomSheetView.findViewById(id);
-                    if (chip != null) {
-                        selectedFilters.add((EventCategory) chip.getTag());
-                    }
-                }
-
-                homeViewModel.applyCategoryFilters(selectedFilters);
-
-                // Close the sheet
-                bottomSheetDialog.dismiss();
-
-                String selectedFiltersCount = String.format("(%d)", selectedFilters.size());
-                boolean allOrNoFiltersSelected = selectedFilters.size() == chipGroup.getChildCount() || selectedFilters.size() == 0;
-                categoryFilter.setText(String.format("Category: %s", allOrNoFiltersSelected ? "Any" : selectedFiltersCount));
-            });
-        } else if (chipTag.compareTo("daysOfWeek") == 0) {
-            btnApply.setOnClickListener(v -> {
-                List<Integer> selectedChipIds = chipGroup.getCheckedChipIds();
-
-                // Convert to readable strings (or use your own logic)
-                List<DayOfWeek> selectedDaysOfWeek = new ArrayList<>();
-                for (Integer id : selectedChipIds) {
-                    Chip chip = bottomSheetView.findViewById(id);
-                    if (chip != null) {
-                        selectedDaysOfWeek.add(DayOfWeek.valueOf((String) chip.getTag()));
-                    }
-                }
-
-                homeViewModel.applyDaysOfWeekFilter(selectedDaysOfWeek);
-
-                // Close the sheet
-                bottomSheetDialog.dismiss();
-
-                String fmt = "Days: %s";
-                if (selectedDaysOfWeek.size() == 7 || selectedDaysOfWeek.isEmpty()) {
-                    daysOfWeekFilter.setText(String.format(fmt, "Any"));
-                } else {
-                    StringBuffer buffer = new StringBuffer();
-                    for (DayOfWeek dow : DayOfWeek.values()) {
-                        if (selectedDaysOfWeek.contains(dow)) {
-                            buffer.append(dow.getDisplayName(TextStyle.NARROW, Locale.CANADA));
-                            buffer.append(" ");
-                        }
-                    }
-                    daysOfWeekFilter.setText(String.format(fmt, buffer.toString().trim()));
-                }
-            });
-
-        } else if (chipTag.compareTo("classTime") == 0) {
-            List<EventCategory> selectedCategories = homeViewModel.getSelectedCategories();
-            boolean allCategoriesSelected = selectedCategories.size() == EventCategory.values().length;
-            for (EventCategory category : EventCategory.values()) {
-                Chip chip = new Chip(getContext());
-                chip.setId(View.generateViewId()); // Assign a unique ID if needed for single selection
-                chip.setText(category.toString().toLowerCase().replace("_", " "));
-                chip.setTag(category);
-                chipGroup.addView(chip);
-
-                chip.setCheckable(true); // Make the chip checkable
-                boolean isChecked = selectedCategories.contains(category);
-                if (isChecked && !allCategoriesSelected) {
-                    chip.setChecked(isChecked);
-                    chipGroup.check(chip.getId());
-                }
-            }
-
-            btnApply.setOnClickListener(v -> {
-                // Get all checked chip IDs
-                List<Integer> selectedChipIds = chipGroup.getCheckedChipIds();
-
-                // Convert to readable strings (or use your own logic)
-                List<EventCategory> selectedFilters = new ArrayList<>();
-                for (Integer id : selectedChipIds) {
-                    Chip chip = bottomSheetView.findViewById(id);
-                    if (chip != null) {
-                        selectedFilters.add((EventCategory) chip.getTag());
-                    }
-                }
-
-                homeViewModel.applyCategoryFilters(selectedFilters);
-
-                // Close the sheet
-                bottomSheetDialog.dismiss();
-
-                String selectedFiltersCount = String.format("(%d)", selectedFilters.size());
-                boolean allOrNoFiltersSelected = selectedFilters.size() == chipGroup.getChildCount() || selectedFilters.size() == 0;
-                categoryFilter.setText(String.format("Category: %s", allOrNoFiltersSelected ? "Any" : selectedFiltersCount));
-            });
-
+        if (buildChipGroup != null) {
+            buildChipGroup.run();
         }
 
+        MaterialButton btnApply = bottomSheetView.findViewById(R.id.applyFilters);
+        btnApply.setOnClickListener(view -> {
+            applyBtnClickListener.onClick(bottomSheetView);
+            bottomSheetDialog.dismiss();
+        });
         bottomSheetDialog.show();
+    }
+
+    private void showCategoryFilterBottomSheet() {
+        View bottomSheetView = getLayoutInflater().inflate(R.layout.filter_category_bottom_sheet, null);
+        ChipGroup chipGroup = bottomSheetView.findViewById(R.id.filterGroup);
+
+        Runnable buildChipGroup = () -> {
+            List<EventCategory> selectedCategories = homeViewModel.getSelectedCategories();
+            boolean allCategoriesSelected = selectedCategories.size() == EventCategory.values().length;
+            for (EventCategory category : EventCategory.values()) {
+                Chip chip = new Chip(getContext());
+                chip.setId(View.generateViewId()); // Assign a unique ID if needed for single selection
+                chip.setText(category.toString().toLowerCase().replace("_", " "));
+                chip.setTag(category);
+                chipGroup.addView(chip);
+
+                chip.setCheckable(true); // Make the chip checkable
+                boolean isChecked = selectedCategories.contains(category);
+                if (isChecked && !allCategoriesSelected) {
+                    chip.setChecked(isChecked);
+                    chipGroup.check(chip.getId());
+                }
+            }
+        };
+
+        showFilterBottomSheet(bottomSheetView, buildChipGroup, view -> {
+            // Get all checked chip IDs
+            List<Integer> selectedChipIds = chipGroup.getCheckedChipIds();
+
+            // Convert to readable strings (or use your own logic)
+            List<EventCategory> selectedFilters = new ArrayList<>();
+            for (Integer id : selectedChipIds) {
+                Chip chip = bottomSheetView.findViewById(id);
+                if (chip != null) {
+                    selectedFilters.add((EventCategory) chip.getTag());
+                }
+            }
+
+            homeViewModel.applyCategoryFilters(selectedFilters);
+
+            String selectedFiltersCount = String.format("(%d)", selectedFilters.size());
+            boolean allOrNoFiltersSelected = selectedFilters.size() == chipGroup.getChildCount() || selectedFilters.size() == 0;
+            categoryFilter.setText(String.format("Category: %s", allOrNoFiltersSelected ? "Any" : selectedFiltersCount));
+        });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void showDaysOfWeekFilterBottomSheet() {
+        View bottomSheetView = getLayoutInflater().inflate(R.layout.filter_days_of_week_bottom_sheet, null);
+        ChipGroup chipGroup = bottomSheetView.findViewById(R.id.filterGroup);
+
+        showFilterBottomSheet(bottomSheetView, null, view -> {
+            List<Integer> selectedChipIds = chipGroup.getCheckedChipIds();
+
+            // Convert to readable strings (or use your own logic)
+            List<DayOfWeek> selectedDaysOfWeek = new ArrayList<>();
+            for (Integer id : selectedChipIds) {
+                Chip chip = bottomSheetView.findViewById(id);
+                if (chip != null) {
+                    selectedDaysOfWeek.add(DayOfWeek.valueOf((String) chip.getTag()));
+                }
+            }
+
+            homeViewModel.applyDaysOfWeekFilter(selectedDaysOfWeek);
+
+            String fmt = "Days: %s";
+            if (selectedDaysOfWeek.size() == 7 || selectedDaysOfWeek.isEmpty()) {
+                daysOfWeekFilter.setText(String.format(fmt, "Any"));
+            } else {
+                StringBuffer buffer = new StringBuffer();
+                for (DayOfWeek dow : DayOfWeek.values()) {
+                    if (selectedDaysOfWeek.contains(dow)) {
+                        buffer.append(dow.getDisplayName(TextStyle.NARROW, Locale.CANADA));
+                        buffer.append(" ");
+                    }
+                }
+                daysOfWeekFilter.setText(String.format(fmt, buffer.toString().trim()));
+            }
+        });
+    }
+
+    private void showClassTimeFilterBottomSheet() {
+        View bottomSheetView = getLayoutInflater().inflate(R.layout.filter_days_of_week_bottom_sheet, null);
+        ChipGroup chipGroup = bottomSheetView.findViewById(R.id.filterGroup);
+
+        // To-Do filtering based on class time preference
+        Runnable buildChipGroup = () -> {
+//            List<EventCategory> selectedCategories = homeViewModel.getSelectedCategories();
+//            for (EventCategory category : EventCategory.values()) {
+//                Chip chip = new Chip(getContext());
+//                chip.setId(View.generateViewId()); // Assign a unique ID if needed for single selection
+//                chip.setText(category.toString().toLowerCase().replace("_", " "));
+//                chip.setTag(category);
+//                chipGroup.addView(chip);
+//                chip.setCheckable(true); // Make the chip checkable
+//                boolean isChecked = selectedCategories.contains(category);
+//                chip.setChecked(isChecked);
+//                if (isChecked) {
+//                    chipGroup.check(chip.getId());
+//                }
+//            }
+        };
+
+        showFilterBottomSheet(bottomSheetView, buildChipGroup, view -> {
+            // Get all checked chip IDs
+//            List<Integer> selectedChipIds = chipGroup.getCheckedChipIds();
+//
+//            // Convert to readable strings (or use your own logic)
+//            List<EventCategory> selectedFilters = new ArrayList<>();
+//            for (Integer id : selectedChipIds) {
+//                Chip chip = bottomSheetView.findViewById(id);
+//                if (chip != null) {
+//                    selectedFilters.add((EventCategory) chip.getTag());
+//                }
+//            }
+//
+//            homeViewModel.applyCategoryFilters(selectedFilters);
+//
+//            String selectedFiltersCount = String.format("(%d)", selectedFilters.size());
+//            categoryFilter.setText(String.format("Category: %s", selectedFilters.size() == chipGroup.getChildCount() ? "Any" : selectedFiltersCount));
+        });
     }
 
     private void applyFilters(List<EventCategory> categoryFilters) {
