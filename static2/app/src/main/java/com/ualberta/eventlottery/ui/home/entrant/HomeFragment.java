@@ -1,6 +1,8 @@
 package com.ualberta.eventlottery.ui.home.entrant;
 
+import android.os.Build;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,9 +10,9 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -21,14 +23,22 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.idling.CountingIdlingResource;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.button.MaterialButtonToggleGroup;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.ualberta.eventlottery.model.Event;
-import com.ualberta.eventlottery.model.EventRegistrationStatus;
+import com.ualberta.eventlottery.model.EventCategory;
+import com.ualberta.eventlottery.model.TimeRange;
 import com.ualberta.static2.R;
 import com.ualberta.static2.databinding.FragmentHomeBinding;
 
+import java.time.DayOfWeek;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Fragment that displays home screen for the entrants.
@@ -42,8 +52,9 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
     private CountingIdlingResource getAvailableEventsIdlingResource = null;
 
     // History button has been removed
-    private Button filterButton, sortButton, myEventsButton, availableEventsButton;
     private EditText searchInputHome;
+    private ChipGroup filterGroup;
+    private Chip categoryFilter, timeRangesFilter, daysOfWeekFilter;
     private RecyclerView recyclerView;
     // History adapter has been removed
     private EventAdapter myEventsAdapter, availableEventsAdapter;
@@ -77,12 +88,36 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
         View view = binding.getRoot();
 
         searchInputHome = view.findViewById(R.id.searchInputHome);
-        filterButton = view.findViewById(R.id.filterButton);
-        sortButton = view.findViewById(R.id.sortButton);
-        myEventsButton = view.findViewById(R.id.myEventsButton);
-        availableEventsButton = view.findViewById(R.id.availableEventsButton);
         recyclerView = view.findViewById(R.id.eventsRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        filterGroup = view.findViewById(R.id.filterGroup);
+        categoryFilter = addFilterChip("category", "Category", "Any");
+        categoryFilter.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onClick(View view) {
+                showCategoryFilterBottomSheet();
+            }
+        });
+
+        daysOfWeekFilter = addFilterChip("daysOfWeek", "Days", "Any");
+        daysOfWeekFilter.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onClick(View view) {
+                showDaysOfWeekFilterBottomSheet();
+            }
+        });
+
+        timeRangesFilter = addFilterChip("timeRanges", " Start Time", "Any");
+        timeRangesFilter.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onClick(View view) {
+                showTimeRangeFilterBottomSheet();
+            }
+        });
 
         // Initialize adapters and observers
         myEventsAdapter = new EventAdapter(new ArrayList<>(), this); // Now starts empty
@@ -107,9 +142,6 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
 
         showMyEvents();
 
-        filterButton.setOnClickListener(v -> Toast.makeText(getContext(), "Filter options coming soon!", Toast.LENGTH_SHORT).show());
-        sortButton.setOnClickListener(v -> Toast.makeText(getContext(), "Sort options coming soon!", Toast.LENGTH_SHORT).show());
-
         searchInputHome.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
                 // Search logic here
@@ -118,12 +150,221 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
             return false;
         });
 
-        // Navigation listeners
-        myEventsButton.setOnClickListener(v -> showMyEvents());
-        availableEventsButton.setOnClickListener(v -> showAvailableEvents());
+        MaterialButtonToggleGroup toggleGroup = view.findViewById(R.id.toggleGroup);
+
+        toggleGroup.addOnButtonCheckedListener(new MaterialButtonToggleGroup.OnButtonCheckedListener() {
+            @Override
+            public void onButtonChecked(MaterialButtonToggleGroup group, int checkedId, boolean isChecked) {
+                if (isChecked) {  // Only act when a button becomes selected
+                    if (checkedId == R.id.myEventsButton) {
+                        showMyEvents();
+                    } else if (checkedId == R.id.availableEventsButton) {
+                        showAvailableEvents();
+                    }
+                }
+            }
+        });
 
         return view;
     }
+
+    private Chip addFilterChip(String tag, String label, String value) {
+        Chip chip = new Chip(getContext());
+        chip.setText(String.format("%s: %s", label, value));
+        chip.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 10);
+        chip.setTag(tag);
+
+        chip.setId(View.generateViewId()); // Assign a unique ID if needed for single selection
+        filterGroup.addView(chip);
+        return chip;
+    }
+    private void showFilterBottomSheet(View bottomSheetView, Runnable buildChipGroup, View.OnClickListener applyBtnClickListener) {
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getContext());
+        bottomSheetDialog.setContentView(bottomSheetView);
+
+        if (buildChipGroup != null) {
+            buildChipGroup.run();
+        }
+
+        MaterialButton btnApply = bottomSheetView.findViewById(R.id.applyFilters);
+        btnApply.setOnClickListener(view -> {
+            applyBtnClickListener.onClick(bottomSheetView);
+            bottomSheetDialog.dismiss();
+        });
+        bottomSheetDialog.show();
+    }
+
+    private void showCategoryFilterBottomSheet() {
+        View bottomSheetView = getLayoutInflater().inflate(R.layout.filter_category_bottom_sheet, null);
+        ChipGroup chipGroup = bottomSheetView.findViewById(R.id.filterGroup);
+
+        Runnable buildChipGroup = () -> {
+            List<EventCategory> selectedCategories = homeViewModel.getSelectedCategories();
+            boolean allCategoriesSelected = selectedCategories.size() == EventCategory.values().length;
+            for (EventCategory category : EventCategory.values()) {
+                Chip chip = new Chip(getContext());
+                chip.setId(View.generateViewId()); // Assign a unique ID if needed for single selection
+                chip.setText(category.toString().toLowerCase().replace("_", " "));
+                chip.setTag(category);
+                chipGroup.addView(chip);
+
+                chip.setCheckable(true); // Make the chip checkable
+                boolean isChecked = selectedCategories.contains(category);
+                if (isChecked && !allCategoriesSelected) {
+                    chip.setChecked(isChecked);
+                    chipGroup.check(chip.getId());
+                }
+            }
+        };
+
+        showFilterBottomSheet(bottomSheetView, buildChipGroup, view -> {
+            // Get all checked chip IDs
+            List<Integer> selectedChipIds = chipGroup.getCheckedChipIds();
+
+            // Convert to readable strings (or use your own logic)
+            List<EventCategory> selectedFilters = new ArrayList<>();
+            for (Integer id : selectedChipIds) {
+                Chip chip = bottomSheetView.findViewById(id);
+                if (chip != null) {
+                    selectedFilters.add((EventCategory) chip.getTag());
+                }
+            }
+
+            homeViewModel.applyCategoryFilters(selectedFilters);
+
+            String selectedFiltersCount = String.format("(%d)", selectedFilters.size());
+            boolean allOrNoFiltersSelected = selectedFilters.size() == chipGroup.getChildCount() || selectedFilters.size() == 0;
+            categoryFilter.setText(String.format("Category: %s", allOrNoFiltersSelected ? "Any" : selectedFiltersCount));
+        });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void showDaysOfWeekFilterBottomSheet() {
+        View bottomSheetView = getLayoutInflater().inflate(R.layout.filter_days_of_week_bottom_sheet, null);
+        ChipGroup chipGroup = bottomSheetView.findViewById(R.id.filterGroup);
+
+        Runnable buildChipGroup = () -> {
+            List<DayOfWeek> selectedDaysOfWeek = homeViewModel.getSelectedDaysOfWeek();
+            boolean allDaysSelected = selectedDaysOfWeek.size() == DayOfWeek.values().length;
+            if (allDaysSelected) {
+                return;
+            }
+            for (int i = 0; i < chipGroup.getChildCount(); ++i) {
+                View child = chipGroup.getChildAt(i);
+                if (child instanceof Chip) {
+                    Chip chip = (Chip) child;
+
+                    String chipTag = (String) chip.getTag();
+                    if (chipTag != null) {
+                        DayOfWeek dow = DayOfWeek.valueOf(chipTag);
+                        if (dow != null) {
+                            boolean isChecked = selectedDaysOfWeek.contains(dow);
+                            chip.setChecked(isChecked);
+                            if (isChecked) {
+                                chipGroup.check(chip.getId());
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        showFilterBottomSheet(bottomSheetView, buildChipGroup, view -> {
+            List<Integer> selectedChipIds = chipGroup.getCheckedChipIds();
+
+            // Convert to readable strings (or use your own logic)
+            List<DayOfWeek> selectedDaysOfWeek = new ArrayList<>();
+            for (Integer id : selectedChipIds) {
+                Chip chip = bottomSheetView.findViewById(id);
+                if (chip != null) {
+                    selectedDaysOfWeek.add(DayOfWeek.valueOf((String) chip.getTag()));
+                }
+            }
+
+            homeViewModel.applyDaysOfWeekFilter(selectedDaysOfWeek);
+
+            String fmt = "Days: %s";
+            if (selectedDaysOfWeek.size() == 7 || selectedDaysOfWeek.isEmpty()) {
+                daysOfWeekFilter.setText(String.format(fmt, "Any"));
+            } else {
+                StringBuffer buffer = new StringBuffer();
+                for (DayOfWeek dow : DayOfWeek.values()) {
+                    if (selectedDaysOfWeek.contains(dow)) {
+                        buffer.append(dow.getDisplayName(TextStyle.NARROW, Locale.CANADA));
+                        buffer.append(" ");
+                    }
+                }
+                daysOfWeekFilter.setText(String.format(fmt, buffer.toString().trim()));
+            }
+        });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void showTimeRangeFilterBottomSheet() {
+        View bottomSheetView = getLayoutInflater().inflate(R.layout.filter_time_ranges_bottom_sheet, null);
+        ChipGroup chipGroup = bottomSheetView.findViewById(R.id.filterGroup);
+
+        Runnable buildChipGroup = () -> {
+            List<TimeRange> selectedTimeRanges = homeViewModel.getSelectedTimeRanges();
+            boolean allRangesSelected = selectedTimeRanges.size() == TimeRange.values().length;
+            if (allRangesSelected) {
+                return;
+            }
+            for (int i = 0; i < chipGroup.getChildCount(); ++i) {
+                View child = chipGroup.getChildAt(i);
+                if (child instanceof Chip) {
+                    Chip chip = (Chip) child;
+
+                    String chipTag = (String) chip.getTag();
+                    if (chipTag != null) {
+                        TimeRange tr = TimeRange.valueOf(chipTag);
+                        if (tr != null) {
+                            boolean isChecked = selectedTimeRanges.contains(tr);
+                            chip.setChecked(isChecked);
+                            if (isChecked) {
+                                chipGroup.check(chip.getId());
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        showFilterBottomSheet(bottomSheetView, buildChipGroup, view -> {
+            List<Integer> selectedChipIds = chipGroup.getCheckedChipIds();
+
+            // Convert to readable strings (or use your own logic)
+            List<TimeRange> selectedTimeRanges = new ArrayList<>();
+            for (Integer id : selectedChipIds) {
+                Chip chip = bottomSheetView.findViewById(id);
+                if (chip != null) {
+                    selectedTimeRanges.add(TimeRange.valueOf((String) chip.getTag()));
+                }
+            }
+
+            homeViewModel.applyTimeRangeFilter(selectedTimeRanges);
+
+            String fmt = "Start Time: %s";
+            if (selectedTimeRanges.size() == 3 || selectedTimeRanges.isEmpty()) {
+                timeRangesFilter.setText(String.format(fmt, "Any"));
+            } else {
+                StringBuffer buffer = new StringBuffer();
+                for (int i = 0; i < selectedTimeRanges.size(); ++i) {
+                    if (i > 0) {
+                        buffer.append(", ");
+                    }
+                    buffer.append(selectedTimeRanges.get(i).getShortDisplayName());
+                }
+                timeRangesFilter.setText(String.format(fmt, buffer.toString().trim()));
+            }
+        });
+    }
+
+    private void applyFilters(List<EventCategory> categoryFilters) {
+        homeViewModel.applyCategoryFilters(categoryFilters);
+    }
+
+
 
     /**
      * Called when an event is clicked.
@@ -145,17 +386,6 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
-    }
-
-    /**
-     * Resets the style of all buttons.
-     */
-    private void resetAllButtonStyles() {
-        Button[] buttons = {myEventsButton, availableEventsButton};
-        for (Button btn : buttons) {
-            btn.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.black));
-            btn.setTextColor(ContextCompat.getColorStateList(requireContext(), R.color.white));
-        }
     }
 
     /**
@@ -183,8 +413,6 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
         homeViewModel.loadMyRegisteredEvents();
 
         recyclerView.setAdapter(myEventsAdapter);
-        resetAllButtonStyles();
-        setActiveButtonStyle(myEventsButton);
     }
 
     /**
@@ -201,7 +429,5 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
         homeViewModel.getAvailableEvents().observe(getViewLifecycleOwner(), availableEventsObserver);
 
         recyclerView.setAdapter(availableEventsAdapter);
-        resetAllButtonStyles();
-        setActiveButtonStyle(availableEventsButton);
     }
 }
