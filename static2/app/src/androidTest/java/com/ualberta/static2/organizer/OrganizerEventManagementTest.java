@@ -1,4 +1,4 @@
-package com.ualberta.eventlottery.organizer;
+package com.ualberta.static2.organizer;
 
 import android.content.Intent;
 
@@ -78,7 +78,7 @@ public class OrganizerEventManagementTest {
         dataInteraction.onChildView(withId(R.id.btn_draw)).perform(click());
 
         // Verify that the draw screen is opened
-        onView(withId(R.id.fragment_organizer_event_draw)).check(matches(isDisplayed()));
+        onView(withId(R.id.fragment_organizer_draw)).check(matches(isDisplayed()));
     }
 
     /**
@@ -92,6 +92,5 @@ public class OrganizerEventManagementTest {
         // Click on the event poster image to initiate the update process
         onView(withId(R.id.iv_event_poster_img)).perform(click());
 
-        // Further testing requires mocking the image picker intent.
     }
 }

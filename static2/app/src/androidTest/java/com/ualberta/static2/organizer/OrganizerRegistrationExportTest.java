@@ -1,4 +1,4 @@
-package com.ualberta.eventlottery.organizer;
+package com.ualberta.static2.organizer;
 
 import android.content.Intent;
 
@@ -53,8 +53,6 @@ public class OrganizerRegistrationExportTest {
                 .atPosition(0);
         dataInteraction.onChildView(withId(R.id.btn_export)).perform(click());
 
-        // Note: Further verification would require checking for a success message
-        // or inspecting the device's file system, which is outside the scope of this test.
-        // This test mainly verifies that the export button is clickable and leads to the expected action.
+
     }
 }
