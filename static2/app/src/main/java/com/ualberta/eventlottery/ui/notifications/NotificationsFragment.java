@@ -48,49 +48,24 @@ public class NotificationsFragment extends Fragment {
         adapter = new NotificationsListAdapter(requireContext(), new NotificationsListAdapter.OnNotificationClickListener() {
             public void onNotificationClick(NotificationModel notification) {
 
-                String currentUserId = UserManager.getCurrentUserId();
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                AlertDialog.Builder builder = new AlertDialog.Builder(requireContext())
+                        .setTitle(notification.getTitle() != null ? notification.getTitle() : "Notification")
+                        .setMessage(notification.getBody() != null ? notification.getBody() : "No content")
+                        .setNegativeButton("Close", null); // Always show Close button
 
-                // Query Firestore to get the user document
-                db.collection("users") // Assuming your users collection is named "users"
-                        .document(currentUserId)
-                        .get()
-                        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                if (task.isSuccessful() && task.getResult() != null) {
-                                    DocumentSnapshot doc = task.getResult();
-                                    String userType = doc.getString("userType"); // Field in Firestore
+                // Show Go to Event button only if type is "accept" and eventId exists
+                if ("action".equals(notification.getNotificationType()) && notification.getEventId() != null) {
+                    builder.setPositiveButton("Go to Event", (dialog, which) -> {
+                        Bundle args = new Bundle();
+                        args.putString("eventId", notification.getEventId());
+                        NavHostFragment.findNavController(NotificationsFragment.this)
+                                .navigate(R.id.navigation_event_details, args);
+                    });
+                }
 
-                                    AlertDialog.Builder builder = new AlertDialog.Builder(requireContext())
-                                            .setTitle(notification.getTitle() != null ? notification.getTitle() : "Notification")
-                                            .setMessage(notification.getBody() != null ? notification.getBody() : "No content")
-                                            .setNegativeButton("Close", null); // Always show Close button
-
-                                    // Only show Go to Event for entrants
-                                    if ("entrant".equals(userType) && notification.getEventId() != null) {
-                                        builder.setPositiveButton("Go to Event", (dialog, which) -> {
-                                            // Navigate to EventDetailsFragment with the eventId from the notification
-                                            Bundle args = new Bundle();
-                                            args.putString("eventId", notification.getEventId());
-                                            NavHostFragment.findNavController(NotificationsFragment.this)
-                                                    .navigate(R.id.navigation_event_details, args);
-                                        });
-                                    }
-
-                                    builder.show();
-
-                                } else {
-                                    // Failed to get user type from Firestore
-                                    AlertDialog.Builder fallback = new AlertDialog.Builder(requireContext())
-                                            .setTitle(notification.getTitle() != null ? notification.getTitle() : "Notification")
-                                            .setMessage(notification.getBody() != null ? notification.getBody() : "No content")
-                                            .setNegativeButton("Close", null);
-                                    fallback.show();
-                                }
-                            }
-                        });
+                builder.show();
             }
+
 
             @Override
             public void onNotificationClose(NotificationModel notification) {
@@ -117,11 +92,14 @@ public class NotificationsFragment extends Fragment {
     private void updateNotifications(List<NotificationModel> notifications) {
         if (notifications != null && !notifications.isEmpty()) {
             adapter.setNotifications(notifications);
-            binding.emptyState.setVisibility(View.GONE);
+            binding.emptyStateLayout.setVisibility(View.GONE);
+            binding.listNotifications.setVisibility(View.VISIBLE);
         } else {
-            binding.emptyState.setVisibility(View.VISIBLE);
+            binding.emptyStateLayout.setVisibility(View.VISIBLE);
+            binding.listNotifications.setVisibility(View.GONE);
         }
     }
+
 
     @Override
     public void onDestroyView() {

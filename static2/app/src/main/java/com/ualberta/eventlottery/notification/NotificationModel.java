@@ -21,6 +21,7 @@ public class NotificationModel {
     private String senderId;
     private List<String> recipientIdList;
     private boolean isRead;
+    private String notificationType;
     private static Context appContext;
     private static final String COLLECTION_NAME = "notifications";
 
@@ -38,7 +39,7 @@ public class NotificationModel {
      * @param eventId         related event ID
      * @param recipientIdList list of recipient user IDs
      */
-    public NotificationModel(String title, String body, String eventId, List<String> recipientIdList) {
+    public NotificationModel(String title, String body, String eventId, List<String> recipientIdList, String notificationType) {
         this.title = title;
         this.body = body;
         this.createdAt = new Date();
@@ -46,6 +47,7 @@ public class NotificationModel {
         this.recipientIdList = recipientIdList;
         this.isRead = false;
         this.senderId = null;
+        this.notificationType = notificationType;
     }
 
     /**
@@ -70,6 +72,9 @@ public class NotificationModel {
     public List<String> getRecipientIdList() { return recipientIdList; }
     public boolean getIsRead() { return isRead; }
     public void setIsRead(boolean read) { isRead = read; }
+    public String getNotificationType() { return notificationType; }
+    public void setNotificationType(String notificationType) { this.notificationType = notificationType; }
+
 
     /**
      * Marks this notification as read in Firestore.
