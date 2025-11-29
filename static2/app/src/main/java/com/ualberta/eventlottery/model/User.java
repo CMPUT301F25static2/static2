@@ -43,6 +43,10 @@ public class User {
         this.fcmToken = fcmToken;
     }
 
+    public User(String userId, String name, String email, String phone, String fcmToken, String userType, String favRecCenter) {
+        this(userId, name, email, phone, fcmToken, userType, favRecCenter, false);
+    }
+
     public User(String userId, String name, String email, String phone, String fcmToken, String userType, String favRecCenter, Boolean notificationsEnabled) {
         this.userId = userId;
         this.name = name;
