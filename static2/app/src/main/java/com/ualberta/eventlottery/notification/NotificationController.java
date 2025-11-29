@@ -92,11 +92,11 @@ public class NotificationController {
      * @param eventId         the related event ID
      * @param recipientIdList list of user IDs to receive the notification
      */
-    public void sendNotification(String title, String body, String eventId, List<String> recipientIdList) {
+    public void sendNotification(String title, String body, String eventId, List<String> recipientIdList, String notificationType) {
         FirebaseFunctions functions = FirebaseFunctions.getInstance();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        NotificationModel notification = new NotificationModel(title, body, eventId, recipientIdList);
+        NotificationModel notification = new NotificationModel(title, body, eventId, recipientIdList, notificationType);
         notification.fetchSenderIdAndSave();
 
         List<Task<DocumentSnapshot>> tasks = new ArrayList<>();
