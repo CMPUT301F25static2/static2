@@ -6,19 +6,66 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <TextView
-        android:id="@+id/textLogs"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <ImageButton
+            android:id="@+id/adminBackButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:backgroundTint="#00FFFFFF"
+            android:src="@drawable/ic_arrow_back_24dp_000000_fill0_wght400_grad0_opsz24"
+            android:contentDescription="Back button" />
+
+        <TextView
+            android:id="@+id/textLogs"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Notification Logs"
+            android:textStyle="bold"
+            android:textSize="26sp"
+            android:textColor="@color/black"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
+
+    <!-- Search Bar -->
+    <EditText
+        android:id="@+id/etSearchLogs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="Search by title, event, or organizer"
+        android:padding="12dp"
+        android:background="@android:drawable/edit_text"
+        android:inputType="text"
+        android:maxLines="1" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="System Logs"
-        android:textStyle="bold"
-        android:textSize="26sp"
-        android:textColor="@color/black" />
+        android:layout_gravity="center"
+        android:layout_marginTop="24dp"
+        android:visibility="gone" />
 
-    <ListView
-        android:id="@+id/systemLogList"
+    <TextView
+        android:id="@+id/tvEmptyState"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="48dp"
+        android:text="No notification logs found"
+        android:textSize="16sp"
+        android:textColor="@android:color/darker_gray"
+        android:visibility="gone" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvNotificationLogs"
         android:layout_width="match_parent"
-        android:layout_height="614dp"
+        android:layout_height="0dp"
         android:layout_marginTop="16dp"
         android:layout_weight="1" />
 </LinearLayout>
