@@ -1,4 +1,4 @@
-package com.ualberta.eventlottery.organizer;
+package com.ualberta.static2.organizer;
 
 import androidx.test.espresso.DataInteraction;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -65,8 +65,7 @@ public class OrganizerRegistrationManagementTest {
                 .atPosition(0);
         dataInteraction.onChildView(withId(R.id.btn_export)).perform(click());
 
-        // Further verification would require checking for a success message (e.g., a Toast)
-        // or inspecting the device's file system, which is outside the scope of this test.
+
     }
 
     /**
