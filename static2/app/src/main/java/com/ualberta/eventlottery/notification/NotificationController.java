@@ -55,12 +55,10 @@ public class NotificationController {
      *
      * @param title   the title of the notification
      * @param body    the message body
-     * @param eventId the related event ID
      */
-    // TODO: implement proper intent when event detail fragment finished
-    public void displayNotification(String title, String body, String eventId) {
+    public void displayNotification(String title, String body) {
         Intent intent = new Intent(context, EntrantMainActivity.class);
-        intent.putExtra("eventId", eventId);
+        intent.putExtra("open_notifications", true); // Flag to open NotificationsFragment
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(
@@ -80,7 +78,6 @@ public class NotificationController {
 
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS)
                 != PackageManager.PERMISSION_GRANTED) {
-            // Missing notification permission
             return;
         }
 
@@ -113,8 +110,9 @@ public class NotificationController {
                     for (Object result : results) {
                         DocumentSnapshot userDoc = (DocumentSnapshot) result;
                         if (userDoc.exists()) {
+                            Boolean notificationsEnabled = userDoc.getBoolean("notificationsEnabled");
                             String fcmToken = userDoc.getString("fcmToken");
-                            if (fcmToken != null && !fcmToken.isEmpty()) {
+                            if (Boolean.TRUE.equals(notificationsEnabled) && fcmToken != null && !fcmToken.isEmpty()) {
                                 tokens.add(fcmToken);
                             }
                         } else {

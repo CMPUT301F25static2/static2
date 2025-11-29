@@ -41,7 +41,6 @@
 
         </LinearLayout>
 
-        <!-- Close button overlayed in top-right corner -->
         <ImageView
             android:id="@+id/close_button"
             android:layout_width="24dp"
