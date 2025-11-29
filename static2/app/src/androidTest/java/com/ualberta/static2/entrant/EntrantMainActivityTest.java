@@ -31,6 +31,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+/**
+ * Tests for Entrant User Stories
+ * Stories Tested:
+ * US-01.01.01, 02, 03, 04
+ */
 @RunWith(AndroidJUnit4.class)
 public class EntrantMainActivityTest {
     private CountingIdlingResource idlingResource = new CountingIdlingResource("EntrantMainActivityTest");
@@ -63,7 +68,9 @@ public class EntrantMainActivityTest {
                 .check(matches(isDisplayed()));
     }
 
-    // US 01.01.03 As an entrant, I want to be able to see a list of events that I can join the waiting list for.
+    /**
+     * US 01.01.03 As an entrant, I want to be able to see a list of events that I can join the waiting list for.
+     */
     @Test
     public void testEntrantIsAbleToSeeEventsTheyCanRegisterFor() {
         // test if the activity launches successfully
@@ -73,7 +80,9 @@ public class EntrantMainActivityTest {
                 .check(matches(isDisplayed()));
     }
 
-    //US 01.01.01 As an entrant, I want to join the waiting list for a specific event
+    /**
+     * US 01.01.01 As an entrant, I want to join the waiting list for a specific event
+     */
     @Test
     public void testJoinWaitlist() {
         // test if the activity launches successfully
@@ -102,7 +111,9 @@ public class EntrantMainActivityTest {
         }
     }
 
-    // US 01.01.02 As an entrant, I want to leave the waiting list for a specific event
+    /**
+     * US 01.01.02 As an entrant, I want to leave the waiting list for a specific event
+     */
     @Test
     public void testLeaveWaitlist() {
         // test if the activity launches successfully
@@ -132,24 +143,36 @@ public class EntrantMainActivityTest {
         }
     }
 
-    //US 01.01.04 As an entrant I want to filter my interests and availability
+    /**
+     * US 01.01.04 As an entrant I want to filter my interests and availability
+     */
+
+    /**
+     * Tests Opening Filtering options
+     */
     @Test
     public void testOpenFilterOptions() {
         ActivityScenario.launch(EntrantMainActivity.class);
 
-        onView(withId(R.id.filterGroup))
+        onView(allOf(withText("Category: Any"), isDisplayed()))
+                .check(matches(isDisplayed()))
                 .perform(click());
 
-        try {
-            onView(allOf(CustomMatchers.first(withText("Filter")), isDisplayed()))
-                    .check(matches(isDisplayed()));
-        } catch (NoMatchingViewException nmve) {
-            // Check if there's a Filter button we can click to make this test pass
-            onView(allOf(CustomMatchers.first(withText("Filter")), isDisplayed()))
-                    .perform(click());
-        }
+        onView(withText("Apply Filters"))
+                .perform(click());
 
-        onView(CustomMatchers.first(withText("Filter")))
+        onView(allOf(withText("Days: Any"), isDisplayed()))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        onView(withText("Apply Selections"))
+                .perform(click());
+
+        onView(allOf(withText("Start Time: Any"), isDisplayed()))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        onView(withText("Apply Selections"))
                 .perform(click());
 
         try{
@@ -159,6 +182,9 @@ public class EntrantMainActivityTest {
         }
     }
 
+    /**
+     * Tests Apply the Sport Filter
+     */
     @Test
     public void testFilterByCategorySport(){
         ActivityScenario.launch(EntrantMainActivity.class);
@@ -166,23 +192,22 @@ public class EntrantMainActivityTest {
         onView(withId(R.id.availableEventsButton))
                 .perform(click());
 
-        onView(withId(R.id.filterGroup))
+        onView(allOf(withText("Category: Any"), isDisplayed()))
+                .check(matches(isDisplayed()))
                 .perform(click());
 
-        try {
-            onView(allOf(CustomMatchers.first(withText("Sports")), isDisplayed()))
-                    .check(matches(isDisplayed()));
-        } catch (NoMatchingViewException nmve) {
-            // Check if there's a Filter button we can click to make this test pass
-            onView(allOf(CustomMatchers.first(withText("Filter")), isDisplayed()))
-                    .perform(click());
-        }
+        onView(allOf(withText("sports"), isDisplayed()))
+                .check(matches(isDisplayed()));
 
-        onView(CustomMatchers.first(withText("Sports")))
+        onView(withText("sports"))
                 .perform(click());
 
-        onView(CustomMatchers.first(withText("Apply")))
+        onView(withText("Apply Filters"))
                 .perform(click());
+
+        onView(allOf(withText("Category: (1)"), isDisplayed()))
+                .check(matches(isDisplayed()));
+
         try {
             Thread.sleep(2000);
         } catch(InterruptedException e) {
@@ -190,93 +215,36 @@ public class EntrantMainActivityTest {
         }
     }
 
+    /**
+     * Tests applying multiple days of the week
+     */
     @Test
-    public void testFilterByMultipleCategories(){
+    public void testFilterByMultipleDaysOfWeek(){
         ActivityScenario.launch(EntrantMainActivity.class);
 
         onView(withId(R.id.availableEventsButton))
                 .perform(click());
 
-        onView(withId(R.id.filterGroup))
+        onView(allOf(withText("Days: Any"), isDisplayed()))
+                .check(matches(isDisplayed()))
                 .perform(click());
 
-        try {
-            onView(allOf(CustomMatchers.first(withText("Sports")), isDisplayed()))
-                    .check(matches(isDisplayed()));
-        } catch (NoMatchingViewException nmve) {
-            // Check if there's a Filter button we can click to make this test pass
-            onView(allOf(CustomMatchers.first(withText("Filter")), isDisplayed()))
-                    .perform(click());
-        }
-
-        onView(CustomMatchers.first(withText("Sports")))
+        onView(allOf(withText("Mon"), isDisplayed()))
+                .check(matches(isDisplayed()))
                 .perform(click());
 
-        onView(CustomMatchers.first(withText("Music")))
+        onView(allOf(withText("Wed"), isDisplayed()))
+                .check(matches(isDisplayed()))
                 .perform(click());
 
-        onView(CustomMatchers.first(withText("Apply")))
+        onView(allOf(withText("Fri"), isDisplayed()))
+                .check(matches(isDisplayed()))
                 .perform(click());
 
-
-        try {
-            Thread.sleep(2000);
-        } catch(InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
-
-    @Test
-    public void testFilterStaysDuringNav() {
-        ActivityScenario.launch(EntrantMainActivity.class);
-
-        onView(withId(R.id.availableEventsButton))
+        onView(withText("Apply Selections"))
                 .perform(click());
 
-        onView(withId(R.id.filterGroup))
-                .perform(click());
-
-        onView(CustomMatchers.first(withText("Sports")))
-                .perform(click());
-
-        onView(CustomMatchers.first(withText("Music")))
-                .perform(click());
-
-
-        //Navigate away from available event screen
-        onView(withId(R.id.myEventsButton))
-                .perform(click());
-
-        onView(withId(R.id.availableEventsButton))
-                .perform(click());
-
-        try {
-            Thread.sleep(2000);
-        } catch(InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
-
-    @Test
-    public void testCancelFilter(){
-
-        ActivityScenario.launch(EntrantMainActivity.class);
-
-        onView(withId(R.id.availableEventsButton))
-                .perform(click());
-
-        onView(withId(R.id.filterGroup))
-                .perform(click());
-
-        onView(CustomMatchers.first(withText("Sports")))
-                .perform(click());
-
-        onView(CustomMatchers.first(withText("Cancel")))
-                .perform(click());
-
-        onView(withId(R.id.availableEventsButton))
+        onView(allOf(withText("Days: M W F"), isDisplayed()))
                 .check(matches(isDisplayed()));
 
         try {
@@ -285,7 +253,118 @@ public class EntrantMainActivityTest {
             throw new RuntimeException(e);
         }
 
-
     }
 
+    /**
+     * Tests that filters are persistent between My Events and Available Events
+     */
+    @Test
+    public void testFiltersApplyToMyEventsAndAvailableEvents() {
+
+        //Lauching Activity
+        ActivityScenario.launch(EntrantMainActivity.class);
+
+        onView(withId(R.id.availableEventsButton))
+                .perform(click());
+
+
+        //Applying Filters to Available Events
+        onView(allOf(withText("Category: Any"), isDisplayed()))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        onView(allOf(withText("sports"), isDisplayed()))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        onView(withText("Apply Filters"))
+                .perform(click());
+
+        //Checks that filters are properly displayed
+        onView(allOf(withText("Category: (1)"), isDisplayed()))
+                .check(matches(isDisplayed()));
+
+        //Tests Applying Days of the week filter
+        onView(allOf(withText("Days: Any"), isDisplayed()))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        onView(allOf(withText("Sat"), isDisplayed()))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        onView(allOf(withText("Sun"), isDisplayed()))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        onView(withText("Apply Selections"))
+                .perform(click());
+
+        //Checks that all texts match with expected behavior
+        onView(allOf(withText("Days: S S"), isDisplayed()))
+                .check(matches(isDisplayed()));
+
+        //Applies start time filter
+        onView(allOf(withText("Start Time: Any"), isDisplayed()))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        onView(allOf(withText("Morning (6am - 12pm)"), isDisplayed()))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        onView(withText("Apply Selections"))
+                .perform(click());
+
+        onView(allOf(withText("Start Time: Morning"), isDisplayed()))
+                .check(matches(isDisplayed()));
+
+        //Navigate away from available event screen
+        onView(withId(R.id.myEventsButton))
+                .perform(click());
+
+        onView(allOf(withText("Category: (1)"), isDisplayed()))
+                .check(matches(isDisplayed()));
+
+        onView(allOf(withText("Days: S S"), isDisplayed()))
+                .check(matches(isDisplayed()));
+
+        onView(allOf(withText("Start Time: Morning"), isDisplayed()))
+                .check(matches(isDisplayed()));
+
+        try {
+            Thread.sleep(2000);
+        } catch(InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Tests ability to stop a Filter Selection
+     */
+    @Test
+    public void testCancelFilter(){
+
+        ActivityScenario.launch(EntrantMainActivity.class);
+
+        onView(withId(R.id.availableEventsButton))
+                .perform(click());
+
+        onView(allOf(withText("Category: Any"), isDisplayed()))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        onView(withText("Apply Filters"))
+                .perform(click());
+
+        onView(allOf(withText("Category: Any"), isDisplayed()))
+                .check(matches(isDisplayed()));
+
+
+        try {
+            Thread.sleep(2000);
+        } catch(InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
