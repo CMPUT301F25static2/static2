@@ -160,20 +160,31 @@ public class OrganizerEventDrawFragment extends Fragment {
                 registrationRepository.getRegistrationCountByStatus(eventId, EntrantRegistrationStatus.WAITING, new RegistrationRepository.CountCallback() {
                     @Override
                     public void onSuccess(int waitingCount) {
-                        binding.tvEventWaitingNumber.setText(String.valueOf(waitingCount));
+                        registrationRepository.getRegistrationCountByStatus(eventId, EntrantRegistrationStatus.CANCELLED, new RegistrationRepository.CountCallback() {
+                            @Override
+                            public void onSuccess(int cancelledCount) {
+                                int drawableCount = waitingCount + cancelledCount;
+                                binding.tvEventWaitingNumber.setText(String.valueOf(drawableCount));
 
-                        String ratio = confirmedCount + "/" + currentEvent.getMaxAttendees();
-                        binding.tvEventAcceptedRatio.setText(ratio);
+                                String ratio = confirmedCount + "/" + currentEvent.getMaxAttendees();
+                                binding.tvEventAcceptedRatio.setText(ratio);
 
-                        int availableCount = currentEvent.getMaxAttendees() - confirmedCount;
-                        binding.tvEventSpotsLeft.setText(String.valueOf(availableCount));
+                                int availableCount = currentEvent.getMaxAttendees() - confirmedCount;
+                                binding.tvEventSpotsLeft.setText(String.valueOf(availableCount));
 
-                        binding.tvMaxEntrantsMsg.setText("Maximum " + Math.min(availableCount, waitingCount) + " entrants to draw");
+                                binding.tvMaxEntrantsMsg.setText("Maximum " + Math.min(availableCount, drawableCount) + " entrants to draw");
 
-                        // Clear input and disable draw button initially
-                        binding.etNumberToDraw.setText("");
-                        binding.btnDraw.setEnabled(false);
-                        binding.btnDraw.setAlpha(0.5f);
+                                // Clear input and disable draw button initially
+                                binding.etNumberToDraw.setText("");
+                                binding.btnDraw.setEnabled(false);
+                                binding.btnDraw.setAlpha(0.5f);
+                            }
+
+                            @Override
+                            public void onFailure(Exception e) {
+                                Toast.makeText(requireContext(), "Failed to load cancelled count", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
 
                     @Override
@@ -239,32 +250,45 @@ public class OrganizerEventDrawFragment extends Fragment {
                     registrationRepository.getRegistrationCountByStatus(eventId, EntrantRegistrationStatus.WAITING, new RegistrationRepository.CountCallback() {
                         @Override
                         public void onSuccess(int waitingCount) {
-                            int availableSpots = currentEvent.getMaxAttendees() - confirmedCount;
+                            registrationRepository.getRegistrationCountByStatus(eventId, EntrantRegistrationStatus.CANCELLED, new RegistrationRepository.CountCallback() {
+                                @Override
+                                public void onSuccess(int cancelledCount) {
+                                    int drawableCount = waitingCount + cancelledCount;
+                                    int availableSpots = currentEvent.getMaxAttendees() - confirmedCount;
 
-                            // Validate against available spots
-                            if (numberToDraw > availableSpots) {
-                                binding.etNumberToDraw.setError("Cannot draw more than " + availableSpots + " entrants");
-                                binding.btnDraw.setEnabled(false);
-                                binding.btnDraw.setAlpha(0.5f);
-                            }
-                            // Validate against waiting list size
-                            else if (numberToDraw > waitingCount) {
-                                binding.etNumberToDraw.setError("Only " + waitingCount + " entrants in waiting list");
-                                binding.btnDraw.setEnabled(false);
-                                binding.btnDraw.setAlpha(0.5f);
-                            }
-                            // Validate minimum draw count
-                            else if (numberToDraw <= 0) {
-                                binding.etNumberToDraw.setError("Must draw at least 1 entrant");
-                                binding.btnDraw.setEnabled(false);
-                                binding.btnDraw.setAlpha(0.5f);
-                            }
-                            // Valid input
-                            else {
-                                binding.etNumberToDraw.setError(null);
-                                binding.btnDraw.setEnabled(true);
-                                binding.btnDraw.setAlpha(1.0f);
-                            }
+                                    // Validate against available spots
+                                    if (numberToDraw > availableSpots) {
+                                        binding.etNumberToDraw.setError("Cannot draw more than " + availableSpots + " entrants");
+                                        binding.btnDraw.setEnabled(false);
+                                        binding.btnDraw.setAlpha(0.5f);
+                                    }
+                                    // Validate against waiting and cancelled list size
+                                    else if (numberToDraw > drawableCount) {
+                                        binding.etNumberToDraw.setError("Only " + drawableCount + " entrants in waiting/cancelled list");
+                                        binding.btnDraw.setEnabled(false);
+                                        binding.btnDraw.setAlpha(0.5f);
+                                    }
+                                    // Validate minimum draw count
+                                    else if (numberToDraw <= 0) {
+                                        binding.etNumberToDraw.setError("Must draw at least 1 entrant");
+                                        binding.btnDraw.setEnabled(false);
+                                        binding.btnDraw.setAlpha(0.5f);
+                                    }
+                                    // Valid input
+                                    else {
+                                        binding.etNumberToDraw.setError(null);
+                                        binding.btnDraw.setEnabled(true);
+                                        binding.btnDraw.setAlpha(1.0f);
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Exception e) {
+                                    binding.etNumberToDraw.setError("Error loading cancelled count");
+                                    binding.btnDraw.setEnabled(false);
+                                    binding.btnDraw.setAlpha(0.5f);
+                                }
+                            });
                         }
 
                         @Override
@@ -312,28 +336,39 @@ public class OrganizerEventDrawFragment extends Fragment {
                     registrationRepository.getRegistrationCountByStatus(eventId, EntrantRegistrationStatus.WAITING, new RegistrationRepository.CountCallback() {
                         @Override
                         public void onSuccess(int waitingCount) {
-                            int availableSpots = currentEvent.getMaxAttendees() - confirmedCount;
+                            registrationRepository.getRegistrationCountByStatus(eventId, EntrantRegistrationStatus.CANCELLED, new RegistrationRepository.CountCallback() {
+                                @Override
+                                public void onSuccess(int cancelledCount) {
+                                    int drawableCount = waitingCount + cancelledCount;
+                                    int availableSpots = currentEvent.getMaxAttendees() - confirmedCount;
 
-                            // Check available spots
-                            if (numberToDraw > availableSpots) {
-                                Toast.makeText(requireContext(), "Cannot draw more than available spots: " + availableSpots, Toast.LENGTH_LONG).show();
-                                return;
-                            }
+                                    // Check available spots
+                                    if (numberToDraw > availableSpots) {
+                                        Toast.makeText(requireContext(), "Cannot draw more than available spots: " + availableSpots, Toast.LENGTH_LONG).show();
+                                        return;
+                                    }
 
-                            // Check waiting list size
-                            if (numberToDraw > waitingCount) {
-                                Toast.makeText(requireContext(), "Not enough entrants in waiting list", Toast.LENGTH_LONG).show();
-                                return;
-                            }
+                                    // Check waiting and cancelled list size
+                                    if (numberToDraw > drawableCount) {
+                                        Toast.makeText(requireContext(), "Not enough entrants in waiting/cancelled list", Toast.LENGTH_LONG).show();
+                                        return;
+                                    }
 
-                            // Check minimum draw count
-                            if (numberToDraw <= 0) {
-                                Toast.makeText(requireContext(), "Must draw at least 1 entrant", Toast.LENGTH_SHORT).show();
-                                return;
-                            }
+                                    // Check minimum draw count
+                                    if (numberToDraw <= 0) {
+                                        Toast.makeText(requireContext(), "Must draw at least 1 entrant", Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
 
-                            // Execute the draw
-                            executeRandomDraw(numberToDraw);
+                                    // Execute the draw
+                                    executeRandomDraw(numberToDraw);
+                                }
+
+                                @Override
+                                public void onFailure(Exception e) {
+                                    Toast.makeText(requireContext(), "Failed to load cancelled count", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                         }
 
                         @Override
@@ -358,22 +393,36 @@ public class OrganizerEventDrawFragment extends Fragment {
      * Executes random selection from waiting list.
      */
     private void executeRandomDraw(int numberToDraw) {
-        registrationRepository.getWaitingRegistrationsByEvent(eventId, new RegistrationRepository.RegistrationListCallback() {
+        registrationRepository.getRegistrationsByStatus(eventId, EntrantRegistrationStatus.WAITING, new RegistrationRepository.RegistrationListCallback() {
             @Override
             public void onSuccess(List<Registration> waitingRegistrations) {
-                if (waitingRegistrations.isEmpty()) {
-                    Toast.makeText(requireContext(), "No entrants in waiting list", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+                registrationRepository.getRegistrationsByStatus(eventId, EntrantRegistrationStatus.CANCELLED, new RegistrationRepository.RegistrationListCallback() {
+                    @Override
+                    public void onSuccess(List<Registration> cancelledRegistrations) {
+                        List<Registration> drawableRegistrations = new ArrayList<>();
+                        drawableRegistrations.addAll(waitingRegistrations);
+                        drawableRegistrations.addAll(cancelledRegistrations);
 
-                // Shuffle and select random entrants
-                Collections.shuffle(waitingRegistrations);
-                int actualDrawCount = Math.min(numberToDraw, waitingRegistrations.size());
-                List<Registration> selectedRegistrations = waitingRegistrations.subList(0, actualDrawCount);
-                List<Registration> nonSelectedRegistrations = new ArrayList<>(waitingRegistrations.subList(actualDrawCount, waitingRegistrations.size()));
+                        if (drawableRegistrations.isEmpty()) {
+                            Toast.makeText(requireContext(), "No entrants in waiting/cancelled list", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
 
-                // Update selected registrations status
-                updateSelectedRegistrations(selectedRegistrations,nonSelectedRegistrations, actualDrawCount);
+                        // Shuffle and select random entrants
+                        Collections.shuffle(drawableRegistrations);
+                        int actualDrawCount = Math.min(numberToDraw, drawableRegistrations.size());
+                        List<Registration> selectedRegistrations = drawableRegistrations.subList(0, actualDrawCount);
+                        List<Registration> nonSelectedRegistrations = new ArrayList<>(drawableRegistrations.subList(actualDrawCount, drawableRegistrations.size()));
+
+                        // Update selected registrations status
+                        updateSelectedRegistrations(selectedRegistrations,nonSelectedRegistrations, actualDrawCount);
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        Toast.makeText(requireContext(), "Failed to load cancelled list: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             @Override
@@ -395,7 +444,7 @@ public class OrganizerEventDrawFragment extends Fragment {
             selectedUserIds.add(registration.getEntrantId());
         }
         for (Registration registration: nonSelectedRegistrations){
-            nonSelectedUserIds.add(registration.getEventId());
+            nonSelectedUserIds.add(registration.getEntrantId()); // Corrected from getEventId() to getEntrantId()
         }
 
         // Update each registration status
