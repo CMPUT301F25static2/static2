@@ -14,20 +14,28 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ed7a8dda-e9bf-412f-b136-8d9c70505908" name="Changes" comment="sdk location">
+      <change beforePath="$PROJECT_DIR$/../.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.13/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/checksums/checksums.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.13/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/executionHistory/executionHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/config.properties" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/config.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/deploymentTargetSelector.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deploymentTargetSelector.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/ualberta/eventlottery/ui/adminImages/AdminImagesFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/ualberta/eventlottery/ui/adminImages/AdminImagesFragment.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/ualberta/eventlottery/ui/home/entrant/EventDetailsFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/ualberta/eventlottery/ui/home/entrant/EventDetailsFragment.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/ualberta/eventlottery/ui/home/entrant/EventDetailsViewModel.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/ualberta/eventlottery/ui/home/entrant/EventDetailsViewModelFactory.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/fragment_event_details.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/fragment_event_details.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle/libs.versions.toml" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/libs.versions.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/androidTest/java/com/ualberta/eventlottery/organizer/OrganizerCapacityTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/androidTest/java/com/ualberta/static2/organizer/OrganizerCapacityTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/androidTest/java/com/ualberta/eventlottery/organizer/OrganizerEntrantManagementTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/androidTest/java/com/ualberta/static2/organizer/OrganizerEntrantManagementTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/androidTest/java/com/ualberta/eventlottery/organizer/OrganizerEventCreationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/androidTest/java/com/ualberta/static2/organizer/OrganizerEventCreationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/androidTest/java/com/ualberta/eventlottery/organizer/OrganizerEventDrawTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/androidTest/java/com/ualberta/static2/organizer/OrganizerEventDrawTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/androidTest/java/com/ualberta/eventlottery/organizer/OrganizerEventManagementTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/androidTest/java/com/ualberta/static2/organizer/OrganizerEventManagementTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/androidTest/java/com/ualberta/eventlottery/organizer/OrganizerGeolocationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/androidTest/java/com/ualberta/static2/organizer/OrganizerGeolocationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/androidTest/java/com/ualberta/eventlottery/organizer/OrganizerIntentTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/androidTest/java/com/ualberta/static2/organizer/OrganizerIntentTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/androidTest/java/com/ualberta/eventlottery/organizer/OrganizerNotificationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/androidTest/java/com/ualberta/static2/organizer/OrganizerNotificationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/androidTest/java/com/ualberta/eventlottery/organizer/OrganizerPosterTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/androidTest/java/com/ualberta/static2/organizer/OrganizerPosterTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/androidTest/java/com/ualberta/eventlottery/organizer/OrganizerRegistrationExportTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/androidTest/java/com/ualberta/static2/organizer/OrganizerRegistrationExportTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/androidTest/java/com/ualberta/eventlottery/organizer/OrganizerRegistrationManagementTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/androidTest/java/com/ualberta/static2/organizer/OrganizerRegistrationManagementTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/androidTest/java/com/ualberta/eventlottery/organizer/OrganizerRegistrationPeriodTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/androidTest/java/com/ualberta/static2/organizer/OrganizerRegistrationPeriodTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/ualberta/eventlottery/ui/organizer/organizerEventCreate/OrganizerEventCreateFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/ualberta/eventlottery/ui/organizer/organizerEventCreate/OrganizerEventCreateFragment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/fragment_organizer_draw.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/fragment_organizer_draw.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/fragment_organizer_event_create.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/fragment_organizer_event_create.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/local.properties" beforeDir="false" afterPath="$PROJECT_DIR$/local.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -38,7 +46,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=C:\Users\zhour\.android\avd\Medium_Phone.avd)]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=C:\Users\25138\.android\avd\Medium_Phone.avd)]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -60,12 +68,12 @@
     &quot;assignee&quot;: &quot;Yuheng2003121&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "git@github.com:CMPUT301F25static2/static2.git",
-    "accountId": "b88087b2-d141-4560-8c26-d2d2f4dc3fb5"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/CMPUT301F25static2/static2.git&quot;,
+    &quot;accountId&quot;: &quot;d26aeba2-0f70-4c7e-b033-f560f69a2e11&quot;
   }
-}]]></component>
+}</component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 7
@@ -81,23 +89,27 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Android App.app.executor": "Run",
-    "Android Instrumented Tests.MainActivityEntrantTest.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "eventdetails-user",
-    "last_opened_file_path": "C:/CMPUT-301/Project/static2/static2",
-    "memory.settings.postsync.last.time.stamp": "1758757999446",
-    "settings.editor.selected.configurable": "AndroidSdkUpdater"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Android App.app.executor&quot;: &quot;Run&quot;,
+    &quot;Android Instrumented Tests.MainActivityEntrantTest.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;yuheng&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/CMPUT-301/Project/static2/static2&quot;,
+    &quot;memory.settings.postsync.last.time.stamp&quot;: &quot;1758757999446&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.17&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;AndroidSdkUpdater&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="Android App.app">
     <configuration name="app" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false">
       <module name="static2.app" />

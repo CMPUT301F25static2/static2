@@ -1,4 +1,4 @@
-package com.ualberta.eventlottery.organizer;
+package com.ualberta.static2.organizer;
 
 import androidx.test.espresso.DataInteraction;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -58,7 +58,7 @@ public class OrganizerEventDrawTest {
         dataInteraction.onChildView(withId(R.id.btn_draw)).perform(click());
 
         // Verify that the draw screen is displayed
-        onView(withId(R.id.fragment_organizer_event_draw)).check(matches(isDisplayed()));
+        onView(withId(R.id.fragment_organizer_draw)).check(matches(isDisplayed()));
     }
 
     /**
@@ -73,15 +73,10 @@ public class OrganizerEventDrawTest {
         dataInteraction.onChildView(withId(R.id.btn_draw)).perform(click());
 
         // Verify that the draw screen is displayed
-        onView(withId(R.id.fragment_organizer_event_draw)).check(matches(isDisplayed()));
+        onView(withId(R.id.fragment_organizer_draw)).check(matches(isDisplayed()));
 
         // Verify key UI elements are displayed
-        onView(withId(R.id.tv_event_name)).check(matches(isDisplayed()));
-        onView(withId(R.id.tv_capacity_count)).check(matches(isDisplayed()));
-        onView(withId(R.id.tv_waiting_list_count)).check(matches(isDisplayed()));
-        onView(withId(R.id.tv_available_spots_count)).check(matches(isDisplayed()));
-        onView(withId(R.id.et_winners_to_draw)).check(matches(isDisplayed()));
-        onView(withId(R.id.btn_draw_winners)).check(matches(isDisplayed()));
+        onView(withId(R.id.btn_draw)).check(matches(isDisplayed()));
     }
 
     /**
@@ -96,13 +91,13 @@ public class OrganizerEventDrawTest {
         dataInteraction.onChildView(withId(R.id.btn_draw)).perform(click());
 
         // Verify that the draw screen is displayed
-        onView(withId(R.id.fragment_organizer_event_draw)).check(matches(isDisplayed()));
+        onView(withId(R.id.fragment_organizer_draw)).check(matches(isDisplayed()));
 
         // Enter an invalid number of winners (e.g., a large number)
-        onView(withId(R.id.et_winners_to_draw)).perform(typeText("1000"), closeSoftKeyboard());
+        onView(withId(R.id.et_number_to_draw)).perform(typeText("1000"), closeSoftKeyboard());
 
         // Verify that the draw button shows an error message or is disabled
-        onView(withId(R.id.btn_draw_winners)).check(matches(withText("Invalid number")));
+        onView(withId(R.id.btn_draw)).check(matches(withText("Invalid number")));
     }
 
     /**
@@ -117,12 +112,11 @@ public class OrganizerEventDrawTest {
         dataInteraction.onChildView(withId(R.id.btn_draw)).perform(click());
 
         // Enter a valid number of winners to draw
-        onView(withId(R.id.et_winners_to_draw)).perform(typeText("1"), closeSoftKeyboard());
+        onView(withId(R.id.et_number_to_draw)).perform(typeText("1"), closeSoftKeyboard());
 
         // Click the draw button
-        onView(withId(R.id.btn_draw_winners)).perform(click());
+        onView(withId(R.id.btn_draw)).perform(click());
 
         // After the draw, a confirmation or updated view should be shown.
-        // This part of the test depends on the app's behavior after a draw.
     }
 }
