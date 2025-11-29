@@ -1,4 +1,4 @@
-package com.ualberta.eventlottery.organizer;
+package com.ualberta.static2.organizer;
 
 import androidx.test.espresso.DataInteraction;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;

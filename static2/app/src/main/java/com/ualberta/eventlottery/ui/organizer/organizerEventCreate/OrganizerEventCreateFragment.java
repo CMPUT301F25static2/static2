@@ -202,10 +202,10 @@ public class OrganizerEventCreateFragment extends Fragment {
             showTimePickerDialog(eventToCalendar, this::updateEventTimeDisplay);
         });
 
-        // Add tags button
-        binding.btnAddTags.setOnClickListener(v -> {
-            showAddTagDialog();
-        });
+//        // Add tags button
+//        binding.btnAddTags.setOnClickListener(v -> {
+//            showAddTagDialog();
+//        });
 
         // Create event button
         binding.btnCreateEvent.setOnClickListener(v -> {

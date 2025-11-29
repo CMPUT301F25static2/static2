@@ -1,4 +1,4 @@
-package com.ualberta.eventlottery.organizer;
+package com.ualberta.static2.organizer;
 
 import android.content.Intent;
 

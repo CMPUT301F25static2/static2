@@ -527,57 +527,57 @@
 
 
             <!--            tags-->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:orientation="vertical">-->
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Tags"
-                    android:textColor="@color/text_primary"
-                    android:textSize="@dimen/text_size_subtitle"
-                    android:textStyle="bold" />
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="Tags"-->
+<!--                    android:textColor="@color/text_primary"-->
+<!--                    android:textSize="@dimen/text_size_subtitle"-->
+<!--                    android:textStyle="bold" />-->
 
 
-                <!--                tags button-->
-                <LinearLayout
-                    android:id="@+id/btn_add_tags"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:background="@drawable/rounded_sm"
-                    android:backgroundTint="@color/gray_light"
-                    android:gravity="center_vertical"
-                    android:paddingHorizontal="8dp"
-                    android:paddingVertical="6dp">
+<!--                &lt;!&ndash;                tags button&ndash;&gt;-->
+<!--                <LinearLayout-->
+<!--                    android:id="@+id/btn_add_tags"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="6dp"-->
+<!--                    android:background="@drawable/rounded_sm"-->
+<!--                    android:backgroundTint="@color/gray_light"-->
+<!--                    android:gravity="center_vertical"-->
+<!--                    android:paddingHorizontal="8dp"-->
+<!--                    android:paddingVertical="6dp">-->
 
-                    <TextView
-                        android:id="@+id/btn_create_event_tags"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:text="Add Tags"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/text_size_body_small" />
+<!--                    <TextView-->
+<!--                        android:id="@+id/btn_create_event_tags"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginLeft="10dp"-->
+<!--                        android:text="Add Tags"-->
+<!--                        android:textColor="@color/black"-->
+<!--                        android:textSize="@dimen/text_size_body_small" />-->
 
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="2dp"
-                        android:src="@drawable/ic_add"
-                        app:tint="@color/text_secondary" />
-                </LinearLayout>
+<!--                    <ImageView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginLeft="2dp"-->
+<!--                        android:src="@drawable/ic_add"-->
+<!--                        app:tint="@color/text_secondary" />-->
+<!--                </LinearLayout>-->
 
-                <!--                tag list-->
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_create_event_tag_list"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="8dp"/>
-            </LinearLayout>
+<!--                &lt;!&ndash;                tag list&ndash;&gt;-->
+<!--                <androidx.recyclerview.widget.RecyclerView-->
+<!--                    android:id="@+id/rv_create_event_tag_list"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:orientation="horizontal"-->
+<!--                    android:padding="8dp"/>-->
+<!--            </LinearLayout>-->
 
             <View
                 android:layout_width="match_parent"
