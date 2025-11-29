@@ -80,6 +80,7 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
      *
      * @return the root view of the fragment's layout
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
@@ -92,7 +93,7 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         filterGroup = view.findViewById(R.id.filterGroup);
-        categoryFilter = addFilterChip("category", "Category", "Any");
+        categoryFilter = addFilterChip("category", "Category", getCategoryFilterText());
         categoryFilter.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
@@ -101,7 +102,7 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
             }
         });
 
-        daysOfWeekFilter = addFilterChip("daysOfWeek", "Days", "Any");
+        daysOfWeekFilter = addFilterChip("daysOfWeek", "Days", getDaysOfWeekFilterText());
         daysOfWeekFilter.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
@@ -110,7 +111,7 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
             }
         });
 
-        timeRangesFilter = addFilterChip("timeRanges", " Start Time", "Any");
+        timeRangesFilter = addFilterChip("timeRanges", "Start Time", getTimeRangesFilterText());
         timeRangesFilter.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
@@ -231,11 +232,15 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
             }
 
             homeViewModel.applyCategoryFilters(selectedFilters);
-
-            String selectedFiltersCount = String.format("(%d)", selectedFilters.size());
-            boolean allOrNoFiltersSelected = selectedFilters.size() == chipGroup.getChildCount() || selectedFilters.size() == 0;
-            categoryFilter.setText(String.format("Category: %s", allOrNoFiltersSelected ? "Any" : selectedFiltersCount));
+            categoryFilter.setText(String.format("Category: %s", getCategoryFilterText()));
         });
+    }
+
+    private String getCategoryFilterText() {
+        List<EventCategory> selectedFilters = homeViewModel.getSelectedCategories();
+        String selectedFiltersCount = String.format("(%d)", selectedFilters.size());
+        boolean allOrNoFiltersSelected = selectedFilters.size() == EventCategory.values().length || selectedFilters.size() == 0;
+        return allOrNoFiltersSelected ? "Any" : selectedFiltersCount;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -284,19 +289,26 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
             homeViewModel.applyDaysOfWeekFilter(selectedDaysOfWeek);
 
             String fmt = "Days: %s";
-            if (selectedDaysOfWeek.size() == 7 || selectedDaysOfWeek.isEmpty()) {
-                daysOfWeekFilter.setText(String.format(fmt, "Any"));
-            } else {
-                StringBuffer buffer = new StringBuffer();
-                for (DayOfWeek dow : DayOfWeek.values()) {
-                    if (selectedDaysOfWeek.contains(dow)) {
-                        buffer.append(dow.getDisplayName(TextStyle.NARROW, Locale.CANADA));
-                        buffer.append(" ");
-                    }
-                }
-                daysOfWeekFilter.setText(String.format(fmt, buffer.toString().trim()));
-            }
+            daysOfWeekFilter.setText(String.format(fmt, getDaysOfWeekFilterText()));
         });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private String getDaysOfWeekFilterText() {
+        List<DayOfWeek> selectedDaysOfWeek = homeViewModel.getSelectedDaysOfWeek();
+        if (selectedDaysOfWeek.size() == 7 || selectedDaysOfWeek.isEmpty()) {
+            return "Any";
+        } else {
+            StringBuffer buffer = new StringBuffer();
+            for (DayOfWeek dow : DayOfWeek.values()) {
+                if (selectedDaysOfWeek.contains(dow)) {
+                    buffer.append(dow.getDisplayName(TextStyle.NARROW, Locale.CANADA));
+                    buffer.append(" ");
+                }
+            }
+            return buffer.toString().trim();
+        }
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -345,19 +357,25 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
             homeViewModel.applyTimeRangeFilter(selectedTimeRanges);
 
             String fmt = "Start Time: %s";
-            if (selectedTimeRanges.size() == 3 || selectedTimeRanges.isEmpty()) {
-                timeRangesFilter.setText(String.format(fmt, "Any"));
-            } else {
-                StringBuffer buffer = new StringBuffer();
-                for (int i = 0; i < selectedTimeRanges.size(); ++i) {
-                    if (i > 0) {
-                        buffer.append(", ");
-                    }
-                    buffer.append(selectedTimeRanges.get(i).getShortDisplayName());
-                }
-                timeRangesFilter.setText(String.format(fmt, buffer.toString().trim()));
-            }
+            timeRangesFilter.setText(String.format(fmt, getTimeRangesFilterText()));
         });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private String getTimeRangesFilterText() {
+        List<TimeRange> selectedTimeRanges = homeViewModel.getSelectedTimeRanges();
+        if (selectedTimeRanges.size() == 3 || selectedTimeRanges.isEmpty()) {
+            return "Any";
+        } else {
+            StringBuffer buffer = new StringBuffer();
+            for (int i = 0; i < selectedTimeRanges.size(); ++i) {
+                if (i > 0) {
+                    buffer.append(", ");
+                }
+                buffer.append(selectedTimeRanges.get(i).getShortDisplayName());
+            }
+            return buffer.toString().trim();
+        }
     }
 
     private void applyFilters(List<EventCategory> categoryFilters) {
