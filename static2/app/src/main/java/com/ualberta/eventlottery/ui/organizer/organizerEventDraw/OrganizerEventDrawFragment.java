@@ -481,7 +481,8 @@ public class OrganizerEventDrawFragment extends Fragment {
                     acceptedTitle,
                     acceptedBody,
                     currentEvent.getId(),
-                    selectedUserIds
+                    selectedUserIds,
+                    "action"
             );
         }
 
@@ -494,7 +495,8 @@ public class OrganizerEventDrawFragment extends Fragment {
                     notAcceptedTitle,
                     notAcceptedBody,
                     currentEvent.getId(),
-                    nonSelectedUserIds
+                    nonSelectedUserIds,
+                    "action"
             );
     }
         }
