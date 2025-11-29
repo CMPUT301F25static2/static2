@@ -84,7 +84,6 @@ public class OrganizerEventShowcaseFragment extends Fragment implements ImageVie
         Bundle args = getArguments();
         if (args != null && args.containsKey(ARG_EVENT_ID)) {
             eventId = args.getString(ARG_EVENT_ID);
-            Toast.makeText(requireContext(), "Received Event ID: " + eventId, Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(requireContext(), "No event ID received", Toast.LENGTH_SHORT).show();
             requireActivity().onBackPressed();
