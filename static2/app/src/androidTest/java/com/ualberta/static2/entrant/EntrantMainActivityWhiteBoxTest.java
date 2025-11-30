@@ -3,6 +3,7 @@ package com.ualberta.static2.entrant;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
@@ -55,6 +56,7 @@ public class EntrantMainActivityWhiteBoxTest {
 
         registrationRepository.registerUser(event.getId(), UserManager.getCurrentUserId(), registrationCallback);
         assertTrue(registrationLatch.await(5000, TimeUnit.MILLISECONDS));
+
         Registration registration = registrationCallback.getRegistration();
         assertNotNull(registration);
         assertEquals(UserManager.getCurrentUserId(), registration.getEntrantId());
@@ -74,42 +76,41 @@ public class EntrantMainActivityWhiteBoxTest {
     //US 01.01.02 As an entrant, I want to leave the waiting list for a specific event
     @Test
     public void entrantCanLeaveWaitingList() throws InterruptedException {
-        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        String testEventId = TEST_EVENT_ID + "-entrantCanJoinWaitingList";
 
-        EventRepository eventRepository = EventRepository.getInstance();
+        DatabaseCleaner.cleanRegistrationsByEvent(testEventId, latchAwaitMS);
 
-        // Arrange: create event with open registration window
-        Event event = new Event(TEST_EVENT_ID, "organizer-1", "Sample Event", "Desc");
-        Date now = new Date();
-        event.setRegistrationStart(new Date(now.getTime() - 60 * 60 * 1000)); // started 1h ago
-        event.setRegistrationEnd(new Date(now.getTime() + 60 * 60 * 1000));   // ends in 1h
-        event.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_OPEN);
-        event.setMaxWaitListSize(5); // capacity
-        event.setMaxAttendees(10);
+        Event event = createTestEvent(testEventId);
 
-        CountDownLatch latch = new CountDownLatch(1);
+        RegistrationRepository registrationRepository = RegistrationRepository.getInstance();
+        CountDownLatch registrationLatch = new CountDownLatch(1);
+        TestRegistrationCallback registrationCallback = new TestRegistrationCallback(registrationLatch);
 
-        EventRepository.OperationCallback callback = new EventRepository.OperationCallback() {
-            @Override
-            public void onSuccess() {
-                latch.countDown();
-            }
+        // First we register the user for the event
+        registrationRepository.registerUser(event.getId(), UserManager.getCurrentUserId(), registrationCallback);
+        assertTrue(registrationLatch.await(5000, TimeUnit.MILLISECONDS));
 
-            @Override
-            public void onFailure(Exception e) {
-                assertFalse(e.getMessage(), false);
-            }
-        };
+        Registration registration = registrationCallback.getRegistration();
+        assertNotNull(registration);
+        assertEquals(UserManager.getCurrentUserId(), registration.getEntrantId());
+        assertTrue("Expecting WAITING status but got " + registration.getStatus().name(), EntrantRegistrationStatus.WAITING.equals(registration.getStatus()));
 
-        Uri posterUri = new Uri.Builder()
-                .scheme("android.resource")
-                .authority(context.getPackageName())
-                .appendPath("drawable")
-                .appendPath(context.getResources().getResourceEntryName(R.drawable.ic_self_improvement_24dp_000000_fill0_wght400_grad0_opsz24))
-                .build();
+        // Now we unregister
+        CountDownLatch unregistrationLatch = new CountDownLatch(1);
+        TestRegistrationCallback unregistrationCallback = new TestRegistrationCallback(unregistrationLatch);
+        registrationRepository.unregisterUser(event.getId(), UserManager.getCurrentUserId(), unregistrationCallback);
+        assertTrue(unregistrationLatch.await(5000, TimeUnit.MILLISECONDS));
 
-        eventRepository.addEventWithPoster(event, posterUri, callback);
-        assertTrue(latch.await(5000, TimeUnit.MILLISECONDS));
+        registration = unregistrationCallback.getRegistration();
+        assertNull(registration);
+
+        CountDownLatch registrationListLatch = new CountDownLatch(1);
+        TestRegistrationListCallback registrationListCallback = new TestRegistrationListCallback(registrationListLatch);
+        registrationRepository.getRegistrationsByEvent(event.getId(), registrationListCallback);
+        assertTrue("Timeout waiting for registration list callback", registrationListLatch.await(5000, TimeUnit.MILLISECONDS));
+
+        List<Registration> registrations = registrationListCallback.getRegistrations();
+        assertEquals(0, registrations.size());
     }
 
     // US 01.01.03 As an entrant, I want to be able to see a list of events that I can join the waiting list for
