@@ -4,12 +4,15 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
+import com.ualberta.eventlottery.MainActivity;
+import com.ualberta.eventlottery.utils.UserManager;
 import com.ualberta.static2.R;
 import com.ualberta.static2.databinding.ActivityEventLotteryMainBinding;
 
@@ -51,20 +54,39 @@ public class EntrantMainActivity extends AppCompatActivity {
         // Make sure the device in the emulator is configured to use your web cam to test the bar code scanning
         //
         String action = getIntent().getAction();
-        String eventId = null;
         if(Intent.ACTION_VIEW.equals(action)){
-            Uri uri = getIntent().getData();
-            if(uri != null){
-                eventId = uri.getQueryParameter("eventId");
-                // Exact google search term: android navigation with parameters in java
-                Bundle bundle = new Bundle();
-                bundle.putString("eventId", eventId);
+            // Need to initialize the user since we didn't go through MainActivity.
+            UserManager.initializeUser (new UserManager.InitCallback() {
+                @Override
+                public void onSuccess(String userId) {
+                    Log.d(TAG, "userInitialization:success:userId=" + userId);
+                    launchEventDetails(navController);
+                }
 
-                navController.navigate(R.id.navigation_event_details, bundle);
-            }
+                @Override
+                public void onFailure(Exception exception) {
+                    Toast.makeText(getApplicationContext(), "User initialization failed.",
+                            Toast.LENGTH_SHORT).show();
+                    launchEventDetails(navController);
+                }
+            });
+        }
+    }
+
+    private void launchEventDetails(NavController navController) {
+        String eventId = null;
+        Uri uri = getIntent().getData();
+        if(uri != null){
+            eventId = uri.getQueryParameter("eventId");
+            // Exact google search term: android navigation with parameters in java
+            Bundle bundle = new Bundle();
+            bundle.putString("eventId", eventId);
+
+            navController.navigate(R.id.navigation_event_details, bundle);
         }
         Log.d(TAG, "Launched with eventId=" + eventId);
     }
+
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
