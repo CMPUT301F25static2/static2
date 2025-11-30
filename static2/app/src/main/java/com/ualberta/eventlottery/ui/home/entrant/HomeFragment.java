@@ -52,7 +52,6 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
     private CountingIdlingResource getAvailableEventsIdlingResource = null;
 
     // History button has been removed
-    private EditText searchInputHome;
     private ChipGroup filterGroup;
     private Chip categoryFilter, timeRangesFilter, daysOfWeekFilter;
     private RecyclerView recyclerView;
@@ -88,7 +87,6 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
-        searchInputHome = view.findViewById(R.id.searchInputHome);
         recyclerView = view.findViewById(R.id.eventsRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -142,14 +140,6 @@ public class HomeFragment extends Fragment implements EventAdapter.OnEventListen
         };
 
         showMyEvents();
-
-        searchInputHome.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_SEARCH || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-                // Search logic here
-                return true;
-            }
-            return false;
-        });
 
         MaterialButtonToggleGroup toggleGroup = view.findViewById(R.id.toggleGroup);
 
