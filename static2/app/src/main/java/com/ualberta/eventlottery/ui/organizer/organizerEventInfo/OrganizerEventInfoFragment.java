@@ -172,6 +172,7 @@ public class OrganizerEventInfoFragment extends Fragment {
         binding.tvEventDescription.setText(currentEvent.getDescription());
         binding.tvEventUpdateTitle.setText(currentEvent.getTitle());
         binding.tvEventUpdateDescription.setText(currentEvent.getDescription());
+        binding.tvEventUpdatePrice.setText(String.valueOf(currentEvent.getPrice()));
 //        binding.tvEventLocation.setText(currentEvent.getLocation());
 
         // Set geolocation requirement toggle
@@ -294,6 +295,10 @@ public class OrganizerEventInfoFragment extends Fragment {
             showEditDialog("title", currentEvent.getTitle());
         });
 
+        binding.btnEventUpdatePrice.setOnClickListener(v -> {
+            showEditDialog("price", String.valueOf(currentEvent.getPrice()));
+        });
+
         binding.btnEventUpdateDescription.setOnClickListener(v -> {
             showEditDialog("description", currentEvent.getDescription());
         });
@@ -408,6 +413,9 @@ public class OrganizerEventInfoFragment extends Fragment {
                 break;
             case "description":
                 currentEvent.setDescription((String) newValue);
+                break;
+            case "price":
+                currentEvent.setPrice((Double) newValue);
                 break;
             case "location":
                 currentEvent.setLocation((String) newValue);
