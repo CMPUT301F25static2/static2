@@ -69,18 +69,6 @@ public class EntrantMainActivityTest {
     }
 
     /**
-     * US 01.01.03 As an entrant, I want to be able to see a list of events that I can join the waiting list for.
-     */
-    @Test
-    public void testEntrantIsAbleToSeeEventsTheyCanRegisterFor() {
-        // test if the activity launches successfully
-        ActivityScenario.launch(EntrantMainActivity.class);
-
-        onView(withId(R.id.availableEventsButton))
-                .check(matches(isDisplayed()));
-    }
-
-    /**
      * US 01.01.01 As an entrant, I want to join the waiting list for a specific event
      */
     @Test
@@ -141,6 +129,18 @@ public class EntrantMainActivityTest {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * US 01.01.03 As an entrant, I want to be able to see a list of events that I can join the waiting list for.
+     */
+    @Test
+    public void testEntrantIsAbleToSeeEventsTheyCanRegisterFor() {
+        // test if the activity launches successfully
+        ActivityScenario.launch(EntrantMainActivity.class);
+
+        onView(withId(R.id.availableEventsButton))
+                .check(matches(isDisplayed()));
     }
 
     /**
