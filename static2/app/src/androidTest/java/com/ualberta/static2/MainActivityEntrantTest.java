@@ -134,36 +134,4 @@
 ////        assertFalse(joinable.contains(eventD));
 //    }
 //
-//
-//
-//    //US 01.01.01 As an entrant, I want to join the waiting list for a specific event
-//    @Test
-//    public void entrantCanJoinWaitingList() {
-//        InstrumentationRegistry.getInstrumentation().getTargetContext();
-//
-//        // Arrange: create event with open registration window
-//        Event event = new Event("event-1", "organizer-1", "Sample Event", "Desc");
-//        Date now = new Date();
-//        event.setRegistrationStart(new Date(now.getTime() - 60 * 60 * 1000)); // started 1h ago
-//        event.setRegistrationEnd(new Date(now.getTime() + 60 * 60 * 1000));   // ends in 1h
-//        event.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_OPEN);
-//        event.setMaxWaitListSize(5); // capacity
-//        event.setMaxAttendees(10);
-//
-//        String userId = "user-123";
-//
-//        // Act: User attempts to join waiting list
-//        boolean added = event.addToWaitingList(userId);
-//
-//        // Assert: User is added to waiting list
-//        assertTrue("User should be added to waiting list", added);
-//        assertEquals(1, event.getWaitListCount());
-//        assertTrue(event.getWaitListUserIds().contains(userId));
-//
-//        // Edge Case: Attempt to add same user again
-//        boolean addedAgain = event.addToWaitingList(userId);
-//        assertFalse("User should not be added again to waiting list", addedAgain);
-//        assertEquals(1, event.getWaitListCount());
-//    }
-//
 //}
