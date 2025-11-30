@@ -2,6 +2,7 @@ package com.ualberta.static2.entrant;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -9,12 +10,15 @@ import static org.junit.Assert.assertTrue;
 import android.content.Context;
 import android.net.Uri;
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+import androidx.lifecycle.Observer;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.ualberta.eventlottery.model.EntrantRegistrationStatus;
 import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.model.EventRegistrationStatus;
 import com.ualberta.eventlottery.model.Registration;
+import com.ualberta.eventlottery.repository.EventListLiveData;
 import com.ualberta.eventlottery.repository.EventRepository;
 import com.ualberta.eventlottery.repository.RegistrationRepository;
 import com.ualberta.eventlottery.utils.UserManager;
@@ -24,6 +28,9 @@ import com.ualberta.static2.testutils.UserManagerRule;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,10 +39,19 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 
+@RunWith(MockitoJUnitRunner.class)
 public class EntrantMainActivityWhiteBoxTest {
 
     @Rule
     public UserManagerRule userManagerRule = new UserManagerRule();
+
+    // Google search term: java junit testing LiveData example
+    @Rule
+    public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
+
+    // Google search term: java junit testing LiveData example
+    @Mock
+    Observer<List<Event>> mockEventListLiveDataObserver;
 
     private int latchAwaitMS = 30000;
 
@@ -46,7 +62,7 @@ public class EntrantMainActivityWhiteBoxTest {
     public void entrantCanJoinWaitingList() throws InterruptedException {
         String testEventDescription = TEST_EVENT_DESCRIPTION + "-entrantCanJoinWaitingList";
 
-        Event event = createTestEvent(testEventDescription);
+        Event event = createTestEvent(testEventDescription, EventRegistrationStatus.REGISTRATION_OPEN);
 
         try {
             RegistrationRepository registrationRepository = RegistrationRepository.getInstance();
@@ -80,7 +96,7 @@ public class EntrantMainActivityWhiteBoxTest {
     public void entrantCanLeaveWaitingList() throws InterruptedException {
         String testEventDescription = TEST_EVENT_DESCRIPTION + "-entrantCanJoinWaitingList";
 
-        Event event = createTestEvent(testEventDescription);
+        Event event = createTestEvent(testEventDescription, EventRegistrationStatus.REGISTRATION_OPEN);
 
         try {
             RegistrationRepository registrationRepository = RegistrationRepository.getInstance();
@@ -119,67 +135,43 @@ public class EntrantMainActivityWhiteBoxTest {
 
     // US 01.01.03 As an entrant, I want to be able to see a list of events that I can join the waiting list for
     @Test
-    public void entrantCanSeeJoinableEventsList() {
-//        InstrumentationRegistry.getInstrumentation().getTargetContext();
-//
-//        String currentUserId = "user-123";
-//        Date now = new Date();
-//        Date openStart = new Date(now.getTime() - 60 * 60 * 1000); // 1h ago
-//        Date openEnd = new Date(now.getTime() + 60 * 60 * 1000);   // in 1h
-//        Date closedEnd = new Date(now.getTime() - 10 * 60 * 1000); // 10m ago
-//
-//        // Event A: joinable (open, not full, user not on waitlist)
-//        Event eventA = new Event("A", "org", "Event A", "Desc");
-//        eventA.setRegistrationStart(openStart);
-//        eventA.setRegistrationEnd(openEnd);
-//        eventA.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_OPEN);
-//        eventA.setMaxWaitListSize(3);
-//
-//        // Event B: waitlist full (not joinable)
-//        Event eventB = new Event("B", "org", "Event B", "Desc");
-//        eventB.setRegistrationStart(openStart);
-//        eventB.setRegistrationEnd(openEnd);
-//        eventB.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_OPEN);
-//        eventB.setMaxWaitListSize(1);
-//        //eventB.addToWaitingList("someone-else"); // fill the waitlist
-//
-//        // Event C: registration closed (not joinable)
-//        Event eventC = new Event("C", "org", "Event C", "Desc");
-//        eventC.setRegistrationStart(openStart);
-//        eventC.setRegistrationEnd(closedEnd);
-//        eventC.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_CLOSED);
-//        eventC.setMaxWaitListSize(3);
-//
-//        // Event D: user already on waitlist (not joinable)
-//        Event eventD = new Event("D", "org", "Event D", "Desc");
-//        eventD.setRegistrationStart(openStart);
-//        eventD.setRegistrationEnd(openEnd);
-//        eventD.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_OPEN);
-//        eventD.setMaxWaitListSize(5);
-//        //eventD.addToWaitingList(currentUserId);
-//
-//        List<Event> all = Arrays.asList(eventA, eventB, eventC, eventD);
-//
-//        // Compute joinable events for current user
-//        List<Event> joinable = new ArrayList<>();
-////        for (Event e : all) {
-////            boolean canJoin = e.isRegistrationOpen()
-////                    && !e.isWaitingListFull()
-////                    && !e.getWaitListUserIds().contains(currentUserId);
-////            if (canJoin) {
-////                joinable.add(e);
-////            }
-//        }
-//
-//        // Assertions: Only Event A should be joinable
-////        assertEquals(1, joinable.size());
-////        assertTrue(joinable.contains(eventA));
-////        assertFalse(joinable.contains(eventB));
-////        assertFalse(joinable.contains(eventC));
-////        assertFalse(joinable.contains(eventD));
+    public void entrantCanSeeJoinableEventsList() throws InterruptedException {
+        String testEventDescription = TEST_EVENT_DESCRIPTION + "-entrantCanJoinWaitingList";
+
+        Event event1 = createTestEvent(testEventDescription + "-1", EventRegistrationStatus.REGISTRATION_OPEN);
+        Event event2 = createTestEvent(testEventDescription + "-2", EventRegistrationStatus.REGISTRATION_OPEN);
+        Event event3 = createTestEvent(testEventDescription + "-3", EventRegistrationStatus.REGISTRATION_CLOSED);
+
+        try {
+            EventRepository eventRepository = EventRepository.getInstance();
+            EventListLiveData availableEvents = eventRepository.getAvailableEvents();
+
+            CountDownLatch latch = new CountDownLatch(1);
+
+            // Google search term: java junit testing LiveData example
+            availableEvents.observeForever(mockEventListLiveDataObserver);
+
+            // Give time for the repository to fill the available events list
+            latch.await(5000, TimeUnit.MILLISECONDS);
+
+            List<Event> result = availableEvents.getValue();
+            List<String> expectedIds = new ArrayList<>();
+            for (Event event : result) {
+                assertNotEquals(event3.getId(), event.getId());
+                if (event.getId().compareTo(event1.getId()) == 0 ||
+                    event.getId().compareTo(event2.getId()) == 0) {
+                    expectedIds.add(event.getId());
+                }
+            }
+            assertEquals(2, expectedIds.size());
+        } finally {
+            DatabaseCleaner.cleanEvent(event1.getId(), latchAwaitMS);
+            DatabaseCleaner.cleanEvent(event2.getId(), latchAwaitMS);
+            DatabaseCleaner.cleanEvent(event3.getId(), latchAwaitMS);
+        }
     }
 
-    private Event createTestEvent(String testEventDescription) throws InterruptedException {
+    private Event createTestEvent(String testEventDescription, EventRegistrationStatus registrationStatus) throws InterruptedException {
         EventRepository eventRepository = EventRepository.getInstance();
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
@@ -190,7 +182,7 @@ public class EntrantMainActivityWhiteBoxTest {
         Date now = new Date();
         event.setRegistrationStart(new Date(now.getTime() - 60 * 60 * 1000)); // started 1h ago
         event.setRegistrationEnd(new Date(now.getTime() + 60 * 60 * 1000));   // ends in 1h
-        event.setRegistrationStatus(EventRegistrationStatus.REGISTRATION_OPEN);
+        event.setRegistrationStatus(registrationStatus);
         event.setMaxWaitListSize(5); // capacity
         event.setMaxAttendees(10);
 
