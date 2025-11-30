@@ -202,6 +202,8 @@ public class OrganizerEventCreateFragment extends Fragment {
             showTimePickerDialog(eventToCalendar, this::updateEventTimeDisplay);
         });
 
+
+
 //        // Add tags button
 //        binding.btnAddTags.setOnClickListener(v -> {
 //            showAddTagDialog();
@@ -330,6 +332,7 @@ public class OrganizerEventCreateFragment extends Fragment {
             Event newEvent = new Event();
             newEvent.setOrganizerId(organizerId);
             newEvent.setTitle(binding.etCreateEventTitle.getText().toString().trim());
+            newEvent.setPrice(Double.parseDouble(binding.etCreateEventPrice.getText().toString().trim()));
             newEvent.setDescription(binding.etCreateEventDescription.getText().toString().trim());
             newEvent.setLocation(binding.etCreateEventLocation.getText().toString().trim());
             newEvent.setLocationRequired(binding.switchGeolocationRequired.isChecked());
