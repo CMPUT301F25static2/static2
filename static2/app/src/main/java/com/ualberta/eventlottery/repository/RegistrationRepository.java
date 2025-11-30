@@ -192,7 +192,7 @@ public class RegistrationRepository {
      * @param registration the Registration object to convert
      * @return a Map containing the registration data for Firestore
      */
-    private Map<String, Object> registrationToMap(Registration registration) {
+    public Map<String, Object> registrationToMap(Registration registration) {
         Map<String, Object> registrationMap = new HashMap<>();
         registrationMap.put("id", registration.getId());
         registrationMap.put("eventId", registration.getEventId());

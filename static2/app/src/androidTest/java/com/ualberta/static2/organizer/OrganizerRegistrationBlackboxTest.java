@@ -22,11 +22,11 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.anything;
 
 /**
- * Android instrumentation tests for organizer registration management functionality.
+ * Android instrumentation blackbox tests for organizer registration management functionality .
  */
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class OrganizerRegistrationManagementTest {
+public class OrganizerRegistrationBlackboxTest {
 
     @Rule
     public ActivityScenarioRule<OrganizerMainActivity> activityRule =

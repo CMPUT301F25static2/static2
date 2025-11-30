@@ -206,7 +206,7 @@ public class EventRepository {
         return event;
     }
 
-    private Map<String, Object> eventToMap(Event event) {
+    public Map<String, Object> eventToMap(Event event) {
         Map<String, Object> eventMap = new HashMap<>();
         eventMap.put("title", event.getTitle());
         eventMap.put("description", event.getDescription());
