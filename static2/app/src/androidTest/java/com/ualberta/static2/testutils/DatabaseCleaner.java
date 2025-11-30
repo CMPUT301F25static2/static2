@@ -4,6 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import com.ualberta.eventlottery.model.Registration;
+import com.ualberta.eventlottery.repository.EventRepository;
 import com.ualberta.eventlottery.repository.RegistrationRepository;
 
 import org.junit.Test;
@@ -14,6 +15,27 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 public class DatabaseCleaner {
+    public static void cleanEvent(String eventId, int awaitMS) throws InterruptedException {
+        cleanRegistrationsByEvent(eventId, awaitMS);
+
+        EventRepository eventRepository = EventRepository.getInstance();
+
+        CountDownLatch latch = new CountDownLatch(1);
+        EventRepository.BooleanCallback callback = new EventRepository.BooleanCallback() {
+            @Override
+            public void onSuccess(boolean result) {
+                latch.countDown();
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                assertTrue("Failed to delete event " + eventId, false);
+            }
+        };
+        eventRepository.deleteEvent(eventId, callback);
+        assertTrue(latch.await(awaitMS, TimeUnit.MILLISECONDS));
+    }
+
     public static void cleanRegistrationsByEvent(String eventId, int awaitMS) throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(1);
 

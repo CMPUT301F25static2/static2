@@ -39,78 +39,82 @@ public class EntrantMainActivityWhiteBoxTest {
 
     private int latchAwaitMS = 30000;
 
-    private static String TEST_EVENT_ID = "entrant-white-box-test-event-id";
+    private static String TEST_EVENT_DESCRIPTION = "entrant-white-box-test-event";
 
     //US 01.01.01 As an entrant, I want to join the waiting list for a specific event
     @Test
     public void entrantCanJoinWaitingList() throws InterruptedException {
-        String testEventId = TEST_EVENT_ID + "-entrantCanJoinWaitingList";
+        String testEventDescription = TEST_EVENT_DESCRIPTION + "-entrantCanJoinWaitingList";
 
-        DatabaseCleaner.cleanRegistrationsByEvent(testEventId, latchAwaitMS);
+        Event event = createTestEvent(testEventDescription);
 
-        Event event = createTestEvent(testEventId);
+        try {
+            RegistrationRepository registrationRepository = RegistrationRepository.getInstance();
+            CountDownLatch registrationLatch = new CountDownLatch(1);
+            TestRegistrationCallback registrationCallback = new TestRegistrationCallback(registrationLatch);
 
-        RegistrationRepository registrationRepository = RegistrationRepository.getInstance();
-        CountDownLatch registrationLatch = new CountDownLatch(1);
-        TestRegistrationCallback registrationCallback = new TestRegistrationCallback(registrationLatch);
+            registrationRepository.registerUser(event.getId(), UserManager.getCurrentUserId(), registrationCallback);
+            assertTrue(registrationLatch.await(5000, TimeUnit.MILLISECONDS));
 
-        registrationRepository.registerUser(event.getId(), UserManager.getCurrentUserId(), registrationCallback);
-        assertTrue(registrationLatch.await(5000, TimeUnit.MILLISECONDS));
+            Registration registration = registrationCallback.getRegistration();
+            assertNotNull(registration);
+            assertEquals(UserManager.getCurrentUserId(), registration.getEntrantId());
+            assertTrue("Expecting WAITING status but got " + registration.getStatus().name(), EntrantRegistrationStatus.WAITING.equals(registration.getStatus()));
 
-        Registration registration = registrationCallback.getRegistration();
-        assertNotNull(registration);
-        assertEquals(UserManager.getCurrentUserId(), registration.getEntrantId());
-        assertTrue("Expecting WAITING status but got " + registration.getStatus().name(), EntrantRegistrationStatus.WAITING.equals(registration.getStatus()));
+            CountDownLatch registrationListLatch = new CountDownLatch(1);
+            TestRegistrationListCallback registrationListCallback = new TestRegistrationListCallback(registrationListLatch);
+            registrationRepository.getRegistrationsByEvent(event.getId(), registrationListCallback);
+            assertTrue("Timeout waiting for registration list callback", registrationListLatch.await(5000, TimeUnit.MILLISECONDS));
 
-        CountDownLatch registrationListLatch = new CountDownLatch(1);
-        TestRegistrationListCallback registrationListCallback = new TestRegistrationListCallback(registrationListLatch);
-        registrationRepository.getRegistrationsByEvent(event.getId(), registrationListCallback);
-        assertTrue("Timeout waiting for registration list callback", registrationListLatch.await(5000, TimeUnit.MILLISECONDS));
-
-        List<Registration> registrations = registrationListCallback.getRegistrations();
-        assertEquals(1, registrations.size());
-        assertEquals(UserManager.getCurrentUserId(), registrations.get(0).getEntrantId());
-        assertTrue("Expecting WAITING status but got " + registrations.get(0).getStatus().name(), EntrantRegistrationStatus.WAITING.equals(registrations.get(0).getStatus()));
+            List<Registration> registrations = registrationListCallback.getRegistrations();
+            assertEquals(1, registrations.size());
+            assertEquals(UserManager.getCurrentUserId(), registrations.get(0).getEntrantId());
+            assertTrue("Expecting WAITING status but got " + registrations.get(0).getStatus().name(), EntrantRegistrationStatus.WAITING.equals(registrations.get(0).getStatus()));
+        } finally {
+            DatabaseCleaner.cleanEvent(event.getId(), latchAwaitMS);
+        }
     }
 
     //US 01.01.02 As an entrant, I want to leave the waiting list for a specific event
     @Test
     public void entrantCanLeaveWaitingList() throws InterruptedException {
-        String testEventId = TEST_EVENT_ID + "-entrantCanJoinWaitingList";
+        String testEventDescription = TEST_EVENT_DESCRIPTION + "-entrantCanJoinWaitingList";
 
-        DatabaseCleaner.cleanRegistrationsByEvent(testEventId, latchAwaitMS);
+        Event event = createTestEvent(testEventDescription);
 
-        Event event = createTestEvent(testEventId);
+        try {
+            RegistrationRepository registrationRepository = RegistrationRepository.getInstance();
+            CountDownLatch registrationLatch = new CountDownLatch(1);
+            TestRegistrationCallback registrationCallback = new TestRegistrationCallback(registrationLatch);
 
-        RegistrationRepository registrationRepository = RegistrationRepository.getInstance();
-        CountDownLatch registrationLatch = new CountDownLatch(1);
-        TestRegistrationCallback registrationCallback = new TestRegistrationCallback(registrationLatch);
+            // First we register the user for the event
+            registrationRepository.registerUser(event.getId(), UserManager.getCurrentUserId(), registrationCallback);
+            assertTrue(registrationLatch.await(5000, TimeUnit.MILLISECONDS));
 
-        // First we register the user for the event
-        registrationRepository.registerUser(event.getId(), UserManager.getCurrentUserId(), registrationCallback);
-        assertTrue(registrationLatch.await(5000, TimeUnit.MILLISECONDS));
+            Registration registration = registrationCallback.getRegistration();
+            assertNotNull(registration);
+            assertEquals(UserManager.getCurrentUserId(), registration.getEntrantId());
+            assertTrue("Expecting WAITING status but got " + registration.getStatus().name(), EntrantRegistrationStatus.WAITING.equals(registration.getStatus()));
 
-        Registration registration = registrationCallback.getRegistration();
-        assertNotNull(registration);
-        assertEquals(UserManager.getCurrentUserId(), registration.getEntrantId());
-        assertTrue("Expecting WAITING status but got " + registration.getStatus().name(), EntrantRegistrationStatus.WAITING.equals(registration.getStatus()));
+            // Now we unregister
+            CountDownLatch unregistrationLatch = new CountDownLatch(1);
+            TestRegistrationCallback unregistrationCallback = new TestRegistrationCallback(unregistrationLatch);
+            registrationRepository.unregisterUser(event.getId(), UserManager.getCurrentUserId(), unregistrationCallback);
+            assertTrue(unregistrationLatch.await(5000, TimeUnit.MILLISECONDS));
 
-        // Now we unregister
-        CountDownLatch unregistrationLatch = new CountDownLatch(1);
-        TestRegistrationCallback unregistrationCallback = new TestRegistrationCallback(unregistrationLatch);
-        registrationRepository.unregisterUser(event.getId(), UserManager.getCurrentUserId(), unregistrationCallback);
-        assertTrue(unregistrationLatch.await(5000, TimeUnit.MILLISECONDS));
+            registration = unregistrationCallback.getRegistration();
+            assertNull(registration);
 
-        registration = unregistrationCallback.getRegistration();
-        assertNull(registration);
+            CountDownLatch registrationListLatch = new CountDownLatch(1);
+            TestRegistrationListCallback registrationListCallback = new TestRegistrationListCallback(registrationListLatch);
+            registrationRepository.getRegistrationsByEvent(event.getId(), registrationListCallback);
+            assertTrue("Timeout waiting for registration list callback", registrationListLatch.await(5000, TimeUnit.MILLISECONDS));
 
-        CountDownLatch registrationListLatch = new CountDownLatch(1);
-        TestRegistrationListCallback registrationListCallback = new TestRegistrationListCallback(registrationListLatch);
-        registrationRepository.getRegistrationsByEvent(event.getId(), registrationListCallback);
-        assertTrue("Timeout waiting for registration list callback", registrationListLatch.await(5000, TimeUnit.MILLISECONDS));
-
-        List<Registration> registrations = registrationListCallback.getRegistrations();
-        assertEquals(0, registrations.size());
+            List<Registration> registrations = registrationListCallback.getRegistrations();
+            assertEquals(0, registrations.size());
+        } finally {
+            DatabaseCleaner.cleanEvent(event.getId(), latchAwaitMS);
+        }
     }
 
     // US 01.01.03 As an entrant, I want to be able to see a list of events that I can join the waiting list for
@@ -175,12 +179,14 @@ public class EntrantMainActivityWhiteBoxTest {
 ////        assertFalse(joinable.contains(eventD));
     }
 
-    private Event createTestEvent(String testEventId) throws InterruptedException {
+    private Event createTestEvent(String testEventDescription) throws InterruptedException {
         EventRepository eventRepository = EventRepository.getInstance();
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         // Arrange: create event with open registration window
-        Event event = new Event(testEventId, "organizer-1", "Sample Event", "Desc");
+        // The id here doesn't matter because it will be set by the EventRepository when the
+        // event is added to the db.
+        Event event = new Event("test-event", "organizer-1", "Test Event", testEventDescription);
         Date now = new Date();
         event.setRegistrationStart(new Date(now.getTime() - 60 * 60 * 1000)); // started 1h ago
         event.setRegistrationEnd(new Date(now.getTime() + 60 * 60 * 1000));   // ends in 1h
