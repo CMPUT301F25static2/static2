@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -97,6 +98,7 @@ public class EntrantsFragment extends Fragment {
         Bundle args = getArguments();
         if (args != null && args.containsKey(ARG_EVENT_ID)) {
             eventId = args.getString(ARG_EVENT_ID);
+            Toast.makeText(requireContext(), "EntrantsFragment received Event ID: " + eventId, Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(requireContext(), "No event ID received in EntrantsFragment", Toast.LENGTH_SHORT).show();
         }
@@ -185,6 +187,7 @@ public class EntrantsFragment extends Fragment {
         for (LinearLayout button : statusButtons) {
             boolean isSelected = button == selectedButton;
             button.setSelected(isSelected);
+            button.setBackgroundResource(R.drawable.button_selector);
         }
     }
 
@@ -442,22 +445,10 @@ public class EntrantsFragment extends Fragment {
      * Toggles the select all functionality, selecting or deselecting all entrants.
      */
     private void toggleSelectAll() {
-        isSelectAllChecked = !isSelectAllChecked;
-        binding.btnSelectAll.setSelected(isSelectAllChecked);
-
-        TextView selectAllTextView = (TextView) ((LinearLayout) binding.btnSelectAll).getChildAt(0);
-
-        // Update the adapter to reflect the new selection state
+        isSelectAllChecked = binding.btnSelectAll.isChecked();
         EntrantAdapter adapter = (EntrantAdapter) binding.lvEventEntrantList.getAdapter();
         if (adapter != null) {
             adapter.setSelectAllMode(isSelectAllChecked);
-        }
-
-        // Update UI to indicate select all state
-        if (isSelectAllChecked) {
-            selectAllTextView.setText("Deselect All");
-        } else {
-            selectAllTextView.setText("Select All");
         }
     }
 
@@ -468,11 +459,7 @@ public class EntrantsFragment extends Fragment {
     private void resetSelectAllState() {
         if (isSelectAllChecked) {
             isSelectAllChecked = false;
-            binding.btnSelectAll.setSelected(false);
-
-            TextView selectAllTextView = (TextView) ((LinearLayout) binding.btnSelectAll).getChildAt(0);
-            selectAllTextView.setText("Select All");
-
+            binding.btnSelectAll.setChecked(false);
             EntrantAdapter adapter = (EntrantAdapter) binding.lvEventEntrantList.getAdapter();
             if (adapter != null) {
                 adapter.setSelectAllMode(false);
