@@ -221,7 +221,8 @@ public class EntrantsFragment extends Fragment {
                 "Event Notification",
                 message,
                 eventId,
-                selectedEntrantIds
+                selectedEntrantIds,
+                "general"
         );
 
         Toast.makeText(requireContext(), "Notification sent to " + selectedEntrantIds.size() + " entrants", Toast.LENGTH_SHORT).show();

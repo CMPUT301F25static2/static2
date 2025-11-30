@@ -459,14 +459,14 @@ public class EventDetailsFragment extends Fragment {
                         public void onSuccess(Entrant entrant) {
                             String entrantName = entrant.getName();
                             String title = NotificationTemplate.getAcceptedOrganizer(entrantName, currentEvent.getTitle());
-                            notificationController.sendNotification(title, "", currentEvent.getId(), List.of(organizerId));
+                            notificationController.sendNotification(title, "", currentEvent.getId(), List.of(organizerId),"general");
                         }
 
                         @Override
                         public void onFailure(Exception e) {
                             Log.e("AcceptInvitation", "Failed to fetch entrant name", e);
                             String title = NotificationTemplate.getAcceptedOrganizer(entrantId, currentEvent.getTitle());
-                            notificationController.sendNotification(title, "", currentEvent.getId(), List.of(organizerId));
+                            notificationController.sendNotification(title, "", currentEvent.getId(), List.of(organizerId),"general");
                         }
                     });
                 }
@@ -510,14 +510,14 @@ public class EventDetailsFragment extends Fragment {
                         public void onSuccess(Entrant entrant) {
                             String entrantName = entrant.getName();
                             String title = NotificationTemplate.getNotAcceptedOrganizer(entrantName, currentEvent.getTitle());
-                            notificationController.sendNotification(title, "", currentEvent.getId(), List.of(organizerId));
+                            notificationController.sendNotification(title, "", currentEvent.getId(), List.of(organizerId),"general");
                         }
 
                         @Override
                         public void onFailure(Exception e) {
                             Log.e("CancelInvitation", "Failed to fetch entrant name", e);
                             String title = NotificationTemplate.getNotAcceptedOrganizer(entrantId, currentEvent.getTitle());
-                            notificationController.sendNotification(title, "", currentEvent.getId(), List.of(organizerId));
+                            notificationController.sendNotification(title, "", currentEvent.getId(), List.of(organizerId),"general");
                         }
                     });
                 }
