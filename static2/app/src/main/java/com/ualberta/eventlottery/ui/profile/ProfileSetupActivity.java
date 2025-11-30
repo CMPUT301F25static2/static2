@@ -1,6 +1,9 @@
 package com.ualberta.eventlottery.ui.profile;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -13,6 +16,7 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -30,6 +34,7 @@ public class ProfileSetupActivity extends AppCompatActivity {
 
     private EditText etName, etEmail, etPhoneNumber;
     private String fcmToken;
+    private boolean notificationsEnabled = false;
     private Button btnSaveProfile;
     private FirebaseFirestore db;
 
@@ -63,11 +68,12 @@ public class ProfileSetupActivity extends AppCompatActivity {
         radioOrganizer = findViewById(R.id.radio_organizer);
         radioAdmin = findViewById(R.id.radio_admin);
 
-        btnSaveProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) { setFCMTokenAndSaveProfile(); }
-        });
+        askNotificationPermission();
+
+        // Set click listener
+        btnSaveProfile.setOnClickListener(v -> setFCMTokenAndSaveProfile());
     }
+
 
     /**
      * Saves the user's profile information to Firestore.
@@ -108,7 +114,7 @@ public class ProfileSetupActivity extends AppCompatActivity {
         String userType = getUserType();
 
         // Create user profile
-        User userProfile = new User(userId, name, email, phoneNumber, this.fcmToken, userType, "");
+        User userProfile = new User(userId, name, email, phoneNumber, this.fcmToken, userType, "", this.notificationsEnabled) ;
         Log.d("FCM", "Get method:"+userProfile.getFcmToken());
 
 
@@ -195,5 +201,65 @@ public class ProfileSetupActivity extends AppCompatActivity {
             return "entrant";
         }
     }
+    private void askNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+
+            // Load saved state
+            notificationsEnabled = getSharedPreferences("prefs", MODE_PRIVATE)
+                    .getBoolean("notifications_enabled", false);
+
+            // Check if we already asked before
+            boolean askedBefore = getSharedPreferences("prefs", MODE_PRIVATE)
+                    .getBoolean("notification_prompt_shown", false);
+
+            if (askedBefore) {
+                return; // Do nothing if permission was already asked
+            }
+
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
+            } else {
+                // Permission already granted
+                notificationsEnabled = true;
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == 101) {
+            boolean granted = grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
+
+            // Update activity attribute
+            notificationsEnabled = granted;
+
+            // Save flag so we don't show again
+            getSharedPreferences("prefs", MODE_PRIVATE)
+                    .edit()
+                    .putBoolean("notification_prompt_shown", true)
+                    .putBoolean("notifications_enabled", granted)
+                    .apply();
+
+            if (granted) {
+                new androidx.appcompat.app.AlertDialog.Builder(this)
+                        .setTitle("Notifications Enabled")
+                        .setMessage("Notifications are now enabled. You can change this anytime in App Settings.")
+                        .setPositiveButton("OK", null)
+                        .show();
+            } else {
+                new androidx.appcompat.app.AlertDialog.Builder(this)
+                        .setTitle("Notifications Disabled")
+                        .setMessage("Notifications were denied. You can enable them later in App Settings.")
+                        .setPositiveButton("OK", null)
+                        .show();
+            }
+        }
+    }
+
 
 }

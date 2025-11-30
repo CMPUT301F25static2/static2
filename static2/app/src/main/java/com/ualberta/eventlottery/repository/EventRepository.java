@@ -90,6 +90,8 @@ public class EventRepository {
         event.setMaxAttendees(document.getLong("maxAttendees").intValue());
         event.setCategory(document.getString("category"));
         event.setOrganizerId(document.getString("organizerId"));
+        Double price = document.getDouble("price");
+        event.setPrice(price != null ? price : 0.0);
 
         event.setStartTime(document.getDate("eventStart"));
         event.setEndTime(document.getDate("eventEnd"));
@@ -218,6 +220,7 @@ public class EventRepository {
         eventMap.put("organizerId", event.getOrganizerId());
         eventMap.put("eventStart", event.getStartTime());
         eventMap.put("eventEnd", event.getEndTime());
+        eventMap.put("price", event.getPrice());
         eventMap.put("registrationStart", event.getRegistrationStart());
         eventMap.put("registrationEnd", event.getRegistrationEnd());
         eventMap.put("dailyStartTime", event.getDailyStartTime() != null ? event.getDailyStartTime().toString() : null);
@@ -366,7 +369,7 @@ public class EventRepository {
                 db.collection(COLLECTION_EVENTS).add(eventToMap(event))
                         .addOnSuccessListener(documentReference -> {
                             String eventId = documentReference.getId();
-
+                            event.setId(eventId);
                             generateAndUploadQrCode(documentReference, eventId, callback);
                         })
                         .addOnFailureListener(callback::onFailure);

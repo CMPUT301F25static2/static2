@@ -17,17 +17,22 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.bumptech.glide.Glide;
+import com.ualberta.eventlottery.model.Entrant;
 import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.model.Registration;
+import com.ualberta.eventlottery.notification.NotificationController;
+import com.ualberta.eventlottery.repository.EntrantRepository;
 import com.ualberta.eventlottery.repository.EventRepository;
 import com.ualberta.eventlottery.repository.RegistrationRepository;
 import com.ualberta.eventlottery.service.LocationService;
+import com.ualberta.eventlottery.ui.notifications.NotificationTemplate;
 import com.ualberta.eventlottery.utils.UserManager;
 import com.ualberta.static2.R;
 import com.ualberta.static2.databinding.FragmentEventDetailsBinding;
 
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -47,6 +52,16 @@ public class EventDetailsFragment extends Fragment {
     private Registration currentUserRegistration = null;
     private ActivityResultLauncher<String[]> locationPermissionLauncher;
     private Event currentEvent;
+    private enum ActionType {
+        REGISTER,
+        WITHDRAW,
+        ACCEPT,
+        CANCEL
+    }
+
+    private ActionType currentAction = ActionType.REGISTER;
+    private static NotificationController notificationController;
+    private EntrantRepository entrantRepository;
 
     /**
      * Required empty public constructor
@@ -60,7 +75,7 @@ public class EventDetailsFragment extends Fragment {
      * @param eventId The ID of the event to display.
      * @return A new instance of fragment EventDetailsFragment.
      */
-    public static EventDetailsFragment newInstance(String eventId) {
+    public EventDetailsFragment newInstance(String eventId) {
         EventDetailsFragment fragment = new EventDetailsFragment();
         Bundle args = new Bundle();
         args.putString(ARG_EVENT_ID, eventId);
@@ -81,6 +96,8 @@ public class EventDetailsFragment extends Fragment {
         receiveArguments();
         initData();
         setupLocationPermissionLauncher();
+        notificationController = new NotificationController(requireContext());
+
     }
 
     /**
@@ -142,6 +159,7 @@ public class EventDetailsFragment extends Fragment {
         eventRepository = EventRepository.getInstance();
         registrationRepository = RegistrationRepository.getInstance();
         locationService = new LocationService(getContext());
+        entrantRepository = EntrantRepository.getInstance();
     }
 
     /**
@@ -168,16 +186,15 @@ public class EventDetailsFragment extends Fragment {
      * Sets up click listeners for UI elements.
      */
     private void setupListeners() {
-        binding.backButton.setOnClickListener(v -> NavHostFragment.findNavController(EventDetailsFragment.this).popBackStack());
+        binding.backButton.setOnClickListener(v ->
+                NavHostFragment.findNavController(EventDetailsFragment.this).popBackStack()
+        );
+        binding.registerButton.setOnClickListener(v -> handleActionButtonPress());
+        binding.acceptButton.setOnClickListener(v -> acceptInvitation());
+        binding.rejectButton.setOnClickListener(v -> withdrawFromEvent());
 
-        binding.registerButton.setOnClickListener(v -> {
-            if (currentUserRegistration != null) {
-                withdrawFromEvent();
-            } else {
-                registerForEvent();
-            }
-        });
     }
+
 
     /**
      * Loads event data from the repository and populates the UI.
@@ -241,15 +258,67 @@ public class EventDetailsFragment extends Fragment {
     /**
      * Updates the UI of the register/withdraw button based on the user's registration status.
      */
+    /**
+     * Updates UI button visibility according to registration status
+     */
+
     private void updateButtonUi() {
         if (getContext() == null) return;
 
-        if (currentUserRegistration != null) {
-            binding.registerButton.setText("Withdraw");
-            binding.registerButton.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.red));
-        } else {
+        // Hide both layouts first
+        binding.registerButton.setVisibility(View.GONE);
+        binding.selectedButtonsLayout.setVisibility(View.GONE);
+
+        if (currentUserRegistration == null) {
             binding.registerButton.setText("Register");
-            binding.registerButton.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.purple_500));
+            binding.registerButton.setVisibility(View.VISIBLE);
+            currentAction = ActionType.REGISTER;
+            return;
+        }
+
+        String status = currentUserRegistration.getStatus().name();
+        Log.d("Status", status);
+
+        switch (status) {
+            case "WAITING":
+                binding.registerButton.setVisibility(View.VISIBLE);
+                binding.registerButton.setText("Withdraw");
+                currentAction = ActionType.WITHDRAW;
+                break;
+
+            case "SELECTED":
+                binding.selectedButtonsLayout.setVisibility(View.VISIBLE);
+                currentAction = ActionType.ACCEPT;
+                break;
+
+            case "CONFIRMED":
+                binding.registerButton.setVisibility(View.VISIBLE);
+                binding.registerButton.setText("Cancel Spot");
+                currentAction = ActionType.CANCEL;
+                break;
+
+            default:
+                binding.registerButton.setVisibility(View.VISIBLE);
+                binding.registerButton.setText("Register");
+                currentAction = ActionType.REGISTER;
+                break;
+        }
+    }
+
+    private void handleActionButtonPress() {
+        switch (currentAction) {
+            case REGISTER:
+                registerForEvent();
+                break;
+            case WITHDRAW:
+                withdrawFromEvent();
+                break;
+            case ACCEPT:
+                acceptInvitation();
+                break;
+            case CANCEL:
+                cancelInvitation();
+                break;
         }
     }
 
@@ -362,6 +431,110 @@ public class EventDetailsFragment extends Fragment {
             }
         });
     }
+    /**
+     * Accepts spot in the event.
+     */
+    private void acceptInvitation() {
+        if (currentUserRegistration == null || currentUserRegistration.getId() == null) {
+            Toast.makeText(getContext(), "Cannot accept spot: Registration not found.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        binding.registerButton.setEnabled(false);
+        binding.registerButton.setText("Accepting...");
+
+        registrationRepository.acceptInvitation(currentUserRegistration.getId(), new RegistrationRepository.RegistrationCallback() {
+            @Override
+            public void onSuccess(Registration updatedRegistration) {
+                currentUserRegistration = updatedRegistration;
+                updateButtonUi();
+                binding.registerButton.setEnabled(true);
+
+                if (currentEvent != null) {
+                    String entrantId = currentUserRegistration.getEntrantId();
+                    String organizerId = currentEvent.getOrganizerId();
+
+                    // Minimal fix: fetch entrant name
+                    EntrantRepository.getInstance().findEntrantById(entrantId, new EntrantRepository.EntrantCallback() {
+                        @Override
+                        public void onSuccess(Entrant entrant) {
+                            String entrantName = entrant.getName();
+                            String title = NotificationTemplate.getAcceptedOrganizer(entrantName, currentEvent.getTitle());
+                            notificationController.sendNotification(title, "", currentEvent.getId(), List.of(organizerId),"general");
+                        }
+
+                        @Override
+                        public void onFailure(Exception e) {
+                            Log.e("AcceptInvitation", "Failed to fetch entrant name", e);
+                            String title = NotificationTemplate.getAcceptedOrganizer(entrantId, currentEvent.getTitle());
+                            notificationController.sendNotification(title, "", currentEvent.getId(), List.of(organizerId),"general");
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(getContext(), "Failed to accept: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                updateButtonUi();
+                binding.registerButton.setEnabled(true);
+            }
+        });
+    }
+    /**
+     * Cancels spot in the event.
+     */
+    private void cancelInvitation() {
+        if (currentUserRegistration == null || currentUserRegistration.getId() == null) {
+            Toast.makeText(getContext(), "Cannot cancel: Registration not found.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        binding.registerButton.setEnabled(false);
+        binding.registerButton.setText("Cancelling...");
+
+        registrationRepository.deleteRegistration(currentUserRegistration.getId(), new RegistrationRepository.BooleanCallback() {
+            @Override
+            public void onSuccess(boolean result) {
+                Toast.makeText(getContext(), "Successfully cancelled spot in event", Toast.LENGTH_SHORT).show();
+                // Capture entrantId before clearing registration
+                String entrantId = currentUserRegistration.getEntrantId();
+                currentUserRegistration = null;
+                updateButtonUi();
+                binding.registerButton.setEnabled(true);
+
+                if (currentEvent != null) {
+                    String organizerId = currentEvent.getOrganizerId();
+
+                    // Minimal fix: fetch entrant name
+                    EntrantRepository.getInstance().findEntrantById(entrantId, new EntrantRepository.EntrantCallback() {
+                        @Override
+                        public void onSuccess(Entrant entrant) {
+                            String entrantName = entrant.getName();
+                            String title = NotificationTemplate.getNotAcceptedOrganizer(entrantName, currentEvent.getTitle());
+                            notificationController.sendNotification(title, "", currentEvent.getId(), List.of(organizerId),"general");
+                        }
+
+                        @Override
+                        public void onFailure(Exception e) {
+                            Log.e("CancelInvitation", "Failed to fetch entrant name", e);
+                            String title = NotificationTemplate.getNotAcceptedOrganizer(entrantId, currentEvent.getTitle());
+                            notificationController.sendNotification(title, "", currentEvent.getId(), List.of(organizerId),"general");
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(getContext(), "Cancellation failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                Log.e("WithdrawFailure", "Error cancelling spot in event", e);
+                updateButtonUi();
+                binding.registerButton.setEnabled(true);
+            }
+        });
+    }
+
+
+
 
     /**
      * Populates the UI with important event details for an entrant.

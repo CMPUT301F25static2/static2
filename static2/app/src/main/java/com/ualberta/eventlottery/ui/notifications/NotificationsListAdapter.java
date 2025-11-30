@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.material.card.MaterialCardView;
@@ -18,11 +19,14 @@ public class NotificationsListAdapter extends BaseAdapter {
 
     public interface OnNotificationClickListener {
         void onNotificationClick(NotificationModel notification);
+        void onNotificationClose(NotificationModel notification);
     }
 
     private final List<NotificationModel> notifications = new ArrayList<>();
     private final LayoutInflater inflater;
     private final OnNotificationClickListener clickListener;
+
+
 
     public NotificationsListAdapter(Context context, OnNotificationClickListener listener) {
         inflater = LayoutInflater.from(context);
@@ -62,6 +66,7 @@ public class NotificationsListAdapter extends BaseAdapter {
             holder.titleText = convertView.findViewById(R.id.notification_title);
             holder.bodyText = convertView.findViewById(R.id.notification_body);
             holder.card = convertView.findViewById(R.id.notification_card);
+            holder.closeButton = convertView.findViewById(R.id.close_button);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -80,6 +85,20 @@ public class NotificationsListAdapter extends BaseAdapter {
         holder.card.setAlpha(notification.getIsRead() ? 0.7f : 1.0f);
 
         holder.card.setOnClickListener(v -> clickListener.onNotificationClick(notification));
+        holder.closeButton.setOnClickListener(v -> {
+            v.animate()
+                    .scaleX(0.7f)
+                    .scaleY(0.7f)
+                    .setDuration(120)
+                    .withEndAction(() -> {
+                        v.animate()
+                                .scaleX(1f)
+                                .scaleY(1f)
+                                .setDuration(120);
+
+                        clickListener.onNotificationClose(notification); // Perform action after animation
+                    });
+        });
 
         return convertView;
     }
@@ -88,5 +107,6 @@ public class NotificationsListAdapter extends BaseAdapter {
         TextView titleText;
         TextView bodyText;
         MaterialCardView card;
+        ImageView closeButton;
     }
 }

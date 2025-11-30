@@ -99,8 +99,9 @@ public class AdminUsersFragment extends Fragment {
                             String phone = snapshot.getString("phone");
                             String favRecCenter = snapshot.getString("favRecCenter");
                             String userType = snapshot.getString("userType");
+                            Boolean notificationsEnabled = snapshot.getBoolean("notificationsEnabled");
 
-                            masterList.add(new User(userId, name, email, phone, "fcmToken", userType, favRecCenter));
+                            masterList.add(new User(userId, name, email, phone, "fcmToken", userType, favRecCenter, notificationsEnabled));
                         }
                         selectedTypeFilter = null;
                         searchText = "";
