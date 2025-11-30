@@ -26,7 +26,7 @@ import static org.hamcrest.Matchers.anything;
  */
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class OrganizerRegistrationBlackboxTest {
+public class OrganizerEntrantListBlackboxTest {
 
     @Rule
     public ActivityScenarioRule<OrganizerMainActivity> activityRule =

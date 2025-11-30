@@ -46,7 +46,7 @@ import org.mockito.Mockito;
  */
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class OrganizerRegistrationWhiteboxTest {
+public class OrganizerEntrantListWhiteboxTest {
 
     @Rule
     public ActivityScenarioRule<OrganizerMainActivity> activityRule =
