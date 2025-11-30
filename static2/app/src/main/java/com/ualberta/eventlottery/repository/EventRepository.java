@@ -139,10 +139,6 @@ public class EventRepository {
         Boolean locationRequired = document.getBoolean("locationRequired");
         event.setLocationRequired(locationRequired != null ? locationRequired : true);
 
-        Double price = document.getDouble("price");
-        if (price != null) {
-            event.setPrice(price);
-        }
 
         return event;
     }
