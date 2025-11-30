@@ -139,6 +139,7 @@ public class EventRepository {
         Boolean locationRequired = document.getBoolean("locationRequired");
         event.setLocationRequired(locationRequired != null ? locationRequired : true);
 
+
         return event;
     }
 

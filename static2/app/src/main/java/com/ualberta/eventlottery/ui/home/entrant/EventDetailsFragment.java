@@ -564,6 +564,13 @@ public class EventDetailsFragment extends Fragment {
         String location = currentEvent.getLocation();
         binding.eventDetailsLocation.setText(location != null && !location.isEmpty() ? location : "Location TBD");
 
+        double price = currentEvent.getPrice();
+        if (price > 0) {
+            binding.eventDetailsPrice.setText(String.format(Locale.CANADA, "$%.2f", price));
+        } else {
+            binding.eventDetailsPrice.setText("Free");
+        }
+
         // --- Poster Image ---
         if (currentEvent.getPosterUrl() != null && !currentEvent.getPosterUrl().isEmpty()) {
             binding.ivEventPosterImg.setVisibility(View.VISIBLE); // Make the ImageView visible
