@@ -67,6 +67,9 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.espresso.intents)
 
+    implementation("androidx.palette:palette:1.0.0")
+
+
     testImplementation(libs.junit)
     androidTestImplementation("androidx.arch.core:core-testing:2.2.0")
     testImplementation("org.robolectric:robolectric:4.11.1")

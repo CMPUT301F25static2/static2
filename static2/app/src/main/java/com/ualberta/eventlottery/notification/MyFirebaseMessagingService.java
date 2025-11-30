@@ -30,10 +30,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         String title = remoteMessage.getData().get("title");
         String body = remoteMessage.getData().get("body");
-        String eventId = remoteMessage.getData().get("eventId");
 
         NotificationController controller = new NotificationController(getApplicationContext());
-        controller.displayNotification(title, body, eventId);
+        controller.displayNotification(title, body);
     }
 
     /**

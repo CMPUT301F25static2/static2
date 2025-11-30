@@ -45,21 +45,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         //Only initialize the view after User initialization below
 
-        // TODO: store into user profile
-        FirebaseMessaging.getInstance().getToken()
-                .addOnCompleteListener(task -> {
-                    if (!task.isSuccessful()) {
-                        Log.w("FCM", "Fetching FCM token failed", task.getException());
-                        return;
-                    }
-
-                    // Get the new FCM registration token
-                    String token = task.getResult();
-                    Log.d("FCM", "Current FCM token: " + token);
-                });
-
-
-        askNotificationPermission();
         UserManager.initializeUser (new UserManager.InitCallback() {
             @Override
             public void onSuccess(String userId) {
@@ -207,15 +192,5 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    // Check for POST_NOTIFICATIONS permission
-    private void askNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
-                    != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
-            }
-        }
-    }
 
 }
