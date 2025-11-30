@@ -364,7 +364,7 @@ public class EventRepository {
                 db.collection(COLLECTION_EVENTS).add(eventToMap(event))
                         .addOnSuccessListener(documentReference -> {
                             String eventId = documentReference.getId();
-
+                            event.setId(eventId);
                             generateAndUploadQrCode(documentReference, eventId, callback);
                         })
                         .addOnFailureListener(callback::onFailure);
