@@ -17,6 +17,9 @@
       <SelectionState runConfigName="entrantCanSeeJoinableEventsList()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
+      <SelectionState runConfigName="OrganizerNotificationTest">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
     </selectionStates>
   </component>
 </project>

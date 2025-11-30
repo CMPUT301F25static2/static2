@@ -38,7 +38,11 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-
+/**
+ * Whitebox testing for Entrant user stories.
+ * Stories Tested:
+ *  * US-01.01.01, 02, 03
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class EntrantMainActivityWhiteBoxTest {
 
@@ -57,7 +61,10 @@ public class EntrantMainActivityWhiteBoxTest {
 
     private static String TEST_EVENT_DESCRIPTION = "entrant-white-box-test-event";
 
-    //US 01.01.01 As an entrant, I want to join the waiting list for a specific event
+    /**
+     * Testing US 01.01.01 As an entrant, I want to join the waiting list for a specific event
+     * @throws InterruptedException
+     */
     @Test
     public void entrantCanJoinWaitingList() throws InterruptedException {
         String testEventDescription = TEST_EVENT_DESCRIPTION + "-entrantCanJoinWaitingList";
@@ -91,7 +98,10 @@ public class EntrantMainActivityWhiteBoxTest {
         }
     }
 
-    //US 01.01.02 As an entrant, I want to leave the waiting list for a specific event
+    /**
+     * Testing US 01.01.02 As an entrant, I want to leave the waiting list for a specific event
+     * @throws InterruptedException
+     */
     @Test
     public void entrantCanLeaveWaitingList() throws InterruptedException {
         String testEventDescription = TEST_EVENT_DESCRIPTION + "-entrantCanJoinWaitingList";
@@ -133,7 +143,10 @@ public class EntrantMainActivityWhiteBoxTest {
         }
     }
 
-    // US 01.01.03 As an entrant, I want to be able to see a list of events that I can join the waiting list for
+    /**
+     * Testing US 01.01.03 As an entrant, I want to be able to see a list of events that I can join the waiting list for
+     * @throws InterruptedException
+     */
     @Test
     public void entrantCanSeeJoinableEventsList() throws InterruptedException {
         String testEventDescription = TEST_EVENT_DESCRIPTION + "-entrantCanJoinWaitingList";
@@ -171,6 +184,13 @@ public class EntrantMainActivityWhiteBoxTest {
         }
     }
 
+    /**
+     * Creates a test event with given description and registration status
+     * @param testEventDescription
+     * @param registrationStatus
+     * @return
+     * @throws InterruptedException
+     */
     private Event createTestEvent(String testEventDescription, EventRegistrationStatus registrationStatus) throws InterruptedException {
         EventRepository eventRepository = EventRepository.getInstance();
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
@@ -212,6 +232,10 @@ public class EntrantMainActivityWhiteBoxTest {
         return event;
     }
 
+    /**
+     * Registration list callback for testing.
+     * It counts down the provided latch on success.
+     */
     private static class TestRegistrationListCallback implements RegistrationRepository.RegistrationListCallback {
         private CountDownLatch latch;
         private List<Registration> registrations = new ArrayList<>();
@@ -236,6 +260,10 @@ public class EntrantMainActivityWhiteBoxTest {
         }
     }
 
+    /**
+     * Registration callback for testing.
+     * It counts down the provided latch on sucess.
+     */
     private static class TestRegistrationCallback implements RegistrationRepository.RegistrationCallback {
         private CountDownLatch latch;
 
