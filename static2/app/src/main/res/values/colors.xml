@@ -12,9 +12,6 @@
     <color name="red">#FF0000</color>
     <color name="purple_500">#6200EE</color>
 
-
-
-
     <color name="btn_dark_light">#595959</color>
     <color name="blue_light">#DBEAFE</color>
     <color name="blue_deep">#3B82F6</color>
@@ -27,5 +24,9 @@
     <color name="orange_light">#fef5d9</color>
     <color name="orange_deep">#F59E0B</color>
 
-
+    <!-- Colors for Select All button -->
+    <color name="select_all_button_default_background">#E0E0E0</color>
+    <color name="select_all_button_selected_background">@color/blue_deep</color>
+    <color name="select_all_button_default_text">@color/text_primary</color>
+    <color name="select_all_button_selected_text">@color/white</color>
 </resources>

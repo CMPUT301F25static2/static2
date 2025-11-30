@@ -36,6 +36,7 @@
             android:layout_height="wrap_content"
             android:layout_marginVertical="10dp">
 
+
             <!--        all members currently in the event -->
             <LinearLayout
                 android:id="@+id/btn_entrants_confirmed"
@@ -43,7 +44,8 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/button_selector"
                 android:paddingVertical="6dp"
-                android:paddingHorizontal="8dp" >
+                android:paddingHorizontal="8dp"
+                android:layout_marginStart="2dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -174,13 +176,30 @@
 
     </HorizontalScrollView>
 
+    <!--        Select All button -->
+    <LinearLayout
+        android:id="@+id/btn_select_all"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:padding="4dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select All"
+            android:textSize="14sp"
+            android:textColor="@color/text_secondary"
+            android:textStyle="bold"/>
+    </LinearLayout>
+
     <!--    entrants list-->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/lv_event_entrant_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="4dp"
     />
 
 </LinearLayout>
