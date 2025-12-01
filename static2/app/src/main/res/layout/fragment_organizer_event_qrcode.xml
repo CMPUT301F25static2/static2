@@ -81,8 +81,6 @@
             android:src="@drawable/placeholder_background"
             android:scaleType="centerCrop"/>
 
-
-
     </LinearLayout>
 
 

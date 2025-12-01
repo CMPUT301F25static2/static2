@@ -83,6 +83,11 @@ public class OrganizerHomeFragment extends Fragment {
         eventRepository.getEventsByOrganizer(organizerId, new EventRepository.EventListCallback() {
             @Override
             public void onSuccess(List<Event> events) {
+                // Check if view is still attached before accessing binding
+                if (binding == null || !isAdded() || getView() == null) {
+                    return;
+                }
+                
                 int totalEvents = events.size();
                 int totalEntrants = 0;
                 int totalMaxAttendees = 0;
