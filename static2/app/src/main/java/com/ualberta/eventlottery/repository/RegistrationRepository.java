@@ -29,7 +29,7 @@ import java.util.Map;
  */
 public class RegistrationRepository {
     private static RegistrationRepository instance;
-    private FirebaseFirestore db;
+    public FirebaseFirestore db;
     private static final String COLLECTION_REGISTRATIONS = "registrations";
 
     // Callback interfaces
@@ -131,7 +131,7 @@ public class RegistrationRepository {
      * Private constructor for Singleton pattern.
      * Initializes Firebase Firestore instance.
      */
-    private RegistrationRepository() {
+    public RegistrationRepository() {
         db = FirebaseFirestore.getInstance();
     }
 
@@ -153,7 +153,7 @@ public class RegistrationRepository {
      * @param document the Firestore document snapshot to convert
      * @return the converted Registration object, or null if conversion fails
      */
-    private Registration documentToRegistration(DocumentSnapshot document) {
+    public Registration documentToRegistration(DocumentSnapshot document) {
         if (document == null || !document.exists()) {
             return null;
         }
@@ -192,7 +192,7 @@ public class RegistrationRepository {
      * @param registration the Registration object to convert
      * @return a Map containing the registration data for Firestore
      */
-    private Map<String, Object> registrationToMap(Registration registration) {
+    public Map<String, Object> registrationToMap(Registration registration) {
         Map<String, Object> registrationMap = new HashMap<>();
         registrationMap.put("id", registration.getId());
         registrationMap.put("eventId", registration.getEventId());

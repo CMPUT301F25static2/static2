@@ -71,23 +71,5 @@ public class Registration {
 
 
 
-    // Business methods
-    public void acceptInvitation() {
-        this.status = EntrantRegistrationStatus.CONFIRMED;
-        this.respondedAt = new Date();
-    }
 
-    public void declineInvitation() {
-        this.status = EntrantRegistrationStatus.DECLINED;
-        this.respondedAt = new Date();
-    }
-
-    public boolean isExpired() {
-        if (status == EntrantRegistrationStatus.SELECTED) {
-            // Check if more than 48 hours passed without response
-            long hoursSinceSelected = (System.currentTimeMillis() - registeredAt.getTime()) / (1000 * 60 * 60);
-            return hoursSinceSelected > 48;
-        }
-        return false;
-    }
 }
