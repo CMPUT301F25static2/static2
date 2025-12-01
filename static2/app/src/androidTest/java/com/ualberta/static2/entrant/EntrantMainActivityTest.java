@@ -86,6 +86,9 @@ public class EntrantMainActivityTest {
         // test if the activity launches successfully
         ActivityScenario.launch(EntrantMainActivity.class);
 
+        onView(allOf(withId(R.id.availableEventsButton), isDisplayed()))
+                .check(matches(isDisplayed()));
+
         onView(withId(R.id.availableEventsButton))
                 .perform(click());
 
@@ -116,6 +119,9 @@ public class EntrantMainActivityTest {
     public void testLeaveWaitlist() {
         // test if the activity launches successfully
         ActivityScenario.launch(EntrantMainActivity.class);
+
+        onView(allOf(withId(R.id.availableEventsButton), isDisplayed()))
+               .check(matches(isDisplayed()));
 
         onView(withId(R.id.availableEventsButton))
                 .perform(click());
