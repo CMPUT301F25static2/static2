@@ -3,13 +3,14 @@ package com.ualberta.static2.entrant;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
 
 import android.Manifest;
 
@@ -22,6 +23,7 @@ import androidx.test.rule.GrantPermissionRule;
 
 import com.ualberta.eventlottery.entrant.EntrantMainActivity;
 import com.ualberta.eventlottery.ui.home.entrant.EventAdapter;
+import com.ualberta.eventlottery.ui.home.entrant.EventDetailsFragment;
 import com.ualberta.eventlottery.ui.home.entrant.HomeFragment;
 import com.ualberta.static2.R;
 
@@ -31,10 +33,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 /**
  * Tests for Entrant User Stories
  * Stories Tested:
  * US-01.01.01, 02, 03, 04
+ * US-01.06.02
  */
 @RunWith(AndroidJUnit4.class)
 public class EntrantMainActivityTest {
@@ -42,20 +48,24 @@ public class EntrantMainActivityTest {
 
     @Rule
     public GrantPermissionRule grantPermissionRule = GrantPermissionRule.grant(
-            Manifest.permission.POST_NOTIFICATIONS);
+            Manifest.permission.POST_NOTIFICATIONS,
+            android.Manifest.permission.ACCESS_FINE_LOCATION,
+            android.Manifest.permission.ACCESS_COARSE_LOCATION);
 
     @Before
     public void setup() {
         IdlingRegistry idlingRegistry = IdlingRegistry.getInstance();
         idlingRegistry.register(idlingResource);
         idlingRegistry.register(EventAdapter.idlingResource);
+        idlingRegistry.register(EventDetailsFragment.idlingResource);
     }
 
     @After
     public void tearDown() {
         IdlingRegistry idlingRegistry = IdlingRegistry.getInstance();
         idlingRegistry.unregister(HomeFragment.idlingResource);
-        idlingRegistry.register(EventAdapter.idlingResource);
+        idlingRegistry.unregister(EventAdapter.idlingResource);
+        idlingRegistry.unregister(EventDetailsFragment.idlingResource);
     }
 
     @Test
@@ -140,7 +150,15 @@ public class EntrantMainActivityTest {
         ActivityScenario.launch(EntrantMainActivity.class);
 
         onView(withId(R.id.availableEventsButton))
-                .check(matches(isDisplayed()));
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        // Delay the exit for easy visual inspection of the test.
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -366,5 +384,43 @@ public class EntrantMainActivityTest {
         } catch(InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * US 01.06.02 As an entrant, I want to be able to sign up for an event from the event details
+     */
+    @Test
+    public void testEntrantSignUpForEventFromEventDetails() throws InterruptedException {
+        // test if the activity launches successfully
+        ActivityScenario.launch(EntrantMainActivity.class);
+
+        onView(withId(R.id.availableEventsButton))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        CountDownLatch latch = new CountDownLatch(1);
+        latch.await(2000, TimeUnit.MILLISECONDS);
+
+        try {
+            onView(allOf(CustomMatchers.first(allOf(withText("Entrants:"), withParent(hasSibling(hasDescendant(withText("Register")))))), isDisplayed()))
+                    .check(matches(isDisplayed()));
+        } catch(NoMatchingViewException e) {
+            // Check if there's a withdraw button we can click to make this test pass
+            onView(allOf(CustomMatchers.first(withText("Withdraw")), isDisplayed()))
+                    .perform(click());
+        }
+
+        onView(CustomMatchers.first(allOf(withText("Entrants:"), withParent(hasSibling(hasDescendant(withText("Register")))))))
+                .perform(click());
+
+        latch.await(2000, TimeUnit.MILLISECONDS);
+
+        onView(allOf(withText("Register"), isDisplayed()))
+                .check(matches(isDisplayed()));
+
+        onView(withText("Register"))
+                .perform(click());
+
+        latch.await(1000, TimeUnit.MILLISECONDS);
     }
 }

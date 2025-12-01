@@ -12,9 +12,11 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.test.espresso.idling.CountingIdlingResource;
 
 import com.bumptech.glide.Glide;
 import com.ualberta.eventlottery.model.Entrant;
@@ -62,6 +64,9 @@ public class EventDetailsFragment extends Fragment {
     private ActionType currentAction = ActionType.REGISTER;
     private static NotificationController notificationController;
     private EntrantRepository entrantRepository;
+
+    @VisibleForTesting
+    public static CountingIdlingResource idlingResource = new CountingIdlingResource("EventDetailsFragment");
 
     /**
      * Required empty public constructor
@@ -357,6 +362,7 @@ public class EventDetailsFragment extends Fragment {
 
 
     private void captureLocationAndRegister() {
+        idlingResource.increment();
         locationService.getCurrentLocation()
                 .thenAccept(location -> {
                     if (location != null) {
@@ -365,10 +371,16 @@ public class EventDetailsFragment extends Fragment {
                         Toast.makeText(getContext(), "Unable to get location. Please try again.", Toast.LENGTH_LONG).show();
                         resetButtonState();
                     }
+                    if (!idlingResource.isIdleNow()) {
+                        idlingResource.decrement();
+                    }
                 })
                 .exceptionally(throwable -> {
                     Toast.makeText(getContext(), "Location capture failed: " + throwable.getMessage(), Toast.LENGTH_LONG).show();
                     resetButtonState();
+                    if (!idlingResource.isIdleNow()) {
+                        idlingResource.decrement();
+                    }
                     return null;
                 });
     }
@@ -377,6 +389,7 @@ public class EventDetailsFragment extends Fragment {
         String currentUserId = UserManager.getCurrentUserId();
         if (currentUserId == null) return;
 
+        idlingResource.increment();
         registrationRepository.registerUser(mEventId, currentUserId, location, new RegistrationRepository.RegistrationCallback() {
             @Override
             public void onSuccess(Registration registration) {
@@ -384,6 +397,9 @@ public class EventDetailsFragment extends Fragment {
                 currentUserRegistration = registration;
                 updateButtonUi();
                 binding.registerButton.setEnabled(true);
+                if (!idlingResource.isIdleNow()) {
+                    idlingResource.decrement();
+                }
             }
 
             @Override
@@ -392,6 +408,9 @@ public class EventDetailsFragment extends Fragment {
                 currentUserRegistration = null;
                 updateButtonUi();
                 binding.registerButton.setEnabled(true);
+                if (!idlingResource.isIdleNow()) {
+                    idlingResource.decrement();
+                }
             }
         });
     }
@@ -413,6 +432,7 @@ public class EventDetailsFragment extends Fragment {
         binding.registerButton.setEnabled(false);
         binding.registerButton.setText("Withdrawing...");
 
+        idlingResource.increment();
         registrationRepository.deleteRegistration(currentUserRegistration.getId(), new RegistrationRepository.BooleanCallback() {
             @Override
             public void onSuccess(boolean result) {
@@ -420,6 +440,9 @@ public class EventDetailsFragment extends Fragment {
                 currentUserRegistration = null;
                 updateButtonUi();
                 binding.registerButton.setEnabled(true);
+                if (!idlingResource.isIdleNow()) {
+                    idlingResource.decrement();
+                }
             }
 
             @Override
@@ -428,6 +451,9 @@ public class EventDetailsFragment extends Fragment {
                 Log.e("WithdrawFailure", "Error withdrawing from event", e);
                 updateButtonUi();
                 binding.registerButton.setEnabled(true);
+                if (!idlingResource.isIdleNow()) {
+                    idlingResource.decrement();
+                }
             }
         });
     }
