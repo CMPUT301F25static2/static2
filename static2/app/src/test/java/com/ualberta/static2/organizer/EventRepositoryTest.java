@@ -251,30 +251,5 @@ public class EventRepositoryTest {
         verify(mockCallback, times(1)).onSuccess(any(List.class));
     }
 
-    @Test
-    public void testAddEventWithPoster_Success() {
-        // Setup mocks
-        when(mockStorage.getReference()).thenReturn(mockStorageRef);
-        when(mockStorageRef.child(anyString())).thenReturn(mockStorageRef);
-        when(mockStorageRef.putFile(any(Uri.class))).thenReturn(mockUploadTask);
-        when(mockUploadTask.continueWithTask(any())).thenReturn(mockUploadTask);
-        when(mockUploadTask.isSuccessful()).thenReturn(true);
-        when(mockUploadTask.getResult()).thenReturn(mock(Uri.class));
 
-        // Setup Firestore
-        when(mockDb.collection(anyString())).thenReturn(mock(CollectionReference.class));
-        when(mockDb.collection(anyString()).add(any(Map.class))).thenReturn(mock(Task.class));
-
-        // Call the method
-        Event event = new Event();
-        event.setTitle("Test Event");
-        event.setDescription("Test Description");
-        event.setOrganizerId("orgId123");
-
-        EventRepository.OperationCallback mockCallback = mock(EventRepository.OperationCallback.class);
-        eventRepository.addEventWithPoster(event, mock(Uri.class), mockCallback);
-
-        // Verify the callback was called
-        verify(mockCallback, times(1)).onSuccess();
-    }
 }

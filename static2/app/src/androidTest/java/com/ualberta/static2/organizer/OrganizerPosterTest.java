@@ -59,7 +59,6 @@ public class OrganizerPosterTest {
         onView(withId(R.id.iv_event_poster)).check(matches(isDisplayed()));
 
         // Click on the poster image view to initiate the upload process
-        // Note: Actual image selection would require mocking intents, so we'll just verify the click is possible
         onView(withId(R.id.iv_event_poster)).perform(click());
     }
 
