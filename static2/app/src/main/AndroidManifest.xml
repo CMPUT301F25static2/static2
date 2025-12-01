@@ -50,12 +50,6 @@
             android:name="com.ualberta.eventlottery.organzier.OrganizerMainActivity"
             android:label="Organizer"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="eventlottery" android:host="event"/>
-            </intent-filter>
         </activity>
         <activity
             android:name="com.ualberta.eventlottery.entrant.EntrantMainActivity"

@@ -39,7 +39,8 @@ public class AdminNotificationLogsTest {
                 "Test Notification",
                 "This is a test message",
                 "event-123",
-                recipients
+                recipients,
+                null
         );
         notification.setNotificationId("notif-1");
 
@@ -105,7 +106,8 @@ public class AdminNotificationLogsTest {
                 "Empty Notification",
                 "No recipients",
                 "event-456",
-                recipients
+                recipients,
+                null
         );
 
         NotificationLog log = new NotificationLog(notification);
@@ -321,4 +323,3 @@ public class AdminNotificationLogsTest {
         return filtered;
     }
 }
-
