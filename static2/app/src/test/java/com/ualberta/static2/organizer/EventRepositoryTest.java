@@ -7,15 +7,16 @@ import static org.mockito.Mockito.*;
 
 import android.net.Uri;
 
+import com.google.firebase.storage.UploadTask;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.ualberta.eventlottery.model.Event;
 import com.ualberta.eventlottery.model.EventStatus;
 import com.ualberta.eventlottery.model.EventRegistrationStatus;
@@ -261,8 +262,8 @@ public class EventRepositoryTest {
         when(mockUploadTask.getResult()).thenReturn(mock(Uri.class));
 
         // Setup Firestore
-        when(mockDb.collection(anyString())).thenReturn(mock(com.google.firebase.firestore.CollectionReference.class));
-        when(mockDb.collection(anyString()).add(any(Map.class))).thenReturn(mock(com.google.android.gms.tasks.Task.class));
+        when(mockDb.collection(anyString())).thenReturn(mock(CollectionReference.class));
+        when(mockDb.collection(anyString()).add(any(Map.class))).thenReturn(mock(Task.class));
 
         // Call the method
         Event event = new Event();

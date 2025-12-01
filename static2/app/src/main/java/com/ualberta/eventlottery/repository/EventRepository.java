@@ -34,8 +34,8 @@ import java.util.UUID;
 
 public class EventRepository {
     private static EventRepository instance;
-    private FirebaseFirestore db;
-    private FirebaseStorage storage;
+    public FirebaseFirestore db;
+    public FirebaseStorage storage;
     private static final String COLLECTION_EVENTS = "events";
     private static final String STORAGE_PATH_POSTERS = "event_posters/";
     static final String STORAGE_PATH_QR_CODES = "event_qr_codes/";
@@ -65,7 +65,7 @@ public class EventRepository {
         void onFailure(Exception e);
     }
 
-    private EventRepository() {
+    public EventRepository() {
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
     }
@@ -78,7 +78,7 @@ public class EventRepository {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private Event documentToEvent(DocumentSnapshot document) {
+    public Event documentToEvent(DocumentSnapshot document) {
         if (document == null || !document.exists()) {
             return null;
         }
@@ -102,6 +102,8 @@ public class EventRepository {
         String dailyEndTimeStr = document.getString("dailyEndTime");
 
         event.setPosterUrl(document.getString("posterUrl"));
+        event.setQrCodeUrl(document.getString("qrCodeUrl"));
+
 
         if (dailyStartTimeStr != null) {
             try {
@@ -207,7 +209,7 @@ public class EventRepository {
         return event;
     }
 
-    private Map<String, Object> eventToMap(Event event) {
+    public Map<String, Object> eventToMap(Event event) {
         Map<String, Object> eventMap = new HashMap<>();
         eventMap.put("title", event.getTitle());
         eventMap.put("description", event.getDescription());
@@ -235,7 +237,7 @@ public class EventRepository {
         return eventMap;
     }
 
-    private void updateEventStatus(Event event) {
+    public void updateEventStatus(Event event) {
         if (event == null) {
             return;
         }

@@ -110,11 +110,11 @@ public class OrganizerEventQrcodeFragment extends Fragment {
                 if (event.getQrCodeUrl() != null && !event.getQrCodeUrl().isEmpty()) {
                     Glide.with(requireContext())
                             .load(event.getQrCodeUrl())
-                            .placeholder(R.drawable.qrcode)
-                            .error(R.drawable.qrcode)
+                            .placeholder(R.drawable.placeholder_background)
+                            .error(R.drawable.placeholder_background)
                             .into(binding.ivEventQrcode);
                 } else {
-                    binding.ivEventQrcode.setImageResource(R.drawable.qrcode); // Default QR image if URL is missing
+                    binding.ivEventQrcode.setImageResource(R.drawable.placeholder_background); // Default QR image if URL is missing
                 }
             }
 
