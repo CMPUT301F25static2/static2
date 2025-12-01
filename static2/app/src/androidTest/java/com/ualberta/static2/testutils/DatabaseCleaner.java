@@ -3,6 +3,8 @@ package com.ualberta.static2.testutils;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.ualberta.eventlottery.model.Registration;
 import com.ualberta.eventlottery.repository.EventRepository;
 import com.ualberta.eventlottery.repository.RegistrationRepository;
@@ -12,9 +14,20 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class DatabaseCleaner {
+
+
+    public static void cleanUser(String userId, int awaitMS) throws ExecutionException, InterruptedException, TimeoutException {
+        if (userId == null || userId.isEmpty()) {
+            return; // Do not clean if userId is invalid
+        }
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Tasks.await(db.collection("users").document(userId).delete(), awaitMS, TimeUnit.MILLISECONDS);
+    }
     public static void cleanEvent(String eventId, int awaitMS) throws InterruptedException {
         cleanRegistrationsByEvent(eventId, awaitMS);
 

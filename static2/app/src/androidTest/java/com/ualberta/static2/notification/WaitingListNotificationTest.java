@@ -128,6 +128,7 @@ public class WaitingListNotificationTest {
      * Note: This test requires events to exist in the test database.
      * If no events are available, the test will skip gracefully.
      */
+
     @Test
     public void testSendNotificationToWaitingListEntrants() {
         // Wait for event list to load and have items
@@ -322,6 +323,7 @@ public class WaitingListNotificationTest {
      * Note: This test requires events to exist in the test database.
      * If no events are available, the test will skip gracefully.
      */
+
     @Test
     public void testSelectWaitingListEntrantsForNotification() {
         // Wait for fragment to initialize
@@ -404,6 +406,7 @@ public class WaitingListNotificationTest {
      * 
      * Note: This test requires events to exist in the test database.
      */
+
     @Test
     public void testNotificationDialogRequiresMessage() {
         // Wait for fragment to initialize
@@ -452,5 +455,6 @@ public class WaitingListNotificationTest {
         // Since toasts are hard to verify, we check that we're still in a valid state
         onView(withId(R.id.lv_event_entrant_list)).check(matches(isDisplayed()));
     }
+
 }
 
