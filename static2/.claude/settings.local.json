@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(mkdir -p \"C:\\Users\\25138\\Documents\\CMPUT 301\\project\\static2\\static2\\app\\src\\androidTest\\java\\com\\ualberta\\static2\\organizer\")"
-    ],
-    "deny": [],
-    "ask": []
-  }
-}
