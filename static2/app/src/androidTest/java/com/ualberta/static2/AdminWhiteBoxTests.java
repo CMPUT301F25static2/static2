@@ -109,8 +109,8 @@ public class AdminWhiteBoxTests {
 
     }
 
-    /*  Deletes a dummy user from the database.
-     *   This test checks to make sure that the user is deleted from the database.
+    /* US 03.02.01
+    * Testing if we can remove users
      */
     @Test
     public void testDeleteUser() throws InterruptedException {
@@ -158,10 +158,12 @@ public class AdminWhiteBoxTests {
 
     }
 
-    /*  Browsing users requires a list and adapter that update properly,
-    *   This test checks to make sure that such a list and adapter can be created,
-    *   and that the size of the list and adapter is correct after adding and deleting users
-    *   from the database.
+    /* US 03.05.01
+    *  Testing if we can browse users
+     *  Browsing users requires a list and adapter that update properly,
+     *   This test checks to make sure that such a list and adapter can be created,
+     *   and that the size of the list and adapter is correct after adding and deleting events
+     *   from the database.
      */
     @Test
     public void testBrowseUsers() throws InterruptedException {
@@ -275,8 +277,8 @@ public class AdminWhiteBoxTests {
         assertTrue("Adding event to Firestore succeeded", writeSuccess[0]);
     }
 
-    /*  Deletes a dummy event from the database .
-     *   This test checks to make sure that the event is deleted from the database.
+    /* US 03.01.01
+     * Testing if we can remove events
      */
     @Test
     public void testDeleteEvent() throws InterruptedException {
@@ -324,7 +326,9 @@ public class AdminWhiteBoxTests {
 
     }
 
-    /*  Browsing events also requires a list and adapter that update properly,
+    /* US 03.04.01
+     * Testing if we can browse events
+     *  Browsing events also requires a list and adapter that update properly,
      *   This test checks to make sure that such a list and adapter can be created,
      *   and that the size of the list and adapter is correct after adding and deleting events
      *   from the database.
@@ -377,8 +381,8 @@ public class AdminWhiteBoxTests {
 
     }
 
-    /*  Deleting an organizer should delete their events as well 
-    *   This test checks to make sure that the cascading delete works.
+    /* US 03.07.01
+     * Testing if we can remove organizers and their events
      */
     @Test
     public void testDeleteOrganizer() throws InterruptedException {
