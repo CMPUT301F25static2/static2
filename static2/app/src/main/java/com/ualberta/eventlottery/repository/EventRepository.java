@@ -379,7 +379,7 @@ public class EventRepository {
 
     private void generateAndUploadQrCode(DocumentReference documentReference, String eventId, OperationCallback callback) {
         try {
-            String qrContent = "eventlottery://event?id=" + eventId;
+            String qrContent = "eventlottery://com.ualberta.eventlottery/viewevent?eventId=" + eventId;
 
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
             Bitmap bitmap = barcodeEncoder.encodeBitmap(qrContent, BarcodeFormat.QR_CODE, 512, 512);
