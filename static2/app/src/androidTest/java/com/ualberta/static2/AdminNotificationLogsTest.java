@@ -28,7 +28,7 @@ public class AdminNotificationLogsTest {
      * Test creating a NotificationLog from NotificationModel
      */
 
-    /*
+
     @Test
     public void testNotificationLogCreation() {
         InstrumentationRegistry.getInstrumentation().getTargetContext();
@@ -95,7 +95,7 @@ public class AdminNotificationLogsTest {
     /**
      * Test notification log with no recipients
      */
-    /*
+
     @Test
     public void testLogWithNoRecipients() {
         InstrumentationRegistry.getInstrumentation().getTargetContext();
