@@ -160,7 +160,155 @@ public class NotificationModelTest {
         assertNotNull(emptyRecipientNotification.getRecipientIdList());
         assertEquals(0, emptyRecipientNotification.getRecipientIdList().size());
     }
+
+    /**
+     * Whitebox test for US 01.04.01: Win notification model.
+     * Verifies that NotificationModel can store win notification data correctly.
+     */
+    @Test
+    public void testWinNotificationModel_US_01_04_01() {
+        List<String> selectedUserIds = new ArrayList<>();
+        selectedUserIds.add("winner1");
+        selectedUserIds.add("winner2");
+
+        NotificationModel winNotification = new NotificationModel(
+                "🎉 Event Test Event – You Have Been Selected!",
+                "Congratulations! You have been selected to attend the event \"Test Event\".",
+                "event123",
+                selectedUserIds,
+                "action"
+        );
+
+        assertEquals("🎉 Event Test Event – You Have Been Selected!", winNotification.getTitle());
+        assertTrue(winNotification.getBody().contains("Congratulations"));
+        assertEquals("event123", winNotification.getEventId());
+        assertEquals(2, winNotification.getRecipientIdList().size());
+        assertEquals("action", winNotification.getNotificationType());
+    }
+
+    /**
+     * Whitebox test for US 01.04.02: Lose notification model.
+     * Verifies that NotificationModel can store lose notification data correctly.
+     */
+    @Test
+    public void testLoseNotificationModel_US_01_04_02() {
+        List<String> nonSelectedUserIds = new ArrayList<>();
+        nonSelectedUserIds.add("loser1");
+        nonSelectedUserIds.add("loser2");
+
+        NotificationModel loseNotification = new NotificationModel(
+                "Event Test Event – Waiting List Update",
+                "Unfortunately, you were not selected for the event \"Test Event\" at this time.",
+                "event123",
+                nonSelectedUserIds,
+                "action"
+        );
+
+        assertEquals("Event Test Event – Waiting List Update", loseNotification.getTitle());
+        assertTrue(loseNotification.getBody().contains("Unfortunately"));
+        assertEquals("event123", loseNotification.getEventId());
+        assertEquals(2, loseNotification.getRecipientIdList().size());
+        assertEquals("action", loseNotification.getNotificationType());
+    }
+
+    /**
+     * Whitebox test for US 02.07.01: Waiting list notification model.
+     * Verifies that NotificationModel can store waiting list notification data correctly.
+     */
+    @Test
+    public void testWaitingListNotificationModel_US_02_07_01() {
+        List<String> waitingListUserIds = new ArrayList<>();
+        waitingListUserIds.add("waiting1");
+        waitingListUserIds.add("waiting2");
+        waitingListUserIds.add("waiting3");
+
+        NotificationModel waitingListNotification = new NotificationModel(
+                "Event Notification",
+                "Custom message for waiting list entrants",
+                "event123",
+                waitingListUserIds,
+                "general"
+        );
+
+        assertEquals("Event Notification", waitingListNotification.getTitle());
+        assertEquals("Custom message for waiting list entrants", waitingListNotification.getBody());
+        assertEquals("event123", waitingListNotification.getEventId());
+        assertEquals(3, waitingListNotification.getRecipientIdList().size());
+        assertEquals("general", waitingListNotification.getNotificationType());
+    }
+
+    /**
+     * Whitebox test for US 02.07.02: Selected entrants notification model.
+     * Verifies that NotificationModel can store selected entrants notification data correctly.
+     */
+    @Test
+    public void testSelectedEntrantsNotificationModel_US_02_07_02() {
+        List<String> selectedEntrantIds = new ArrayList<>();
+        selectedEntrantIds.add("selected1");
+        selectedEntrantIds.add("selected2");
+
+        NotificationModel selectedNotification = new NotificationModel(
+                "Event Notification",
+                "Notification message for selected entrants",
+                "event123",
+                selectedEntrantIds,
+                "general"
+        );
+
+        assertEquals("Event Notification", selectedNotification.getTitle());
+        assertEquals("Notification message for selected entrants", selectedNotification.getBody());
+        assertEquals("event123", selectedNotification.getEventId());
+        assertEquals(2, selectedNotification.getRecipientIdList().size());
+        assertEquals("general", selectedNotification.getNotificationType());
+    }
+
+    /**
+     * Whitebox test for US 02.07.03: Cancelled entrants notification model.
+     * Verifies that NotificationModel can store cancelled entrants notification data correctly.
+     */
+    @Test
+    public void testCancelledEntrantsNotificationModel_US_02_07_03() {
+        List<String> cancelledEntrantIds = new ArrayList<>();
+        cancelledEntrantIds.add("cancelled1");
+        cancelledEntrantIds.add("cancelled2");
+
+        NotificationModel cancelledNotification = new NotificationModel(
+                "Event Notification",
+                "Notification message for cancelled entrants",
+                "event123",
+                cancelledEntrantIds,
+                "general"
+        );
+
+        assertEquals("Event Notification", cancelledNotification.getTitle());
+        assertEquals("Notification message for cancelled entrants", cancelledNotification.getBody());
+        assertEquals("event123", cancelledNotification.getEventId());
+        assertEquals(2, cancelledNotification.getRecipientIdList().size());
+        assertEquals("general", cancelledNotification.getNotificationType());
+    }
+
+    /**
+     * Whitebox test: Verifies that notification types are correctly differentiated.
+     * Win/lose notifications use "action" type, while organizer notifications use "general".
+     */
+    @Test
+    public void testNotificationTypeDifferentiation() {
+        // Win notification uses "action" type
+        NotificationModel winNotification = new NotificationModel(
+                "Win Title", "Win Body", "event1", recipientList, "action"
+        );
+        assertEquals("action", winNotification.getNotificationType());
+
+        // Organizer notifications use "general" type
+        NotificationModel organizerNotification = new NotificationModel(
+                "Organizer Title", "Organizer Body", "event1", recipientList, "general"
+        );
+        assertEquals("general", organizerNotification.getNotificationType());
+
+        assertNotEquals(winNotification.getNotificationType(), organizerNotification.getNotificationType());
+    }
 }
+
 
 
 
