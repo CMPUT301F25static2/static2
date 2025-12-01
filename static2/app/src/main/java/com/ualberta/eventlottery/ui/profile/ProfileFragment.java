@@ -2,6 +2,7 @@ package com.ualberta.eventlottery.ui.profile;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -20,6 +21,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.ualberta.eventlottery.MainActivity;
 import com.ualberta.eventlottery.utils.UserManager;
 import com.ualberta.static2.databinding.FragmentProfileBinding;
 
@@ -140,10 +142,19 @@ public class ProfileFragment extends Fragment {
                     .setTitle("Delete User")
                     .setMessage("Are you sure you want to delete this user? This action cannot be undone.")
                     .setPositiveButton("Delete", (dialog, which) -> {
+                        Toast.makeText(getContext(), "Profile deleted", Toast.LENGTH_SHORT).show();
                         deleteUser(userId);
                         deleteOrganizedEvents(userId);
                         deleteUserRegistrations(userId);
-                        requireActivity().onBackPressed();
+                        if (userId == UserManager.getCurrentUserId()) {
+                            Intent intent = new Intent(requireActivity(), MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                            requireActivity().finish();
+                        }
+                        else {
+                            requireActivity().onBackPressed();
+                        }
                     })
                     .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
                     .setIcon(android.R.drawable.ic_dialog_alert)
