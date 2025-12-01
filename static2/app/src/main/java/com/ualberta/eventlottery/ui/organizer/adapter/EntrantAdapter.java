@@ -178,6 +178,21 @@ public class EntrantAdapter extends RecyclerView.Adapter<EntrantAdapter.ViewHold
         return selectedIds;
     }
 
+    /**
+     * Sets the select all mode for the adapter.
+     *
+     * @param isSelectAllChecked true to select all items, false to deselect all items.
+     */
+    public void setSelectAllMode(boolean isSelectAllChecked) {
+        selectedItems.clear();
+        if (isSelectAllChecked) {
+            for (int i = 0; i < entrants.size(); i++) {
+                selectedItems.put(i, true);
+            }
+        }
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemCount() {
         return entrants != null ? entrants.size() : 0;
