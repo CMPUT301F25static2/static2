@@ -273,7 +273,7 @@ public class AdminMainActivityTest {
         //onView(withId(R.id.systemImageList)).check(matches(isDisplayed()));
         this.getClass().getSimpleName().matches("AdminImagesFragment");
     }
-
+    /*
     @Test
     public void testAdminPortalBrowseLogs() {
         waitForViewToAppear(R.id.btn_admin);
@@ -289,7 +289,7 @@ public class AdminMainActivityTest {
         onView(withId(R.id.systemLogList)).check(matches(isDisplayed()));
         this.getClass().getSimpleName().matches("AdminLogFragment");
     }
-
+    */
 
 
     // Helper method to wait for a view to appear

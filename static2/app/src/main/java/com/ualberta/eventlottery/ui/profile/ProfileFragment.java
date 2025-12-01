@@ -2,7 +2,7 @@ package com.ualberta.eventlottery.ui.profile;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.content.pm.PackageManager;
+import android.content.Intent;import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -143,7 +143,11 @@ public class ProfileFragment extends Fragment {
                         deleteUser(userId);
                         deleteOrganizedEvents(userId);
                         deleteUserRegistrations(userId);
-                        requireActivity().onBackPressed();
+
+
+                        Intent intent = new Intent(getActivity(), ProfileSetupActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
                     })
                     .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
                     .setIcon(android.R.drawable.ic_dialog_alert)

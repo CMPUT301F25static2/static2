@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     id("com.google.gms.google-services")}
 
+
 android {
     namespace = "com.ualberta.static2"
     compileSdk = 36
